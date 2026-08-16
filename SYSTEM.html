@@ -306,7 +306,7 @@
             </div>
 
             <div class="panel-header">
-                <span>عرض تفاصيل الأسبوع وتكلفة دخله:</span>
+                <span>اختر الأسبوع لعرض التقرير والدخل:</span>
                 <select id="report-week-select" style="width: 130px; padding: 4px 8px; font-size: 11px;" onchange="renderAll()">
                     <option value="1">الأسبوع الأول</option>
                     <option value="2">الأسبوع الثاني</option>
@@ -315,6 +315,15 @@
                 </select>
             </div>
 
+            <!-- تفكيك الدخل الأسبوعي المباشر -->
+            <div style="background: rgba(255, 215, 0, 0.05); border: 1px solid var(--gold); border-radius: 8px; padding: 12px; margin-bottom: 15px;">
+                <div style="font-size: 13px; font-weight: 700; color: var(--gold); margin-bottom: 8px; border-bottom: 1px dashed var(--gold); padding-bottom: 4px;">
+                    💰 تفاصيل الدخل الأسبوعي (كام ومن مين):
+                </div>
+                <div id="master-weekly-breakdown-list" class="mobile-card-list"></div>
+            </div>
+
+            <div class="panel-header">تفاصيل جدول التصوير لهذا الأسبوع</div>
             <div style="overflow-x:auto;">
                 <table class="report-table">
                     <thead>
@@ -347,7 +356,7 @@
 
             <div class="summary-card">
                 <div class="summary-item"><span>إجمالي المحصل الكلي:</span><span id="m-total-rev" style="color:var(--mint); font-weight:bold;">0 ج.م</span></div>
-                <div class="summary-item"><span>دخل هذا الأسبوع المختار:</span><span id="m-week-income" style="color:var(--gold); font-weight:bold;">0 ج.م</span></div>
+                <div class="summary-item"><span>إجمالي دخل الأسبوع المختار:</span><span id="m-week-income" style="color:var(--gold); font-weight:bold;">0 ج.م</span></div>
                 <div class="summary-item"><span>ديون متبقية لدى العملاء (السوق):</span><span id="m-total-pend" style="color:var(--red); font-weight:bold;">0 ج.م</span></div>
                 <div class="summary-item"><span>إجمالي المصاريف والرواتب:</span><span id="m-total-exp" style="color:var(--red); font-weight:bold;">0 ج.م</span></div>
                 <div class="summary-item"><span>صافي الأرباح الكلية المتبقية:</span><span id="m-net-income" style="color:var(--mint); font-weight:bold;">0 ج.م</span></div>
@@ -609,17 +618,43 @@
             let totalExp = expOffice + empPaidTotal;
             let netIncome = rev - totalExp;
 
-            // حساب دخل الأسبوع المختار بالتفصيل
+            // حساب دخل الأسبوع المختار والتفاصيل المفككة
             let selectedWeek = document.getElementById('report-week-select') ? document.getElementById('report-week-select').value : '1';
             let selectedWeekClients = db.monthSchedule.filter(m => m.week === selectedWeek).map(m => m.client.trim());
-            let currentWeekClientIncome = 0;
             
+            let weeklyExpectedIncome = 0;
+            let breakdownContainer = document.getElementById('master-weekly-breakdown-list');
+            breakdownContainer.innerHTML = '';
+
+            // 1. حساب وتحليل القسط الأسبوعي لعملاء الاشتراكات
             db.clients.forEach(c => {
                 if (selectedWeekClients.includes(c.name.trim())) {
-                    currentWeekClientIncome += (c.paid / 4); // توزيع متوسط دخل العميل على الأسابيع الأربعة
+                    let share = (c.paid / 4);
+                    weeklyExpectedIncome += share;
+
+                    breakdownContainer.innerHTML += `
+                        <div class="m-card-row" style="background: rgba(0,0,0,0.2); padding: 6px 10px; border-radius: 6px;">
+                            <span>👤 <strong style="color:var(--mint);">${c.name}</strong> <small style="color:rgba(255,255,255,0.5);">(اشتراك أسبوعي)</small></span>
+                            <span style="color:var(--gold); font-weight:bold;">${Math.round(share).toLocaleString()} ج.م</span>
+                        </div>
+                    `;
                 }
             });
-            let weeklyExpectedIncome = currentWeekClientIncome + dailyRev;
+
+            // 2. حساب وإضافة الخدمات اليومية
+            db.dailyIncome.forEach(di => {
+                weeklyExpectedIncome += di.cost;
+                breakdownContainer.innerHTML += `
+                    <div class="m-card-row" style="background: rgba(0,0,0,0.2); padding: 6px 10px; border-radius: 6px;">
+                        <span>⚡ <strong style="color:var(--mint);">${di.client}</strong> <small style="color:rgba(255,255,255,0.5);">(خدمة: ${di.service})</small></span>
+                        <span style="color:var(--gold); font-weight:bold;">${di.cost.toLocaleString()} ج.م</span>
+                    </div>
+                `;
+            });
+
+            if (breakdownContainer.innerHTML === '') {
+                breakdownContainer.innerHTML = `<div style="color:rgba(255,255,255,0.4); font-size:11px;">لا يوجد دخل مسجل لهذا الأسبوع حتى الآن</div>`;
+            }
 
             document.getElementById('total-revenue').innerText = rev.toLocaleString() + " ج.م";
             document.getElementById('total-pending').innerText = pend.toLocaleString() + " ج.م";
