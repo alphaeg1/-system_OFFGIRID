@@ -3,10 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>OFFGRID | Business Management System</title>
+    <title>SYSTEM OFFGRID CLOUD AGENCY</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Readex+Pro:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- html2canvas Library for Capturing Reports -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         :root {
             --bg-dark: #28262C;
@@ -14,6 +16,7 @@
             --red: #C1292E;
             --lavender: #F9F5FF;
             --cobalt: #14248A;
+            --gold: #FFD700;
             --card-bg: rgba(255, 255, 255, 0.04);
             --card-border: rgba(255, 255, 255, 0.08);
         }
@@ -26,13 +29,11 @@
             background: var(--card-bg); border: 1px solid var(--card-border); 
             padding: 14px; border-radius: 12px; margin-bottom: 15px; backdrop-filter: blur(10px);
         }
-        .brand { display: flex; align-items: center; justify-content: space-between; width: 100%; }
-        .brand-logo { background: var(--mint); color: var(--bg-dark); font-weight: 700; padding: 4px 10px; border-radius: 6px; font-size: 15px; }
-        .brand-title { font-size: 14px; font-weight: 600; color: var(--lavender); }
+        .brand { display: flex; align-items: center; justify-content: center; width: 100%; text-align: center; }
+        .brand-title { font-size: 15px; font-weight: 700; color: var(--mint); letter-spacing: 0.5px; }
         
-        .sync-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; width: 100%; }
-        .btn-sync { background: var(--mint); color: var(--bg-dark); border: none; padding: 10px; border-radius: 8px; font-weight: 600; cursor: pointer; text-align: center; font-size: 12px; }
-        .btn-sync.cobalt { background: var(--cobalt); color: white; }
+        .sync-actions { display: flex; width: 100%; }
+        .btn-sync { background: var(--mint); color: var(--bg-dark); border: none; padding: 12px; border-radius: 8px; font-weight: 700; cursor: pointer; text-align: center; font-size: 13px; width: 100%; }
 
         .kpi-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 15px; }
         .kpi-card { 
@@ -68,6 +69,10 @@
             padding: 10px 12px; border-radius: 8px; color: var(--lavender); font-size: 13px; width: 100%;
         }
         input:focus, select:focus { border-color: var(--mint); outline: none; }
+        
+        .checkbox-container { display: flex; align-items: center; gap: 8px; background: rgba(0,0,0,0.15); padding: 8px 12px; border-radius: 8px; border: 1px solid var(--card-border); }
+        .checkbox-container input { width: auto; cursor: pointer; }
+
         button.btn-add { background: var(--cobalt); color: white; border: none; padding: 12px; border-radius: 8px; font-weight: 600; cursor: pointer; margin-top: 4px; }
 
         .mobile-card-list { display: flex; flex-direction: column; gap: 10px; }
@@ -81,6 +86,7 @@
         .badge { display: inline-block; padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: 600; }
         .badge-mint { background: rgba(78, 166, 153, 0.15); color: var(--mint); }
         .badge-red { background: rgba(193, 41, 46, 0.25); color: #ff5252; border: 1px solid var(--red); }
+        .badge-gold { background: rgba(255, 215, 0, 0.15); color: var(--gold); border: 1px solid var(--gold); }
         
         .btn-del { background: rgba(193, 41, 46, 0.2); color: var(--red); border: 1px solid var(--red); padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 11px; }
         .btn-pay { background: rgba(78, 166, 153, 0.2); color: var(--mint); border: 1px solid var(--mint); padding: 4px 8px; border-radius: 4px; cursor: pointer; font-weight: 600; font-size: 11px; }
@@ -96,13 +102,10 @@
 
     <header>
         <div class="brand">
-            <span class="brand-logo">OFFGRID</span>
-            <span class="brand-title">إدارة العمليات والماليات</span>
+            <span class="brand-title">SYSTEM OFFGRID CLOUD AGENCY</span>
         </div>
         <div class="sync-actions">
-            <button class="btn-sync" onclick="exportData()">💾 تصدير JSON</button>
-            <input type="file" id="importFile" onchange="importData(event)" style="display:none">
-            <button class="btn-sync cobalt" onclick="document.getElementById('importFile').click()">📂 استيراد JSON</button>
+            <button class="btn-sync" onclick="exportReportImage()">📸 تصدير صورة التقرير الشامل</button>
         </div>
     </header>
 
@@ -117,10 +120,10 @@
 
     <!-- Scrollable Mobile Tabs -->
     <div class="tabs-nav">
-        <button class="tab-btn active" onclick="switchTab('month-weeks-tab', this)">📅 جدول أسرع الـ 4 أسابيع</button>
+        <button class="tab-btn active" onclick="switchTab('month-weeks-tab', this)">📅 جدول الـ 4 أسابيع</button>
         <button class="tab-btn" onclick="switchTab('clients-tab', this)">👥 العملاء والاشتراكات</button>
         <button class="tab-btn" onclick="switchTab('schedule-tab', this)">📌 التكليفات اليومية</button>
-        <button class="tab-btn" onclick="switchTab('team-tab', this)">👨‍💼 الفريق والرواتب</button>
+        <button class="tab-btn" onclick="switchTab('team-tab', this)">👑 الملاّك والفريق</button>
         <button class="tab-btn" onclick="switchTab('expenses-tab', this)">💸 المصروفات</button>
         <button class="tab-btn" onclick="switchTab('master-tab', this)">📊 التقرير المجمع</button>
     </div>
@@ -130,7 +133,7 @@
         <div class="panel">
             <div class="panel-header">تسكين مواعيد التصوير للأسابيع (عادي / استثنائي)</div>
             <form class="form-grid" onsubmit="addMonthlySchedule(event)">
-                <select id="ms-week" required>
+                <select id="ms-week">
                     <option value="1">الأسبوع الأول</option>
                     <option value="2">الأسبوع الثاني</option>
                     <option value="3">الأسبوع الثالث</option>
@@ -151,6 +154,12 @@
                     <option value="exceptional">عميل استثنائي (لون مختلف)</option>
                 </select>
                 <input type="text" id="ms-task" placeholder="المهمة المطلوبة (مثال: تصوير 3 ريلز)">
+                
+                <div class="checkbox-container">
+                    <input type="checkbox" id="ms-repeat">
+                    <label for="ms-repeat">🔄 تكرار العميل تلقائياً في الأربعة أسابيع</label>
+                </div>
+
                 <button type="submit" class="btn-add">إضافة للجدول الأسبوعي</button>
             </form>
 
@@ -195,17 +204,17 @@
         </div>
     </div>
 
-    <!-- Tab 3: الموظفين -->
+    <!-- Tab 3: الموظفين والملاّك -->
     <div id="team-tab" class="tab-content">
         <div class="panel">
-            <div class="panel-header">تسجيل دفعة راتب لموظف</div>
+            <div class="panel-header">تسجيل سحبيات / مسحوبات مالية</div>
             <form class="form-grid" onsubmit="paySalary(event)">
                 <select id="emp-select"></select>
                 <input type="number" id="emp-paid-amount" placeholder="المبلغ المستلم" required>
-                <button type="submit" class="btn-add">تسجيل الدفعة</button>
+                <button type="submit" class="btn-add">تسجيل السحب</button>
             </form>
 
-            <div class="panel-header" style="margin-top:20px;">حسابات الفريق والرواتب</div>
+            <div class="panel-header" style="margin-top:20px;">حسابات الملاّك والفريق</div>
             <div id="team-mobile-list" class="mobile-card-list"></div>
         </div>
     </div>
@@ -225,32 +234,54 @@
         </div>
     </div>
 
-    <!-- Tab 5: التقرير النهائي -->
+    <!-- Tab 5: التقرير النهائي (قابل للتصدير كصورة) -->
     <div id="master-tab" class="tab-content">
-        <div class="panel">
-            <div class="panel-header">التقرير المجمع الشامل للعمليات</div>
+        <div class="panel" id="exportable-report-area" style="background:#28262C; padding:15px;">
+            <div style="text-align:center; margin-bottom:15px; border-bottom:1px solid var(--mint); padding-bottom:8px;">
+                <h2 style="color:var(--mint); font-size:16px;">SYSTEM OFFGRID CLOUD AGENCY</h2>
+                <p style="font-size:11px; color:rgba(255,255,255,0.6);">التقرير النهائي المجمع وشامل جدول العمليات</p>
+            </div>
+
+            <!-- جدول مواعيد الـ 4 أسابيع في التقرير -->
+            <div class="panel-header">مواعيد التصوير للأسابيع الأربعة</div>
+            <div id="master-weeks-container" style="margin-bottom:15px;"></div>
+
+            <!-- ملخص الحسابات العملياتية -->
+            <div class="panel-header">التقرير المجمع للعملاء والماليات</div>
             <div id="master-mobile-list" class="mobile-card-list"></div>
 
             <div class="summary-card">
                 <div class="summary-item"><span>إجمالي المحصل:</span><span id="m-total-rev" style="color:var(--mint); font-weight:bold;">0 ج.م</span></div>
                 <div class="summary-item"><span>ديون لدى العملاء:</span><span id="m-total-pend" style="color:var(--red); font-weight:bold;">0 ج.م</span></div>
                 <div class="summary-item"><span>إجمالي المصاريف والرواتب:</span><span id="m-total-exp" style="color:var(--red); font-weight:bold;">0 ج.م</span></div>
+                <div class="summary-item"><span>صافي الأرباح المتبقية:</span><span id="m-net-income" style="color:var(--gold); font-weight:bold;">0 ج.م</span></div>
             </div>
         </div>
     </div>
 
     <script>
+        let defaultTeam = [
+            { name: "الفا", role: "Owner / الشريك المؤسس", isOwner: true, baseSalary: 0, paid: 0 },
+            { name: "حمدي", role: "Owner / الشريك المؤسس", isOwner: true, baseSalary: 0, paid: 0 },
+            { name: "حمو", role: "مونتير", isOwner: false, baseSalary: 0, paid: 0 },
+            { name: "زين", role: "تطوير الأعمال والتنفيذ", isOwner: false, baseSalary: 0, paid: 0 },
+            { name: "مريم", role: "كول سنتر و سيلز", isOwner: false, baseSalary: 0, paid: 0 }
+        ];
+
         let db = JSON.parse(localStorage.getItem('OFFGRID_DB')) || {
             clients: [], schedule: [], monthSchedule: [],
-            employees: [
-                { name: "الفا", role: "مبرمج و جرافيك ديزاينر", baseSalary: 0, paid: 0 },
-                { name: "حمدي", role: "مصور و منتاج", baseSalary: 0, paid: 0 },
-                { name: "حمو", role: "مونتير", baseSalary: 0, paid: 0 },
-                { name: "زين", role: "المدير و مسؤول تطوير الشركه", baseSalary: 0, paid: 0 },
-                { name: "مريم", role: "كول سنتر و سيلز", baseSalary: 0, paid: 0 }
-            ],
+            employees: defaultTeam,
             expenses: []
         };
+
+        if (db.employees && db.employees.length > 0) {
+            db.employees.forEach(emp => {
+                if (emp.name === "الفا" || emp.name === "حمدي") {
+                    emp.role = "Owner / الشريك المؤسس";
+                    emp.isOwner = true;
+                }
+            });
+        }
 
         if(!db.monthSchedule) db.monthSchedule = [];
 
@@ -265,14 +296,27 @@
 
         function addMonthlySchedule(e) {
             e.preventDefault();
-            db.monthSchedule.push({
-                id: Date.now(),
-                week: document.getElementById('ms-week').value,
-                day: document.getElementById('ms-day').value,
-                client: document.getElementById('ms-client').value,
-                type: document.getElementById('ms-type').value,
-                task: document.getElementById('ms-task').value || 'تصوير'
-            });
+            let isRepeat = document.getElementById('ms-repeat').checked;
+            let day = document.getElementById('ms-day').value;
+            let client = document.getElementById('ms-client').value;
+            let type = document.getElementById('ms-type').value;
+            let task = document.getElementById('ms-task').value || 'تصوير';
+
+            if (isRepeat) {
+                ['1', '2', '3', '4'].forEach(w => {
+                    db.monthSchedule.push({
+                        id: Date.now() + Math.random(),
+                        week: w, day, client, type, task
+                    });
+                });
+            } else {
+                let week = document.getElementById('ms-week').value;
+                db.monthSchedule.push({
+                    id: Date.now(),
+                    week, day, client, type, task
+                });
+            }
+
             e.target.reset(); saveDB();
         }
 
@@ -309,7 +353,8 @@
         }
 
         function updateBaseSalary(empIdx) {
-            let amount = prompt(`أدخل الراتب الاتفاق لـ (${db.employees[empIdx].name}):`, db.employees[empIdx].baseSalary);
+            let label = db.employees[empIdx].isOwner ? "المبلغ المستهدف/المتفق عليه" : "الراتب الأساسي";
+            let amount = prompt(`أدخل ${label} لـ (${db.employees[empIdx].name}):`, db.employees[empIdx].baseSalary);
             if (amount !== null && !isNaN(amount)) { db.employees[empIdx].baseSalary = +amount; saveDB(); }
         }
 
@@ -328,25 +373,32 @@
             let empBaseTotal = db.employees.reduce((a, b) => a + (b.baseSalary || 0), 0);
             let expOffice = db.expenses.reduce((a, b) => a + b.amount, 0);
             let totalExp = expOffice + empPaidTotal;
+            let netIncome = rev - totalExp;
             
             document.getElementById('total-revenue').innerText = rev.toLocaleString() + " ج.م";
             document.getElementById('total-pending').innerText = pend.toLocaleString() + " ج.م";
             document.getElementById('total-expenses').innerText = totalExp.toLocaleString() + " ج.م";
             document.getElementById('total-salaries').innerText = empPaidTotal.toLocaleString() + " / " + empBaseTotal.toLocaleString();
-            document.getElementById('net-income').innerText = (rev - totalExp).toLocaleString() + " ج.م";
+            document.getElementById('net-income').innerText = netIncome.toLocaleString() + " ج.م";
 
             // Render 4 Weeks Schedule
             let weeksContainer = document.getElementById('weeks-container');
+            let masterWeeksContainer = document.getElementById('master-weeks-container');
             weeksContainer.innerHTML = '';
+            masterWeeksContainer.innerHTML = '';
             
             const weekNames = { '1': 'الأسبوع الأول', '2': 'الأسبوع الثاني', '3': 'الأسبوع الثالث', '4': 'الأسبوع الرابع' };
             
             ['1', '2', '3', '4'].forEach(wNum => {
                 let items = db.monthSchedule.filter(m => m.week === wNum);
-                weeksContainer.innerHTML += `<div class="week-title">${weekNames[wNum]}</div>`;
+                let weekHeader = `<div class="week-title">${weekNames[wNum]}</div>`;
+                weeksContainer.innerHTML += weekHeader;
+                masterWeeksContainer.innerHTML += weekHeader;
                 
                 if(items.length === 0) {
-                    weeksContainer.innerHTML += `<div style="color:rgba(255,255,255,0.4); font-size:11px; margin-bottom:10px;">لا توجد مواعيد مسجلة لهذا الأسبوع</div>`;
+                    let emptyMsg = `<div style="color:rgba(255,255,255,0.4); font-size:11px; margin-bottom:10px;">لا توجد مواعيد مسجلة لهذا الأسبوع</div>`;
+                    weeksContainer.innerHTML += emptyMsg;
+                    masterWeeksContainer.innerHTML += emptyMsg;
                 } else {
                     let listHtml = items.map(item => `
                         <div class="m-card ${item.type === 'exceptional' ? 'exceptional' : ''}">
@@ -356,10 +408,24 @@
                             </div>
                             <div class="m-card-row"><span class="m-label">يوم التصوير:</span><span class="m-value">${item.day}</span></div>
                             <div class="m-card-row"><span class="m-label">المهمة المطلوبة:</span><span class="m-value">${item.task}</span></div>
-                            <div style="text-align:left; margin-top:4px;"><button class="btn-del" onclick="deleteItem('monthSchedule', ${item.id})">حذف</button></div>
+                            <div style="text-align:left; margin-top:4px;"><button class="btn-del" onclick="deleteItem('monthSchedule', ${item.id})">حذف هذا الموعد</button></div>
                         </div>
                     `).join('');
+                    
+                    // Version for Master report (without delete buttons for clean export)
+                    let masterListHtml = items.map(item => `
+                        <div class="m-card ${item.type === 'exceptional' ? 'exceptional' : ''}">
+                            <div class="m-card-row">
+                                <span class="m-value" style="color:${item.type === 'exceptional' ? '#ff5252' : 'var(--mint)'}">${item.client}</span>
+                                ${item.type === 'exceptional' ? '<span class="badge badge-red">عميل استثنائي 🚨</span>' : '<span class="badge badge-mint">ثابت</span>'}
+                            </div>
+                            <div class="m-card-row"><span class="m-label">يوم التصوير:</span><span class="m-value">${item.day}</span></div>
+                            <div class="m-card-row"><span class="m-label">المهمة المطلوبة:</span><span class="m-value">${item.task}</span></div>
+                        </div>
+                    `).join('');
+
                     weeksContainer.innerHTML += `<div class="mobile-card-list" style="margin-bottom:15px;">${listHtml}</div>`;
+                    masterWeeksContainer.innerHTML += `<div class="mobile-card-list" style="margin-bottom:15px;">${masterListHtml}</div>`;
                 }
             });
 
@@ -388,14 +454,17 @@
                 </div>
             `).join('');
 
-            // Mobile Team Cards
+            // Mobile Team & Owners Cards
             document.getElementById('emp-select').innerHTML = db.employees.map((e, i) => `<option value="${i}">${e.name} (${e.role})</option>`).join('');
             document.getElementById('team-mobile-list').innerHTML = db.employees.map((e, i) => `
                 <div class="m-card">
-                    <div class="m-card-row"><span class="m-value" style="font-size:13.5px;">${e.name}</span><span class="badge badge-mint">${e.role}</span></div>
-                    <div class="m-card-row"><span class="m-label">الراتب الأساسي:</span><span class="m-value" style="text-decoration:underline;" onclick="updateBaseSalary(${i})">${e.baseSalary || 0} ج.م ✏️</span></div>
-                    <div class="m-card-row"><span class="m-label">المستلم:</span><span class="m-value" style="color:var(--mint);">${e.paid} ج.م</span></div>
-                    <div class="m-card-row"><span class="m-label">المتبقي له:</span><span class="m-value" style="color:var(--red);">${(e.baseSalary || 0) - e.paid} ج.م</span></div>
+                    <div class="m-card-row">
+                        <span class="m-value" style="font-size:14px; color:${e.isOwner ? 'var(--gold)' : 'var(--lavender)'};">${e.name} ${e.isOwner ? '👑' : ''}</span>
+                        <span class="badge ${e.isOwner ? 'badge-gold' : 'badge-mint'}">${e.role}</span>
+                    </div>
+                    <div class="m-card-row"><span class="m-label">${e.isOwner ? 'الاتفاق/المستهدف:' : 'الراتب الأساسي:'}</span><span class="m-value" style="text-decoration:underline;" onclick="updateBaseSalary(${i})">${e.baseSalary || 0} ج.م ✏️</span></div>
+                    <div class="m-card-row"><span class="m-label">المسحوب / المستلم:</span><span class="m-value" style="color:var(--mint);">${e.paid} ج.م</span></div>
+                    <div class="m-card-row"><span class="m-label">المتبقي:</span><span class="m-value" style="color:var(--red);">${(e.baseSalary || 0) - e.paid} ج.م</span></div>
                 </div>
             `).join('');
 
@@ -419,7 +488,7 @@
             `);
             db.employees.forEach(e => masterList.innerHTML += `
                 <div class="m-card">
-                    <div class="m-card-row"><span class="badge badge-red">رواتب</span><span class="m-value">${e.name} (${e.role})</span></div>
+                    <div class="m-card-row"><span class="badge ${e.isOwner ? 'badge-gold' : 'badge-red'}">${e.isOwner ? 'مسحوبات مالك' : 'رواتب'}</span><span class="m-value">${e.name}</span></div>
                     <div class="m-card-row"><span class="m-label">المبلغ المستلم:</span><span class="m-value" style="color:var(--red);">${e.paid} ج.م</span></div>
                 </div>
             `);
@@ -433,21 +502,27 @@
             document.getElementById('m-total-rev').innerText = rev.toLocaleString() + " ج.م";
             document.getElementById('m-total-pend').innerText = pend.toLocaleString() + " ج.م";
             document.getElementById('m-total-exp').innerText = totalExp.toLocaleString() + " ج.م";
+            document.getElementById('m-net-income').innerText = netIncome.toLocaleString() + " ج.م";
         }
 
-        function exportData() {
-            let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(db, null, 2));
-            let downloadAnchor = document.createElement('a');
-            downloadAnchor.setAttribute("href", dataStr);
-            downloadAnchor.setAttribute("download", "database.json");
-            document.body.appendChild(downloadAnchor);
-            downloadAnchor.click(); downloadAnchor.remove();
-        }
+        function exportReportImage() {
+            // Switch to master tab to make sure it's fully visible and rendered
+            let masterBtn = document.querySelectorAll('.tab-btn')[5];
+            switchTab('master-tab', masterBtn);
 
-        function importData(e) {
-            let reader = new FileReader();
-            reader.onload = function(event) { db = JSON.parse(event.target.result); saveDB(); };
-            reader.readAsText(e.target.files[0]);
+            setTimeout(() => {
+                let area = document.getElementById('exportable-report-area');
+                html2canvas(area, {
+                    backgroundColor: '#28262C',
+                    scale: 2
+                }).then(canvas => {
+                    let image = canvas.toDataURL("image/png");
+                    let link = document.createElement('a');
+                    link.download = `OFFGRID_Report_${new Date().toISOString().slice(0,10)}.png`;
+                    link.href = image;
+                    link.click();
+                });
+            }, 300);
         }
 
         renderAll();
