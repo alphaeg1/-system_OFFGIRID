@@ -321,7 +321,6 @@
     </div>
 
     <script>
-        // رابط الـ Web App الجديد المعدل
         const GOOGLE_SHEET_API = "https://script.google.com/macros/s/AKfycbyrkx4j29FqpV0_viQzfVDMqv1zl04blAyPT0vcqEgwggaUe8DSpZ8M_2-GPmye1nHd9g/exec";
         const daysOrder = ["السبت", "الأحد", "الإثنين", "الثلاثاء", "الأربعاء", "الخميس", "الجمعة"];
 
@@ -347,9 +346,6 @@
             if (statusElem) statusElem.innerText = text;
         }
 
-        // ==========================================
-        // حفظ البيانات للسحابة (Google Sheets)
-        // ==========================================
         function saveDB() { 
             localStorage.setItem('OFFGRID_DB', JSON.stringify(db)); 
             renderAll();
@@ -373,9 +369,6 @@
             }
         }
 
-        // ==========================================
-        // جلب البيانات عبر تقنية JSONP
-        // ==========================================
         function loadDBFromSheet() {
             setSyncStatus("جاري جلب البيانات من Google Sheets... ⏳");
             
