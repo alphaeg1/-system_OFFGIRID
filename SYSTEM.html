@@ -60,7 +60,7 @@
         .tab-content.active { display: block; }
 
         .panel { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 12px; padding: 14px; margin-bottom: 15px; }
-        .panel-header { font-size: 14px; font-weight: 600; color: var(--mint); margin-bottom: 12px; border-bottom: 1px solid var(--card-border); padding-bottom: 6px; }
+        .panel-header { font-size: 14px; font-weight: 600; color: var(--mint); margin-bottom: 12px; border-bottom: 1px solid var(--card-border); padding-bottom: 6px; display: flex; justify-content: space-between; align-items: center; }
 
         .form-grid { display: flex; flex-direction: column; gap: 8px; margin-bottom: 15px; }
         input, select { 
@@ -98,8 +98,8 @@
         .week-title { color: var(--mint); font-weight: 700; border-right: 3px solid var(--mint); padding-right: 8px; margin: 15px 0 10px 0; font-size: 13px; }
 
         /* Report Table Styling */
-        .report-table { width: 100%; border-collapse: collapse; margin-bottom: 15px; font-size: 12px; }
-        .report-table th, .report-table td { border: 1px solid var(--card-border); padding: 8px; text-align: center; }
+        .report-table { width: 100%; border-collapse: collapse; margin-bottom: 15px; font-size: 11px; }
+        .report-table th, .report-table td { border: 1px solid var(--card-border); padding: 8px 4px; text-align: center; }
         .report-table th { background: rgba(20, 36, 138, 0.4); color: var(--mint); font-weight: 600; }
         .report-table td { background: rgba(0, 0, 0, 0.15); }
     </style>
@@ -175,7 +175,7 @@
     <!-- TAB: العملاء والاشتراكات -->
     <div id="clients-tab" class="tab-content">
         <div class="panel">
-            <div class="panel-header">إضافة عميل جديد (سينزل تلقائياً بالترتيب في الجدول الأسبوعي)</div>
+            <div class="panel-header">إضافة عميل جديد</div>
             <form class="form-grid" onsubmit="addClient(event)">
                 <input type="text" id="c-name" placeholder="اسم العميل" required>
                 <input type="tel" id="c-phone" placeholder="رقم الهاتف" required>
@@ -228,7 +228,7 @@
                 <button type="submit" class="btn-add">إضافة للقائمة</button>
             </form>
 
-            <div class="panel-header" style="margin-top:20px;">قائمة النواقص (استخدم ⬆️ ⬇️ للترتيب)</div>
+            <div class="panel-header" style="margin-top:20px;">قائمة النواقص</div>
             <div id="needs-mobile-list" class="mobile-card-list"></div>
         </div>
     </div>
@@ -268,26 +268,35 @@
         <div class="panel" id="exportable-report-area" style="background:#28262C; padding:15px;">
             <div style="text-align:center; margin-bottom:15px; border-bottom:1px solid var(--mint); padding-bottom:8px;">
                 <h2 style="color:var(--mint); font-size:16px;">SYSTEM OFFGRID CLOUD AGENCY</h2>
-                <p style="font-size:11px; color:rgba(255,255,255,0.6);">التقرير النهائي المجمع - جدول إحصاء أعداد العملاء بالأسابيع</p>
+                <p style="font-size:11px; color:rgba(255,255,255,0.6);">التقرير التفصيلي الأسبوعي الشامل</p>
             </div>
 
-            <!-- الجدول المجمع الجديد لأعداد العملاء بالأيام -->
-            <div class="panel-header">ملخص أعداد العملاء للأسابيع (عدد العملاء في كل يوم)</div>
+            <!-- محدد اختيار الأسبوع الحالي للتقرير -->
+            <div class="panel-header">
+                <span>جدول بيانات تفاصيل الأسبوع</span>
+                <select id="report-week-select" style="width: 130px; padding: 4px 8px; font-size: 11px;" onchange="renderAll()">
+                    <option value="1">الأسبوع الأول</option>
+                    <option value="2">الأسبوع الثاني</option>
+                    <option value="3">الأسبوع الثالث</option>
+                    <option value="4">الأسبوع الرابع</option>
+                </select>
+            </div>
+
+            <!-- جدول تفاصيل عملاء الأسبوع المختار -->
             <div style="overflow-x:auto;">
                 <table class="report-table">
                     <thead>
                         <tr>
-                            <th>الأسبوع</th>
-                            <th>السبت</th>
-                            <th>الأحد</th>
-                            <th>الإثنين</th>
-                            <th>الثلاثاء</th>
-                            <th>الأربعاء</th>
-                            <th>الخميس</th>
-                            <th>الجمعة</th>
+                            <th>العميل</th>
+                            <th>يوم التصوير</th>
+                            <th>الريلز (مسلم/مطلوب)</th>
+                            <th>المتبقي ريلز</th>
+                            <th>الاتفاق</th>
+                            <th>المستلم</th>
+                            <th>المتبقي فلوس</th>
                         </tr>
                     </thead>
-                    <tbody id="master-weeks-summary-tbody"></tbody>
+                    <tbody id="master-weekly-details-tbody"></tbody>
                 </table>
             </div>
 
@@ -475,8 +484,6 @@
             
             ['1', '2', '3', '4'].forEach(wNum => {
                 let items = db.monthSchedule.filter(m => m.week === wNum);
-                
-                // Sort items according to daysOrder
                 items.sort((a, b) => daysOrder.indexOf(a.day) - daysOrder.indexOf(b.day));
 
                 let weekHeader = `<div class="week-title">${weekNames[wNum]}</div>`;
@@ -501,22 +508,41 @@
                 }
             });
 
-            // 2. Render Master Report Summary Table (Client Counts Per Day)
-            let masterTbody = document.getElementById('master-weeks-summary-tbody');
-            masterTbody.innerHTML = '';
-            
-            ['1', '2', '3', '4'].forEach(wNum => {
-                let weekItems = db.monthSchedule.filter(m => m.week === wNum);
-                let rowHtml = `<tr><td style="font-weight:bold; color:var(--mint);">${weekNames[wNum]}</td>`;
-                
-                daysOrder.forEach(day => {
-                    let count = weekItems.filter(i => i.day === day).length;
-                    rowHtml += `<td style="${count > 0 ? 'color:var(--gold); font-weight:bold;' : 'color:rgba(255,255,255,0.3);'}">${count} عملاء</td>`;
+            // 2. Render Weekly Detailed Report Table for Selected Week Only
+            let selectedWeek = document.getElementById('report-week-select').value;
+            let masterWeeklyTbody = document.getElementById('master-weekly-details-tbody');
+            masterWeeklyTbody.innerHTML = '';
+
+            let weekItems = db.monthSchedule.filter(m => m.week === selectedWeek);
+            weekItems.sort((a, b) => daysOrder.indexOf(a.day) - daysOrder.indexOf(b.day));
+
+            if (weekItems.length === 0) {
+                masterWeeklyTbody.innerHTML = `<tr><td colspan="7" style="color:rgba(255,255,255,0.4);">لا توجد مواعيد تسكين في هذا الأسبوع</td></tr>`;
+            } else {
+                weekItems.forEach(item => {
+                    let clientObj = db.clients.find(c => c.name.trim() === item.client.trim());
+                    
+                    let reelsDelivered = clientObj ? clientObj.delivered : 0;
+                    let reelsTotal = clientObj ? clientObj.reels : 0;
+                    let reelsRemaining = reelsTotal - reelsDelivered;
+                    let totalSalary = clientObj ? clientObj.salary : 0;
+                    let totalPaid = clientObj ? clientObj.paid : 0;
+                    let totalPending = totalSalary - totalPaid;
+
+                    let rowHtml = `
+                        <tr>
+                            <td style="font-weight:bold; color:var(--mint);">${item.client}</td>
+                            <td style="color:var(--gold); font-weight:bold;">${item.day}</td>
+                            <td>${reelsDelivered} / ${reelsTotal}</td>
+                            <td style="color:${reelsRemaining > 0 ? '#ff5252' : 'var(--mint)'}; font-weight:bold;">${reelsRemaining}</td>
+                            <td>${totalSalary.toLocaleString()}</td>
+                            <td style="color:var(--mint); font-weight:bold;">${totalPaid.toLocaleString()}</td>
+                            <td style="color:var(--red); font-weight:bold;">${totalPending.toLocaleString()}</td>
+                        </tr>
+                    `;
+                    masterWeeklyTbody.innerHTML += rowHtml;
                 });
-                
-                rowHtml += `</tr>`;
-                masterTbody.innerHTML += rowHtml;
-            });
+            }
 
             // 3. Render Tasks & Deliveries
             let tasksList = document.getElementById('tasks-mobile-list');
@@ -572,7 +598,7 @@
                             </div>
                             <div style="display:flex; justify-content:space-between; margin-top:8px; padding-top:6px; border-top:1px solid var(--card-border);">
                                 <div>
-                                    <button class="btn-move" onclick="moveNeed(${index}, -1)">⬆️ أعلا</button>
+                                    <button class="btn-move" onclick="moveNeed(${index}, -1)">⬆️ أعلى</button>
                                     <button class="btn-move" onclick="moveNeed(${index}, 1)">⬇️ أسفل</button>
                                 </div>
                                 <button class="btn-del" onclick="deleteItem('officeNeeds', ${item.id})">تم الشراء/حذف</button>
