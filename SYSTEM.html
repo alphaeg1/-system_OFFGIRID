@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OFFGRID - Dashboard</title>
+    <style>
+        :root {
+            --bg-dark: #28262C;
+            --mint: #4EA699;
+            --red: #C1292E;
+            --lavender: #F9F5FF;
+            --cobalt: #14248A;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; }
+        body { background-color: var(--bg-dark); color: var(--lavender); padding: 20px; font-size: 14px; }
+        
+        header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--mint); padding-bottom: 15px; margin-bottom: 25px; }
+        h1 { color: var(--lavender); letter-spacing: 2px; }
+        .btn-sync { background-color: var(--mint); color: var(--bg-dark); border: none; padding: 8px 16px; border-radius: 6px; font-weight: bold; cursor: pointer; }
+        
+        .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 25px; }
+        .kpi-card { background-color: #333138; padding: 15px; border-radius: 8px; border-right: 4px solid var(--mint); }
+        .kpi-card.red { border-right-color: var(--red); }
+        .kpi-card.blue { border-right-color: var(--cobalt); }
+        .kpi-card h3 { font-size: 12px; opacity: 0.8; margin-bottom: 5px; }
+        .kpi-card p { font-size: 20px; font-weight: bold; }
+
+        .section-card { background-color: #333138; border-radius: 8px; padding: 18px; margin-bottom: 25px; }
+        .section-card h2 { color: var(--mint); font-size: 16px; margin-bottom: 15px; border-bottom: 1px solid #444; padding-bottom: 8px; }
+
+        .form-row { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 15px; }
+        input, select, button { padding: 8px 12px; border-radius: 4px; border: 1px solid #555; background: var(--bg-dark); color: var(--lavender); }
+        input:focus { border-color: var(--mint); outline: none; }
+        button.btn-add { background-color: var(--cobalt); color: white; border: none; cursor: pointer; font-weight: bold; }
+        
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; text-align: right; font-size: 13px; }
+        th, td { padding: 10px; border-bottom: 1px solid #444; }
+        th { background-color: var(--cobalt); color: white; }
+        tr:hover { background-color: #3d3a42; }
+        .btn-del { background-color: var(--red); color: white; border: none; padding: 4px 8px; border-radius: 3px; cursor: pointer; }
+
+        .flex-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>OFFGRID SYSTEM</h1>
+        <div>
+            <button class="btn-sync" onclick="exportData()">تصدير قاعدة البيانات (JSON)</button>
+            <input type="file" id="importFile" onchange="importData(event)" style="display:none">
+            <button class="btn-sync" style="background-color:var(--cobalt); color:white;" onclick="document.getElementById('importFile').click()">استيراد</button>
+        </div>
+    </header>
+
+    <!-- KPIs -->
+    <div class="kpi-grid">
+        <div class="kpi-card"><div h3>إجمالي إيرادات العملاء</div><p id="total-revenue">0 ج.م</p></div>
+        <div class="kpi-card red"><div h3>إجمالي المصروفات</div><p id="total-expenses">0 ج.م</p></div>
+        <div class="kpi-card blue"><div h3>صافي دخل المكتب</div><p id="net-income">0 ج.م</p></div>
+        <div class="kpi-card"><div h3>المتبقي لدى العملاء</div><p id="total-pending">0 ج.م</p></div>
+    </div>
+
+    <!-- 1. إدارة العملاء -->
+    <div class="section-card">
+        <h2>1. إدارة العملاء والاشتراكات</h2>
+        <form class="form-row" onsubmit="addClient(event)">
+            <input type="text" id="c-name" placeholder="اسم العميل" required>
+            <input type="text" id="c-phone" placeholder="رقم الهاتف" required>
+            <input type="number" id="c-reels" placeholder="عدد الريلز" required>
+            <input type="number" id="c-salary" placeholder="الراتب المتفق عليه" required>
+            <input type="number" id="c-paid" placeholder="المبلغ المدفوع" required>
+            <input type="text" id="c-day" placeholder="يوم التصوير (مثال: الأحد)" required>
+            <input type="number" id="c-delivered" placeholder="الفيديوهات المسلمة" required>
+            <input type="text" id="c-titles" placeholder="عناوين الفيديوهات المسلمة">
+            <button type="submit" class="btn-add">إضافة عميل</button>
+        </form>
+        <div style="overflow-x:auto;">
+            <table>
+                <thead>
+                    <tr>
+                        <th>العميل</th><th>الهاتف</th><th>الريلز</th><th>الراتب</th><th>المدفوع</th><th>المتبقي</th><th>يوم التصوير</th><th>المسلم</th><th>المتبقي</th><th>عناوين الفيديوهات</th><th>إجراء</th>
+                    </tr>
+                </thead>
+                <tbody id="clients-tb"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="flex-grid">
+        <!-- 2. جدول الشهر والمهام اليومية -->
+        <div class="section-card">
+            <h2>2. جدول التصوير والاستثناءات اليومية</h2>
+            <form class="form-row" onsubmit="addSchedule(event)">
+                <input type="date" id="s-date" required>
+                <input type="text" id="s-client" placeholder="العميل / الاستثناء" required>
+                <input type="text" id="s-task" placeholder="المهمة المطلوبة" required>
+                <button type="submit" class="btn-add">إضافة للجدول</button>
+            </form>
+            <table>
+                <thead><tr><th>التاريخ</th><th>العميل</th><th>المهمة</th><th>إجراء</th></tr></thead>
+                <tbody id="schedule-tb"></tbody>
+            </table>
+        </div>
+
+        <!-- 3. الموظفين والرواتب -->
+        <div class="section-card">
+            <h2>3. الموظفين والرواتب المستلمة</h2>
+            <form class="form-row" onsubmit="paySalary(event)">
+                <select id="emp-select"></select>
+                <input type="number" id="emp-paid-amount" placeholder="المبلغ المستلم" required>
+                <button type="submit" class="btn-add">تسجيل دفعة</button>
+            </form>
+            <table>
+                <thead><tr><th>الموظف</th><th>الظيفة</th><th>إجمالي الرواتب المرفوعة</th><th>إجراء</th></tr></thead>
+                <tbody id="employees-tb"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- 4. دخل المكتب والمصروفات -->
+    <div class="section-card">
+        <h2>4. مصروفات المكتب والنواقص</h2>
+        <form class="form-row" onsubmit="addExpense(event)">
+            <input type="text" id="e-title" placeholder="بند المصروف / الناقص" required>
+            <input type="number" id="e-amount" placeholder="المبلغ" required>
+            <button type="submit" class="btn-add">إضافة مصروف</button>
+        </form>
+        <table>
+            <thead><tr><th>البند / الناقص</th><th>المبلغ</th><th>إجراء</th></tr></thead>
+            <tbody id="expenses-tb"></tbody>
+        </table>
+    </div>
+
+    <!-- الجدول الشامل المجمع -->
+    <div class="section-card" style="border: 2px solid var(--mint);">
+        <h2>التقرير الشامل المجمع لكل البيانات</h2>
+        <div style="overflow-x:auto;">
+            <table>
+                <thead>
+                    <tr><th>النوع</th><th>البيان / الاسم</th><th>التفاصيل / المهام</th><th>المبلغ / الدخل</th><th>المتبقي / المصروف</th></tr>
+                </thead>
+                <tbody id="master-tb"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        let db = JSON.parse(localStorage.getItem('OFFGRID_DB')) || {
+            clients: [],
+            schedule: [],
+            employees: [
+                { name: "الفا", role: "مبرمج و جرافيك ديزاينر", paid: 0 },
+                { name: "حمدي", role: "مصور و منتاج", paid: 0 },
+                { name: "حمو", role: "مونتير", paid: 0 },
+                { name: "زين", role: "المدير و مسؤول تطوير الشركه", paid: 0 },
+                { name: "مريم", role: "كول سنتر و سيلز", paid: 0 }
+            ],
+            expenses: []
+        };
+
+        function saveDB() {
+            localStorage.setItem('OFFGRID_DB', JSON.stringify(db));
+            renderAll();
+        }
+
+        function addClient(e) {
+            e.preventDefault();
+            db.clients.push({
+                id: Date.now(),
+                name: document.getElementById('c-name').value,
+                phone: document.getElementById('c-phone').value,
+                reels: +document.getElementById('c-reels').value,
+                salary: +document.getElementById('c-salary').value,
+                paid: +document.getElementById('c-paid').value,
+                day: document.getElementById('c-day').value,
+                delivered: +document.getElementById('c-delivered').value,
+                titles: document.getElementById('c-titles').value
+            });
+            e.target.reset();
+            saveDB();
+        }
+
+        function addSchedule(e) {
+            e.preventDefault();
+            db.schedule.push({
+                id: Date.now(),
+                date: document.getElementById('s-date').value,
+                client: document.getElementById('s-client').value,
+                task: document.getElementById('s-task').value
+            });
+            e.target.reset();
+            saveDB();
+        }
+
+        function paySalary(e) {
+            e.preventDefault();
+            let idx = document.getElementById('emp-select').value;
+            db.employees[idx].paid += +document.getElementById('emp-paid-amount').value;
+            e.target.reset();
+            saveDB();
+        }
+
+        function addExpense(e) {
+            e.preventDefault();
+            db.expenses.push({
+                id: Date.now(),
+                title: document.getElementById('e-title').value,
+                amount: +document.getElementById('e-amount').value
+            });
+            e.target.reset();
+            saveDB();
+        }
+
+        function deleteItem(type, id) {
+            db[type] = db[type].filter(item => item.id !== id);
+            saveDB();
+        }
+
+        function renderAll() {
+            // Totals
+            let rev = db.clients.reduce((a, b) => a + b.paid, 0);
+            let pend = db.clients.reduce((a, b) => a + (b.salary - b.paid), 0);
+            let exp = db.expenses.reduce((a, b) => a + b.amount, 0) + db.employees.reduce((a, b) => a + b.paid, 0);
+            
+            document.getElementById('total-revenue').innerText = rev + " ج.م";
+            document.getElementById('total-pending').innerText = pend + " ج.م";
+            document.getElementById('total-expenses').innerText = exp + " ج.م";
+            document.getElementById('net-income').innerText = (rev - exp) + " ج.م";
+
+            // Clients
+            let cTb = document.getElementById('clients-tb');
+            cTb.innerHTML = db.clients.map(c => `
+                <tr>
+                    <td><b>${c.name}</b></td><td>${c.phone}</td><td>${c.reels}</td><td>${c.salary}</td><td>${c.paid}</td>
+                    <td style="color:var(--red)">${c.salary - c.paid}</td><td>${c.day}</td><td>${c.delivered}</td>
+                    <td style="color:var(--mint)">${c.reels - c.delivered}</td><td>${c.titles}</td>
+                    <td><button class="btn-del" onclick="deleteItem('clients', ${c.id})">حذف</button></td>
+                </tr>
+            `).join('');
+
+            // Schedule
+            document.getElementById('schedule-tb').innerHTML = db.schedule.map(s => `
+                <tr><td>${s.date}</td><td>${s.client}</td><td>${s.task}</td>
+                <td><button class="btn-del" onclick="deleteItem('schedule', ${s.id})">حذف</button></td></tr>
+            `).join('');
+
+            // Employees
+            let empSelect = document.getElementById('emp-select');
+            empSelect.innerHTML = db.employees.map((e, i) => `<option value="${i}">${e.name}</option>`).join('');
+            document.getElementById('employees-tb').innerHTML = db.employees.map(e => `
+                <tr><td><b>${e.name}</b></td><td>${e.role}</td><td>${e.paid} ج.م</td><td>-</td></tr>
+            `).join('');
+
+            // Expenses
+            document.getElementById('expenses-tb').innerHTML = db.expenses.map(e => `
+                <tr><td>${e.title}</td><td>${e.amount} ج.م</td>
+                <td><button class="btn-del" onclick="deleteItem('expenses', ${e.id})">حذف</button></td></tr>
+            `).join('');
+
+            // Master Table
+            let master = document.getElementById('master-tb');
+            master.innerHTML = '';
+            db.clients.forEach(c => master.innerHTML += `<tr><td>عميل</td><td>${c.name}</td><td>${c.reels} ريلز - تصوير: ${c.day}</td><td>${c.paid} ج.م</td><td>متبقي: ${c.salary - c.paid} ج.م</td></tr>`);
+            db.employees.forEach(e => master.innerHTML += `<tr><td>موظف</td><td>${e.name}</td><td>${e.role}</td><td>-</td><td>مستلم: ${e.paid} ج.م</td></tr>`);
+            db.expenses.forEach(e => master.innerHTML += `<tr><td>مصروفات</td><td>${e.title}</td><td>مصاريف مكتب / نواقص</td><td>-</td><td>${e.amount} ج.م</td></tr>`);
+        }
+
+        function exportData() {
+            let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(db, null, 2));
+            let downloadAnchor = document.createElement('a');
+            downloadAnchor.setAttribute("href", dataStr);
+            downloadAnchor.setAttribute("download", "database.json");
+            document.body.appendChild(downloadAnchor);
+            downloadAnchor.click();
+            downloadAnchor.remove();
+        }
+
+        function importData(e) {
+            let reader = new FileReader();
+            reader.onload = function(event) {
+                db = JSON.parse(event.target.result);
+                saveDB();
+            };
+            reader.readAsText(e.target.files[0]);
+        }
+
+        renderAll();
+    </script>
+</body>
+</html>
