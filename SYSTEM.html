@@ -347,50 +347,55 @@
         }
 
         // ==========================================
-        // حفظ البيانات للسحابة (Google Sheets)
+        // حفظ البيانات للسحابة (Google Sheets) مع إتاحة الاتصال المباشر
         // ==========================================
-        async function saveDB() { 
+        function saveDB() { 
             localStorage.setItem('OFFGRID_DB', JSON.stringify(db)); 
             renderAll();
             setSyncStatus("جاري الحفظ في Google Sheets... ⏳");
 
             try {
-                await fetch(GOOGLE_SHEET_API, {
+                // إرسال البيانات بأسلوب text/plain يتخطى حظر CORS Preflight
+                fetch(GOOGLE_SHEET_API, {
                     method: "POST",
                     mode: "no-cors",
-                    headers: { "Content-Type": "text/plain;charset=utf-8" },
+                    headers: { "Content-Type": "text/plain" },
                     body: JSON.stringify(db)
+                }).then(() => {
+                    setSyncStatus("تم إرسال التحديث للسحابة ✅");
+                }).catch(err => {
+                    console.error("خطأ إرسال:", err);
+                    setSyncStatus("محفوظ محلياً (تعذر الاتصال بالسحابة) ⚠️");
                 });
-                setSyncStatus("تم الحفظ والمزامنة بنجاح ✅");
             } catch (err) {
-                console.error("خطأ في الإرسال:", err);
-                setSyncStatus("محفوظ محلياً (تعذر الحفظ في السحابة) ⚠️");
+                console.error("خطأ:", err);
+                setSyncStatus("محفوظ محلياً ⚠️");
             }
         }
 
         // ==========================================
-        // جلب البيانات من السحابة مع معالجة CORS (JSONP)
+        // جلب البيانات عبر تقنية JSONP لكسر حظر CORS تماماً
         // ==========================================
         function loadDBFromSheet() {
-            setSyncStatus("جاري جلب أحدث بيانات من Google Sheets... ⏳");
+            setSyncStatus("جاري جلب البيانات من Google Sheets... ⏳");
             
             const script = document.createElement('script');
-            const callbackName = 'handleSheetResponse_' + Date.now();
+            const callbackName = 'handleSheetResponse_' + Math.floor(Math.random() * 100000);
             
             window[callbackName] = function(data) {
                 try {
-                    if (data && typeof data === 'object' && Object.keys(data).length > 0) {
+                    if (data && typeof data === 'object' && (data.clients || data.monthSchedule)) {
                         db = data;
                         localStorage.setItem('OFFGRID_DB', JSON.stringify(db));
                         renderAll();
-                        setSyncStatus("تم المزامنة بنجاح من السحابة ✅");
+                        setSyncStatus("تمت المزامنة بنجاح من السحابة ✅");
                     } else {
                         setSyncStatus("تم التحميل من الذاكرة المحلية ✅");
                         renderAll();
                     }
                 } catch (err) {
                     console.error("خطأ المعالجة:", err);
-                    setSyncStatus("العمل بالذاكرة المحلية (غير متصل) ⚠️");
+                    setSyncStatus("يعمل محلياً (خطأ في صيغة البيانات) ⚠️");
                     renderAll();
                 } finally {
                     delete window[callbackName];
@@ -400,7 +405,7 @@
 
             script.src = `${GOOGLE_SHEET_API}?callback=${callbackName}`;
             script.onerror = function() {
-                setSyncStatus("العمل بالذاكرة المحلية (غير متصل) ⚠️");
+                setSyncStatus("العمل محلياً (تعذر جلب بيانات السحابة) ⚠️");
                 renderAll();
                 delete window[callbackName];
                 if (script.parentNode) script.parentNode.removeChild(script);
@@ -768,7 +773,6 @@
             }, 300);
         }
 
-        // تشغيل الجلب من السحابة عند فتح الصفحة
         window.onload = function() {
             loadDBFromSheet();
         };
