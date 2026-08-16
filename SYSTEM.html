@@ -189,6 +189,12 @@
         <div class="panel">
             <div class="panel-header">تسجيل خدمة / دخل يومي جديد (مربوط بالمهام)</div>
             <form class="form-grid" onsubmit="addDailyIncome(event)">
+                <select id="di-week" required>
+                    <option value="1">الأسبوع الأول</option>
+                    <option value="2">الأسبوع الثاني</option>
+                    <option value="3">الأسبوع الثالث</option>
+                    <option value="4">الأسبوع الرابع</option>
+                </select>
                 <select id="di-day" required>
                     <option value="" disabled selected>اختر يوم الطلب</option>
                     <option value="السبت">السبت</option>
@@ -215,9 +221,7 @@
     <!-- TAB: نظام إدارة الفواتير والخدمات -->
     <div id="invoice-system-tab" class="tab-content">
         <div class="invoice-grid-layout">
-            <!-- قسم التحكم بالأسعار وإنشاء الباقة -->
             <div>
-                <!-- التحكم في الأسعار -->
                 <div class="panel">
                     <div class="panel-header">⚙️ التحكم في قائمة أسعار الخدمات (سعر الوحدة)</div>
                     <div style="overflow-x: auto;">
@@ -235,7 +239,6 @@
                     <button class="btn-add" style="background: rgba(78, 166, 153, 0.2); color: var(--mint);" onclick="saveCustomPrices()">حفظ الأسعار المعدلة 💾</button>
                 </div>
 
-                <!-- تركيب الباقة للعميل -->
                 <div class="panel">
                     <div class="panel-header">📦 بناء باقة العميل والتخصيص</div>
                     <div class="form-group">
@@ -257,11 +260,9 @@
                 </div>
             </div>
 
-            <!-- معاينة وتصدير الفاتورة -->
             <div>
                 <div class="panel">
                     <div class="panel-header">📄 معاينة الفاتورة الفخمة (جاهزة للعميل)</div>
-                    
                     <div id="invoice-preview-wrapper">
                         <div class="invoice-card" id="invoice-card-element">
                             <div class="invoice-header">
@@ -464,7 +465,7 @@
                 <p style="font-size:11px; color:rgba(255,255,255,0.6);">التقرير التفصيلي الأسبوعي الشامل</p>
             </div>
 
-            <div class="panel-header">
+            <div class="panel-header" style="flex-wrap: wrap; gap: 8px;">
                 <span>اختر الأسبوع لعرض التقرير والدخل:</span>
                 <select id="report-week-select" style="width: 130px; padding: 4px 8px; font-size: 11px;" onchange="renderAll()">
                     <option value="1">الأسبوع الأول</option>
@@ -475,8 +476,21 @@
             </div>
 
             <div style="background: rgba(255, 215, 0, 0.05); border: 1px solid var(--gold); border-radius: 8px; padding: 12px; margin-bottom: 15px;">
-                <div style="font-size: 13px; font-weight: 700; color: var(--gold); margin-bottom: 8px; border-bottom: 1px dashed var(--gold); padding-bottom: 4px;">
-                    💰 تفاصيل الدخل الأسبوعي (كام ومن مين):
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; border-bottom: 1px dashed var(--gold); padding-bottom: 6px;">
+                    <div style="font-size: 13px; font-weight: 700; color: var(--gold);">
+                        🎛️ التحكم اليدوي في دخل هذا الأسبوع:
+                    </div>
+                </div>
+
+                <div class="checkbox-container" style="margin-bottom: 10px;">
+                    <input type="checkbox" id="include-subs-checkbox" onchange="toggleManualSubscriptions(this.checked)">
+                    <label for="include-subs-checkbox" style="color: var(--gold-light); font-size: 12px;">
+                        إدراج قسمة اشتراكات العملاء الثابتين في حسابات هذا الأسبوع يدويّاً 🖐️
+                    </label>
+                </div>
+
+                <div style="font-size: 12px; font-weight: 700; color: var(--mint); margin-bottom: 6px;">
+                    💰 تفاصيل الدخل المحسوب لهذا الأسبوع:
                 </div>
                 <div id="master-weekly-breakdown-list" class="mobile-card-list"></div>
             </div>
@@ -536,15 +550,16 @@
 
         let db = JSON.parse(localStorage.getItem('OFFGRID_DB')) || {
             clients: [], monthSchedule: [], taskDeliveries: [], officeNeeds: [],
-            employees: defaultTeam, expenses: [], dailyIncome: []
+            employees: defaultTeam, expenses: [], dailyIncome: [],
+            manualWeekSubs: { "1": false, "2": false, "3": false, "4": false }
         };
 
         if (!db.taskDeliveries) db.taskDeliveries = [];
         if (!db.officeNeeds) db.officeNeeds = [];
         if (!db.monthSchedule) db.monthSchedule = [];
         if (!db.dailyIncome) db.dailyIncome = [];
+        if (!db.manualWeekSubs) db.manualWeekSubs = { "1": false, "2": false, "3": false, "4": false };
 
-        // بيانات أسعار الفواتير وبناء الباقات
         let servicesData = {
             "شغل الشارع": [
                 { name: "شباب اسكيت", price: 300 },
@@ -613,6 +628,7 @@
                     if (data && typeof data === 'object' && (data.clients || data.monthSchedule)) {
                         db = data;
                         if (!db.dailyIncome) db.dailyIncome = [];
+                        if (!db.manualWeekSubs) db.manualWeekSubs = { "1": false, "2": false, "3": false, "4": false };
                         localStorage.setItem('OFFGRID_DB', JSON.stringify(db));
                         renderAll();
                         setSyncStatus("تمت المزامنة بنجاح من السحابة ✅");
@@ -648,7 +664,6 @@
             if(btn) btn.classList.add('active');
         }
 
-        /* ووظائف نظام الفواتير */
         function renderPriceControlTable() {
             let tbody = document.getElementById('price-control-tbody');
             if (!tbody) return;
@@ -760,9 +775,9 @@
             });
         }
 
-        /* ووظائف الموديولات الأخرى */
         function addDailyIncome(e) {
             e.preventDefault();
+            let week = document.getElementById('di-week').value;
             let day = document.getElementById('di-day').value;
             let client = document.getElementById('di-client').value;
             let service = document.getElementById('di-service').value;
@@ -774,14 +789,14 @@
 
             db.dailyIncome.push({
                 id: incomeId,
-                day, client, service, empName, dueDate, cost
+                week, day, client, service, empName, dueDate, cost
             });
 
             db.taskDeliveries.push({
                 id: Date.now() + 1,
                 dailyRefId: incomeId,
                 empName: empName,
-                task: `[خدمة يومية] ${service} - للعميل: ${client}`,
+                task: `[خدمة يومية - ${week}] ${service} - للعميل: ${client}`,
                 dueDate: dueDate,
                 delivered: false
             });
@@ -793,6 +808,12 @@
         function deleteDailyIncome(id) {
             db.dailyIncome = db.dailyIncome.filter(item => item.id !== id);
             db.taskDeliveries = db.taskDeliveries.filter(item => item.dailyRefId !== id);
+            saveDB();
+        }
+
+        function toggleManualSubscriptions(isChecked) {
+            let selectedWeek = document.getElementById('report-week-select') ? document.getElementById('report-week-select').value : '1';
+            db.manualWeekSubs[selectedWeek] = isChecked;
             saveDB();
         }
 
@@ -947,27 +968,34 @@
             let netIncome = rev - totalExp;
 
             let selectedWeek = document.getElementById('report-week-select') ? document.getElementById('report-week-select').value : '1';
+            let includeSubs = db.manualWeekSubs[selectedWeek] || false;
+            
+            let checkboxElem = document.getElementById('include-subs-checkbox');
+            if(checkboxElem) checkboxElem.checked = includeSubs;
+
             let selectedWeekClients = db.monthSchedule.filter(m => m.week === selectedWeek).map(m => m.client.trim());
             
             let weeklyExpectedIncome = 0;
             let breakdownContainer = document.getElementById('master-weekly-breakdown-list');
             breakdownContainer.innerHTML = '';
 
-            db.clients.forEach(c => {
-                if (selectedWeekClients.includes(c.name.trim())) {
-                    let share = (c.paid / 4);
-                    weeklyExpectedIncome += share;
+            if (includeSubs) {
+                db.clients.forEach(c => {
+                    if (selectedWeekClients.includes(c.name.trim())) {
+                        let share = (c.paid / 4);
+                        weeklyExpectedIncome += share;
 
-                    breakdownContainer.innerHTML += `
-                        <div class="m-card-row" style="background: rgba(0,0,0,0.2); padding: 6px 10px; border-radius: 6px;">
-                            <span>👤 <strong style="color:var(--mint);">${c.name}</strong> <small style="color:rgba(255,255,255,0.5);">(اشتراك أسبوعي)</small></span>
-                            <span style="color:var(--gold); font-weight:bold;">${Math.round(share).toLocaleString()} ج.م</span>
-                        </div>
-                    `;
-                }
-            });
+                        breakdownContainer.innerHTML += `
+                            <div class="m-card-row" style="background: rgba(0,0,0,0.2); padding: 6px 10px; border-radius: 6px;">
+                                <span>👤 <strong style="color:var(--mint);">${c.name}</strong> <small style="color:rgba(255,255,255,0.5);">(اشتراك أسبوعي مضاف يدوياً)</small></span>
+                                <span style="color:var(--gold); font-weight:bold;">${Math.round(share).toLocaleString()} ج.م</span>
+                            </div>
+                        `;
+                    }
+                });
+            }
 
-            db.dailyIncome.forEach(di => {
+            db.dailyIncome.filter(di => (di.week || '1') === selectedWeek).forEach(di => {
                 weeklyExpectedIncome += di.cost;
                 breakdownContainer.innerHTML += `
                     <div class="m-card-row" style="background: rgba(0,0,0,0.2); padding: 6px 10px; border-radius: 6px;">
@@ -978,7 +1006,7 @@
             });
 
             if (breakdownContainer.innerHTML === '') {
-                breakdownContainer.innerHTML = `<div style="color:rgba(255,255,255,0.4); font-size:11px;">لا يوجد دخل مسجل لهذا الأسبوع حتى الآن</div>`;
+                breakdownContainer.innerHTML = `<div style="color:rgba(255,255,255,0.4); font-size:11px;">لا يوجد دخل يدوياً مسجل لهذا الأسبوع حتى الآن</div>`;
             }
 
             document.getElementById('total-revenue').innerText = rev.toLocaleString() + " ج.م";
@@ -1006,7 +1034,7 @@
             db.dailyIncome.forEach(di => {
                 dailyList.innerHTML += `
                     <div class="m-card">
-                        <div class="m-card-row"><span class="m-value" style="color:var(--mint); font-size:13px;">${di.client}</span><span class="badge badge-gold">${di.day}</span></div>
+                        <div class="m-card-row"><span class="m-value" style="color:var(--mint); font-size:13px;">${di.client}</span><span class="badge badge-gold">الأسبوع ${di.week || '1'} - ${di.day}</span></div>
                         <div class="m-card-row"><span class="m-label">الخدمة:</span><span class="m-value">${di.service}</span></div>
                         <div class="m-card-row"><span class="m-label">القائم بالخدمة:</span><span class="m-value" style="color:var(--gold);">${di.empName}</span></div>
                         <div class="m-card-row"><span class="m-label">تاريخ التسليم:</span><span class="m-value">${di.dueDate}</span></div>
@@ -1015,13 +1043,15 @@
                     </div>
                 `;
 
-                masterDailyContainer.innerHTML += `
-                    <div class="m-card">
-                        <div class="m-card-row"><span class="m-value">${di.client} (${di.day})</span><span style="color:var(--mint); font-weight:bold;">${di.cost.toLocaleString()} ج.م</span></div>
-                        <div class="m-card-row"><span class="m-label">الخدمة:</span><span class="m-value">${di.service}</span></div>
-                        <div class="m-card-row"><span class="m-label">المسؤول:</span><span class="m-value">${di.empName}</span></div>
-                    </div>
-                `;
+                if((di.week || '1') === selectedWeek) {
+                    masterDailyContainer.innerHTML += `
+                        <div class="m-card">
+                            <div class="m-card-row"><span class="m-value">${di.client} (${di.day})</span><span style="color:var(--mint); font-weight:bold;">${di.cost.toLocaleString()} ج.م</span></div>
+                            <div class="m-card-row"><span class="m-label">الخدمة:</span><span class="m-value">${di.service}</span></div>
+                            <div class="m-card-row"><span class="m-label">المسؤول:</span><span class="m-value">${di.empName}</span></div>
+                        </div>
+                    `;
+                }
             });
 
             // Render 4 Weeks Schedule
@@ -1190,7 +1220,6 @@
             document.getElementById('m-total-exp').innerText = totalExp.toLocaleString() + " ج.م";
             document.getElementById('m-net-income').innerText = netIncome.toLocaleString() + " ج.م";
 
-            // Render invoice control table & date
             renderPriceControlTable();
             let invDateElem = document.getElementById('inv-date');
             if (invDateElem) invDateElem.innerText = new Date().toLocaleDateString('ar-EG');
