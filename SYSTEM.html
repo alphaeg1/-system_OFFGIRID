@@ -6,20 +6,21 @@
     <title>SYSTEM OFFGRID CLOUD AGENCY</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Readex+Pro:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Readex+Pro:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         :root {
-            --bg-dark: #28262C;
-            --mint: #4EA699;
-            --red: #C1292E;
-            --lavender: #F9F5FF;
-            --cobalt: #14248A;
-            --gold: #FFD700;
-            --gold-light: #FFF0B1;
-            --card-bg: rgba(255, 255, 255, 0.04);
+            --bg-dark: #18191A;
+            --card-bg: #242526;
             --card-border: rgba(255, 255, 255, 0.08);
+            --mint: #4EA699;
+            --red: #E53935;
+            --lavender: #F9F5FF;
+            --cobalt: #1E3A8A;
+            --gold: #D4AF37;
+            --gold-light: #FFD700;
             --text-gray: #B0B3B8;
+            --dark-paper: #121315;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Readex Pro', sans-serif; -webkit-tap-highlight-color: transparent; }
@@ -28,10 +29,10 @@
         header { 
             display: flex; flex-direction: column; gap: 12px; 
             background: var(--card-bg); border: 1px solid var(--card-border); 
-            padding: 14px; border-radius: 12px; margin-bottom: 15px; backdrop-filter: blur(10px);
+            padding: 14px; border-radius: 12px; margin-bottom: 15px;
         }
         .brand { display: flex; align-items: center; justify-content: center; width: 100%; text-align: center; }
-        .brand-title { font-size: 15px; font-weight: 700; color: var(--mint); letter-spacing: 0.5px; }
+        .brand-title { font-size: 16px; font-weight: 700; color: var(--mint); letter-spacing: 0.5px; }
         
         .sync-actions { display: flex; gap: 8px; width: 100%; }
         .btn-sync { background: var(--mint); color: var(--bg-dark); border: none; padding: 10px; border-radius: 8px; font-weight: 700; cursor: pointer; text-align: center; font-size: 12px; flex: 1; }
@@ -70,7 +71,7 @@
         .form-group { margin-bottom: 10px; }
         label { display: block; font-size: 11px; color: var(--text-gray); margin-bottom: 4px; }
         input, select, textarea { 
-            background: rgba(0, 0, 0, 0.25); border: 1px solid var(--card-border); 
+            background: rgba(0, 0, 0, 0.3); border: 1px solid var(--card-border); 
             padding: 10px 12px; border-radius: 8px; color: var(--lavender); font-size: 13px; width: 100%;
         }
         input:focus, select:focus, textarea:focus { border-color: var(--mint); outline: none; }
@@ -82,7 +83,7 @@
         button.btn-add:hover { background: var(--mint); color: #000; }
 
         .mobile-card-list { display: flex; flex-direction: column; gap: 10px; }
-        .m-card { background: rgba(0,0,0,0.2); border: 1px solid var(--card-border); border-radius: 8px; padding: 12px; }
+        .m-card { background: rgba(0,0,0,0.25); border: 1px solid var(--card-border); border-radius: 8px; padding: 12px; }
         .m-card.exceptional { border: 1.5px solid var(--red); background: rgba(193, 41, 46, 0.08); }
         .m-card-row { display: flex; justify-content: space-between; margin-bottom: 6px; font-size: 12px; align-items: center; }
         .m-card-row:last-child { margin-bottom: 0; }
@@ -91,10 +92,10 @@
 
         .badge { display: inline-block; padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: 600; }
         .badge-mint { background: rgba(78, 166, 153, 0.15); color: var(--mint); }
-        .badge-red { background: rgba(193, 41, 46, 0.25); color: #ff5252; border: 1px solid var(--red); }
-        .badge-gold { background: rgba(255, 215, 0, 0.15); color: var(--gold); border: 1px solid var(--gold); }
+        .badge-red { background: rgba(229, 57, 53, 0.2); color: #ff5252; border: 1px solid var(--red); }
+        .badge-gold { background: rgba(212, 175, 55, 0.15); color: var(--gold); border: 1px solid var(--gold); }
         
-        .btn-del { background: rgba(193, 41, 46, 0.2); color: var(--red); border: 1px solid var(--red); padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 11px; }
+        .btn-del { background: rgba(229, 57, 53, 0.2); color: #ff5252; border: 1px solid var(--red); padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 11px; }
         .btn-pay { background: rgba(78, 166, 153, 0.2); color: var(--mint); border: 1px solid var(--mint); padding: 4px 8px; border-radius: 4px; cursor: pointer; font-weight: 600; font-size: 11px; }
 
         .summary-card { background: rgba(0, 0, 0, 0.4); border: 1px solid var(--mint); border-radius: 8px; padding: 12px; margin-top: 10px; }
@@ -105,18 +106,18 @@
 
         .report-table { width: 100%; border-collapse: collapse; margin-bottom: 15px; font-size: 11px; }
         .report-table th, .report-table td { border: 1px solid var(--card-border); padding: 8px 4px; text-align: center; }
-        .report-table th { background: rgba(20, 36, 138, 0.4); color: var(--mint); font-weight: 600; }
+        .report-table th { background: rgba(30, 58, 138, 0.4); color: var(--mint); font-weight: 600; }
         .report-table td { background: rgba(0, 0, 0, 0.15); }
         
         #sync-status { font-size: 10px; text-align: center; color: var(--gold); margin-top: 4px; }
 
-        /* Invoice Section CSS */
+        /* Invoice Section CSS (PRO DESIGN) */
         .invoice-grid-layout { display: grid; grid-template-columns: 1fr; gap: 15px; }
-        @media (min-width: 900px) { .invoice-grid-layout { grid-template-columns: 1fr 1fr; } }
+        @media (min-width: 900px) { .invoice-grid-layout { grid-template-columns: 1fr 1.2fr; } }
 
         .price-table { width: 100%; border-collapse: collapse; margin-bottom: 10px; font-size: 12px; }
         .price-table th, .price-table td { border: 1px solid var(--card-border); padding: 8px; text-align: right; }
-        .price-table th { background: rgba(20, 36, 138, 0.3); color: var(--gold); }
+        .price-table th { background: rgba(30, 58, 138, 0.3); color: var(--gold); }
         .price-table input { width: 80px; padding: 4px 6px; border-radius: 4px; border: 1px solid var(--card-border); background: #18191A; color: var(--mint); text-align: center; font-weight: bold; }
 
         .cart-list { margin-top: 10px; display: flex; flex-direction: column; gap: 8px; }
@@ -124,30 +125,37 @@
         .cart-item-info strong { color: var(--gold); display: block; font-size: 12px; }
         .cart-item-info span { font-size: 11px; color: var(--text-gray); }
 
-        #invoice-preview-wrapper { margin-top: 15px; }
-        
+        /* Luxury Invoice Box */
         .invoice-card {
-            background: linear-gradient(145deg, #121314 0%, #1c1d1f 100%);
-            border: 2px solid var(--gold); border-radius: 12px; padding: 25px;
-            color: #fff; position: relative; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            background: #0f1012;
+            border: 1px solid rgba(212, 175, 55, 0.4);
+            border-radius: 12px;
+            padding: 30px;
+            color: #E2E8F0;
+            position: relative;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6);
+            background-image: radial-gradient(circle at top right, rgba(212, 175, 55, 0.05), transparent 40%);
         }
-        .invoice-header { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2px dashed var(--gold); padding-bottom: 15px; margin-bottom: 15px; }
-        .invoice-logo { font-size: 18px; font-weight: 800; color: var(--gold-light); letter-spacing: 1px; }
-        .invoice-sub { font-size: 10px; color: var(--mint); }
-        .invoice-meta { text-align: left; font-size: 11px; color: var(--text-gray); }
+        
+        .inv-brand-box { display: flex; justify-content: space-between; align-items: flex-start; padding-bottom: 18px; border-bottom: 2px solid var(--gold); margin-bottom: 20px; }
+        .inv-brand-name { font-size: 20px; font-weight: 800; color: var(--gold-light); letter-spacing: 1.5px; }
+        .inv-brand-sub { font-size: 9px; color: var(--mint); letter-spacing: 2px; text-transform: uppercase; margin-top: 2px; }
+        
+        .inv-meta-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255,255,255,0.05); padding: 12px; border-radius: 8px; margin-bottom: 20px; }
+        .inv-meta-item label { font-size: 10px; color: var(--text-gray); display: block; }
+        .inv-meta-item val { font-size: 12px; font-weight: 600; color: var(--lavender); }
 
-        .invoice-client-info { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(212, 175, 55, 0.3); border-radius: 8px; padding: 10px 15px; margin-bottom: 15px; display: flex; justify-content: space-between; }
+        .inv-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+        .inv-table th { background: rgba(212, 175, 55, 0.12); color: var(--gold-light); padding: 10px; font-size: 11px; text-align: right; font-weight: 600; border-bottom: 1px solid rgba(212, 175, 55, 0.3); }
+        .inv-table td { padding: 10px; font-size: 11px; border-bottom: 1px solid rgba(255, 255, 255, 0.05); }
+        
+        .inv-total-box { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; padding-top: 12px; border-top: 2px solid var(--gold); }
+        .inv-row { display: flex; justify-content: space-between; width: 220px; font-size: 12px; color: var(--text-gray); }
+        .inv-row.grand { font-size: 15px; font-weight: 700; color: var(--gold-light); margin-top: 4px; padding-top: 6px; border-top: 1px dashed rgba(255, 255, 255, 0.2); }
 
-        .invoice-table { width: 100%; border-collapse: collapse; margin-bottom: 15px; }
-        .invoice-table th { background: rgba(212, 175, 55, 0.15); color: var(--gold-light); padding: 8px; font-size: 11px; text-align: right; border-bottom: 1px solid var(--gold); }
-        .invoice-table td { padding: 8px; font-size: 11px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .inv-footer { margin-top: 30px; text-align: center; font-size: 10px; color: var(--text-gray); border-top: 1px solid var(--card-border); padding-top: 12px; }
 
-        .invoice-summary { display: flex; flex-direction: column; align-items: flex-end; gap: 5px; border-top: 2px solid var(--gold); padding-top: 10px; }
-        .invoice-total-row { display: flex; justify-content: space-between; width: 220px; font-size: 14px; font-weight: 700; color: var(--gold-light); }
-
-        .invoice-footer { margin-top: 20px; text-align: center; font-size: 10px; color: var(--text-gray); border-top: 1px solid var(--card-border); padding-top: 10px; }
-
-        .btn-download { background: linear-gradient(90deg, #D4AF37, #FFD700); color: #000; border: none; padding: 12px; border-radius: 8px; font-weight: 700; font-size: 13px; cursor: pointer; width: 100%; margin-top: 10px; box-shadow: 0 4px 10px rgba(212, 175, 55, 0.3); }
+        .btn-download { background: linear-gradient(135deg, #D4AF37, #FFD700); color: #000; border: none; padding: 12px; border-radius: 8px; font-weight: 700; font-size: 13px; cursor: pointer; width: 100%; margin-top: 12px; box-shadow: 0 4px 12px rgba(212, 175, 55, 0.2); }
     </style>
 </head>
 <body>
@@ -175,7 +183,7 @@
         <button class="tab-btn active" onclick="switchTab('daily-income-tab', this)">💰 الدخل والخدمات اليومية</button>
         <button class="tab-btn" onclick="switchTab('invoice-system-tab', this)">🧾 الفواتير وبناء الباقات</button>
         <button class="tab-btn" onclick="switchTab('month-weeks-tab', this)">📅 جدول الـ 4 أسابيع</button>
-        <button class="tab-btn" onclick="switchTab('clients-tab', this)">👥 العملاء والاشتراكات</button>
+        <button class="tab-btn" onclick="switchTab('clients-tab', this)">👥 العملاء والاشتراكات والدفعات</button>
         <button class="tab-btn" onclick="switchTab('reels-deliveries-tab', this)">🎬 تسليمات الفيديو والإنتاج</button>
         <button class="tab-btn" onclick="switchTab('tasks-deliveries-tab', this)">🎯 المهام المطلوبة وتسليماتها</button>
         <button class="tab-btn" onclick="switchTab('office-needs-tab', this)">🛒 مطالبات ونواقص المكتب</button>
@@ -262,29 +270,38 @@
 
             <div>
                 <div class="panel">
-                    <div class="panel-header">📄 معاينة الفاتورة الفخمة (جاهزة للعميل)</div>
+                    <div class="panel-header">📄 معاينة الفاتورة الاحترافية</div>
                     <div id="invoice-preview-wrapper">
                         <div class="invoice-card" id="invoice-card-element">
-                            <div class="invoice-header">
+                            <div class="inv-brand-box">
                                 <div>
-                                    <div class="invoice-logo">OFFGRID AGENCY</div>
-                                    <div class="invoice-sub">MEDIA & CREATIVE SOLUTIONS</div>
+                                    <div class="inv-brand-name">OFFGRID AGENCY</div>
+                                    <div class="inv-brand-sub">Media & Creative Solutions</div>
                                 </div>
-                                <div class="invoice-meta">
-                                    <div>رقم الفاتورة: <strong style="color:var(--gold);" id="inv-number">#OG-001</strong></div>
-                                    <div>التاريخ: <span id="inv-date"></span></div>
+                                <div style="text-align: left;">
+                                    <span class="badge badge-gold" style="font-size: 11px;">فاتورة مطالبات / عرض سعر</span>
                                 </div>
                             </div>
 
-                            <div class="invoice-client-info">
-                                <div>العميل المحترم: <strong style="color:var(--gold-light);" id="inv-client-name">عميل جديد</strong></div>
-                                <div style="font-size:10px; color:var(--mint);">حالة الدفع: طلب عرض سعر / فاتورة</div>
+                            <div class="inv-meta-grid">
+                                <div class="inv-meta-item">
+                                    <label>رقم الفاتورة:</label>
+                                    <val id="inv-number">#OG-001</val>
+                                </div>
+                                <div class="inv-meta-item">
+                                    <label>تاريخ الإصدار:</label>
+                                    <val id="inv-date"></val>
+                                </div>
+                                <div class="inv-meta-item" style="grid-column: span 2;">
+                                    <label>المطلوب من المحترم/ة:</label>
+                                    <val id="inv-client-name" style="color: var(--gold-light); font-size: 13px;">عميل جديد</val>
+                                </div>
                             </div>
 
-                            <table class="invoice-table">
+                            <table class="inv-table">
                                 <thead>
                                     <tr>
-                                        <th>الخدمة / البيان</th>
+                                        <th>الوصف / الخدمة</th>
                                         <th style="text-align:center;">العدد/الساعات</th>
                                         <th style="text-align:center;">السعر</th>
                                         <th style="text-align:left;">الإجمالي</th>
@@ -293,20 +310,20 @@
                                 <tbody id="invoice-tbody"></tbody>
                             </table>
 
-                            <div class="invoice-summary">
-                                <div class="invoice-total-row">
-                                    <span>الإجمالي الكلي:</span>
+                            <div class="inv-total-box">
+                                <div class="inv-row grand">
+                                    <span>الإجمالي المستحق:</span>
                                     <span id="inv-total-price">0 ج.م</span>
                                 </div>
                             </div>
 
-                            <div class="invoice-footer">
-                                شكراً لثقتكم بشركة OFFGRID AGENCY | نعمل بشغف لتحقيق أفضل النتائج لمشروعكم 🚀
+                            <div class="inv-footer">
+                                شكرًا لثقتكم بـ OFFGRID AGENCY | يسعدنا دائمًا صناعة النجاح معكم 🚀
                             </div>
                         </div>
                     </div>
 
-                    <button class="btn-download" onclick="downloadInvoice()">تحميل فاتورة العميل 📥</button>
+                    <button class="btn-download" onclick="downloadInvoice()">تحميل الفاتورة (صورة عالية الجودة) 📥</button>
                 </div>
             </div>
         </div>
@@ -351,7 +368,7 @@
         </div>
     </div>
 
-    <!-- TAB: العملاء والاشتراكات -->
+    <!-- TAB: العملاء والاشتراكات والدفعات المجدولة -->
     <div id="clients-tab" class="tab-content">
         <div class="panel">
             <div class="panel-header">إضافة عميل جديد</div>
@@ -361,7 +378,6 @@
                 <input type="number" id="c-reels" placeholder="عدد الريلز المطلوبة" required>
                 <input type="number" id="c-salary" placeholder="إجمالي المبلغ الاتفاق" required>
                 <input type="number" id="c-paid" placeholder="الدفعة الأولى المستلمة" required>
-                <input type="date" id="c-refund-date" placeholder="ميعاد استرداد الفلوس المتبقية في السوق">
                 <select id="c-day" required>
                     <option value="" disabled selected>اختر يوم التصوير الأسبوعي الثابت</option>
                     <option value="السبت">السبت</option>
@@ -374,8 +390,32 @@
                 </select>
                 <button type="submit" class="btn-add">حفظ العميل وتنزيله في جدول الأسابيع 🔄</button>
             </form>
+        </div>
 
-            <div class="panel-header" style="margin-top:20px;">قائمة العملاء الحالية ومواعيد الاسترداد</div>
+        <div class="panel">
+            <div class="panel-header">📅 جدولة دفعة قادمة للعميل (مربوطة بالتاريخ والدخل)</div>
+            <form class="form-grid" onsubmit="addScheduledPayment(event)">
+                <select id="sp-client-select" required></select>
+                <input type="number" id="sp-amount" placeholder="مبلغ الدفعة المستحقة" required>
+                <input type="date" id="sp-date" required>
+                <select id="sp-week" required>
+                    <option value="1">تسديد في الأسبوع الأول</option>
+                    <option value="2">تسديد في الأسبوع الثاني</option>
+                    <option value="3">تسديد في الأسبوع الثالث</option>
+                    <option value="4">تسديد في الأسبوع الرابع</option>
+                </select>
+
+                <button type="submit" class="btn-add" style="background: var(--gold); color:#000;">جدولة الدفعة 🗓️</button>
+            </form>
+        </div>
+
+        <div class="panel">
+            <div class="panel-header">⏳ الدفعات المجدولة بانتظار التحصيل</div>
+            <div id="scheduled-payments-list" class="mobile-card-list"></div>
+        </div>
+
+        <div class="panel">
+            <div class="panel-header">قائمة العملاء الحالية والماليات</div>
             <div id="clients-mobile-list" class="mobile-card-list"></div>
         </div>
     </div>
@@ -459,7 +499,7 @@
 
     <!-- TAB: التقرير النهائي المجمع -->
     <div id="master-tab" class="tab-content">
-        <div class="panel" id="exportable-report-area" style="background:#28262C; padding:15px;">
+        <div class="panel" id="exportable-report-area" style="background:#18191A; padding:15px;">
             <div style="text-align:center; margin-bottom:15px; border-bottom:1px solid var(--mint); padding-bottom:8px;">
                 <h2 style="color:var(--mint); font-size:16px;">SYSTEM OFFGRID CLOUD AGENCY</h2>
                 <p style="font-size:11px; color:rgba(255,255,255,0.6);">التقرير التفصيلي الأسبوعي الشامل</p>
@@ -475,7 +515,7 @@
                 </select>
             </div>
 
-            <div style="background: rgba(255, 215, 0, 0.05); border: 1px solid var(--gold); border-radius: 8px; padding: 12px; margin-bottom: 15px;">
+            <div style="background: rgba(212, 175, 0, 0.05); border: 1px solid var(--gold); border-radius: 8px; padding: 12px; margin-bottom: 15px;">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; border-bottom: 1px dashed var(--gold); padding-bottom: 6px;">
                     <div style="font-size: 13px; font-weight: 700; color: var(--gold);">
                         🎛️ التحكم اليدوي في دخل هذا الأسبوع:
@@ -507,7 +547,6 @@
                             <th>الاتفاق</th>
                             <th>المستلم</th>
                             <th>المتبقي فلوس</th>
-                            <th>تاريخ الاسترداد</th>
                         </tr>
                     </thead>
                     <tbody id="master-weekly-details-tbody"></tbody>
@@ -550,7 +589,7 @@
 
         let db = JSON.parse(localStorage.getItem('OFFGRID_DB')) || {
             clients: [], monthSchedule: [], taskDeliveries: [], officeNeeds: [],
-            employees: defaultTeam, expenses: [], dailyIncome: [],
+            employees: defaultTeam, expenses: [], dailyIncome: [], scheduledPayments: [],
             manualWeekSubs: { "1": false, "2": false, "3": false, "4": false }
         };
 
@@ -558,6 +597,7 @@
         if (!db.officeNeeds) db.officeNeeds = [];
         if (!db.monthSchedule) db.monthSchedule = [];
         if (!db.dailyIncome) db.dailyIncome = [];
+        if (!db.scheduledPayments) db.scheduledPayments = [];
         if (!db.manualWeekSubs) db.manualWeekSubs = { "1": false, "2": false, "3": false, "4": false };
 
         let servicesData = {
@@ -628,6 +668,7 @@
                     if (data && typeof data === 'object' && (data.clients || data.monthSchedule)) {
                         db = data;
                         if (!db.dailyIncome) db.dailyIncome = [];
+                        if (!db.scheduledPayments) db.scheduledPayments = [];
                         if (!db.manualWeekSubs) db.manualWeekSubs = { "1": false, "2": false, "3": false, "4": false };
                         localStorage.setItem('OFFGRID_DB', JSON.stringify(db));
                         renderAll();
@@ -744,7 +785,7 @@
 
                 invoiceTbody.innerHTML += `
                     <tr>
-                        <td><strong>${item.name}</strong> <br><small style="color:var(--text-gray);">${item.category}</small></td>
+                        <td><strong>${item.name}</strong><br><small style="color:var(--text-gray);">${item.category}</small></td>
                         <td style="text-align:center;">${item.qty}</td>
                         <td style="text-align:center;">${item.price.toLocaleString()} ج.م</td>
                         <td style="text-align:left; font-weight:bold; color:var(--gold-light);">${item.total.toLocaleString()} ج.م</td>
@@ -765,7 +806,7 @@
             let clientName = document.getElementById('client-name-input').value || "Client";
 
             html2canvas(invoiceElement, {
-                backgroundColor: '#121314',
+                backgroundColor: '#0f1012',
                 scale: 2
             }).then(canvas => {
                 let link = document.createElement('a');
@@ -824,13 +865,12 @@
             let reels = +document.getElementById('c-reels').value;
             let salary = +document.getElementById('c-salary').value;
             let paid = +document.getElementById('c-paid').value;
-            let refundDate = document.getElementById('c-refund-date').value || 'غير محدد';
             let day = document.getElementById('c-day').value;
             let delivered = 0;
             let titles = '';
 
             let clientId = Date.now();
-            db.clients.push({ id: clientId, name, phone, reels, salary, paid, refundDate, day, delivered, titles });
+            db.clients.push({ id: clientId, name, phone, reels, salary, paid, day, delivered, titles });
 
             ['1', '2', '3', '4'].forEach(w => {
                 db.monthSchedule.push({
@@ -840,18 +880,52 @@
             });
 
             e.target.reset(); saveDB();
-            alert(`تم حفظ العميل "${name}" وتحديد ميعاد استرداد المتبقي!`);
+            alert(`تم حفظ العميل "${name}" بنجاح!`);
         }
 
-        function updateRefundDate(clientId) {
+        /* --- الدفعات المجدولة --- */
+        function addScheduledPayment(e) {
+            e.preventDefault();
+            let clientId = +document.getElementById('sp-client-select').value;
+            let amount = +document.getElementById('sp-amount').value || 0;
+            let dueDate = document.getElementById('sp-date').value;
+            let week = document.getElementById('sp-week').value;
+
             let client = db.clients.find(c => c.id === clientId);
+            if (!client) return;
+
+            db.scheduledPayments.push({
+                id: Date.now(),
+                clientId: clientId,
+                clientName: client.name,
+                amount: amount,
+                dueDate: dueDate,
+                week: week,
+                status: 'pending'
+            });
+
+            e.target.reset();
+            saveDB();
+            alert("تم جدولة الدفعة بنجاح! 🗓️");
+        }
+
+        function markPaymentAsReceived(paymentId) {
+            let payment = db.scheduledPayments.find(p => p.id === paymentId);
+            if (!payment) return;
+
+            let client = db.clients.find(c => c.id === payment.clientId);
             if (client) {
-                let newDate = prompt("تعديل تاريخ استرداد الفلوس المتبقية (YYYY-MM-DD):", client.refundDate || '');
-                if (newDate !== null) {
-                    client.refundDate = newDate || 'غير محدد';
-                    saveDB();
-                }
+                client.paid += payment.amount;
             }
+
+            payment.status = 'received';
+            saveDB();
+            alert(`تم تأكيد استلام مبلغ ${payment.amount} ج.م وإضافتها لحساب العميل ودخل الأسبوع! ✅`);
+        }
+
+        function deleteScheduledPayment(paymentId) {
+            db.scheduledPayments = db.scheduledPayments.filter(p => p.id !== paymentId);
+            saveDB();
         }
 
         function onReelsClientSelectChange(selectElem) {
@@ -928,7 +1002,7 @@
         }
 
         function addPayment(clientId) {
-            let amount = prompt("أدخل الدفعة المستلمة الجديدة:");
+            let amount = prompt("أدخل الدفعة المستلمة الجديدة المباشرة:");
             if (amount && !isNaN(amount) && +amount > 0) {
                 let client = db.clients.find(c => c.id === clientId);
                 if (client) { client.paid += +amount; saveDB(); }
@@ -1005,8 +1079,19 @@
                 `;
             });
 
+            // الدفعات المستلمة المجدولة في هذا الأسبوع
+            db.scheduledPayments.filter(p => p.week === selectedWeek && p.status === 'received').forEach(p => {
+                weeklyExpectedIncome += p.amount;
+                breakdownContainer.innerHTML += `
+                    <div class="m-card-row" style="background: rgba(0,0,0,0.2); padding: 6px 10px; border-radius: 6px;">
+                        <span>💳 <strong style="color:var(--mint);">${p.clientName}</strong> <small style="color:rgba(255,255,255,0.5);">(دفعة مجدولة مستلمة)</small></span>
+                        <span style="color:var(--gold); font-weight:bold;">${p.amount.toLocaleString()} ج.م</span>
+                    </div>
+                `;
+            });
+
             if (breakdownContainer.innerHTML === '') {
-                breakdownContainer.innerHTML = `<div style="color:rgba(255,255,255,0.4); font-size:11px;">لا يوجد دخل يدوياً مسجل لهذا الأسبوع حتى الآن</div>`;
+                breakdownContainer.innerHTML = `<div style="color:rgba(255,255,255,0.4); font-size:11px;">لا يوجد دخل مسجل أو مضاف لهذا الأسبوع حتى الآن</div>`;
             }
 
             document.getElementById('total-revenue').innerText = rev.toLocaleString() + " ج.م";
@@ -1020,11 +1105,16 @@
             document.getElementById('td-emp').innerHTML = empOptions;
             document.getElementById('emp-select').innerHTML = db.employees.map((e, i) => `<option value="${i}">${e.name} (${e.role})</option>`).join('');
 
+            // القوائم المنسدلة للعملاء
             let reelsClientSelect = document.getElementById('rd-client-select');
             let currentSelected = reelsClientSelect.value;
             reelsClientSelect.innerHTML = `<option value="" disabled ${!currentSelected ? 'selected' : ''}>اختر العميل لتعديل تسليماته</option>` +
                 db.clients.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
             if (currentSelected) reelsClientSelect.value = currentSelected;
+
+            let spClientSelect = document.getElementById('sp-client-select');
+            spClientSelect.innerHTML = `<option value="" disabled selected>اختر العميل لجدولة الدفعة</option>` +
+                db.clients.map(c => `<option value="${c.id}">${c.name} (المتبقي عليه: ${c.salary - c.paid} ج.م)</option>`).join('');
 
             // Render Daily Income
             let dailyList = document.getElementById('daily-income-mobile-list');
@@ -1053,6 +1143,27 @@
                     `;
                 }
             });
+
+            // Render Scheduled Payments
+            let spList = document.getElementById('scheduled-payments-list');
+            spList.innerHTML = '';
+            if (db.scheduledPayments.length === 0) {
+                spList.innerHTML = `<div style="color:rgba(255,255,255,0.4); font-size:11px;">لا توجد دفعات مجدولة حالياً</div>`;
+            } else {
+                db.scheduledPayments.forEach(p => {
+                    spList.innerHTML += `
+                        <div class="m-card" style="border-right: 4px solid ${p.status === 'received' ? 'var(--mint)' : 'var(--gold)'}">
+                            <div class="m-card-row"><span class="m-value" style="color:var(--mint); font-size:13px;">${p.clientName}</span><span class="badge ${p.status === 'received' ? 'badge-mint' : 'badge-gold'}">${p.status === 'received' ? '✅ تم الاستلام' : '⏳ معلقة'}</span></div>
+                            <div class="m-card-row"><span class="m-label">المبلغ المجدول:</span><span class="m-value" style="color:var(--gold-light); font-size:13px;">${p.amount.toLocaleString()} ج.م</span></div>
+                            <div class="m-card-row"><span class="m-label">تاريخ الاستحقاق:</span><span class="m-value">${p.dueDate} (الأسبوع ${p.week})</span></div>
+                            <div style="display:flex; justify-content:space-between; margin-top:8px; padding-top:6px; border-top:1px solid var(--card-border);">
+                                ${p.status === 'pending' ? `<button class="btn-pay" onclick="markPaymentAsReceived(${p.id})">✔ تم الاستلام</button>` : '<span></span>'}
+                                <button class="btn-del" onclick="deleteScheduledPayment(${p.id})">حذف</button>
+                            </div>
+                        </div>
+                    `;
+                });
+            }
 
             // Render 4 Weeks Schedule
             let weeksContainer = document.getElementById('weeks-container');
@@ -1092,7 +1203,7 @@
             weekItems.sort((a, b) => daysOrder.indexOf(a.day) - daysOrder.indexOf(b.day));
 
             if (weekItems.length === 0) {
-                masterWeeklyTbody.innerHTML = `<tr><td colspan="8" style="color:rgba(255,255,255,0.4);">لا توجد مواعيد تسكين في هذا الأسبوع</td></tr>`;
+                masterWeeklyTbody.innerHTML = `<tr><td colspan="7" style="color:rgba(255,255,255,0.4);">لا توجد مواعيد تسكين في هذا الأسبوع</td></tr>`;
             } else {
                 weekItems.forEach(item => {
                     let clientObj = db.clients.find(c => c.name.trim() === item.client.trim());
@@ -1102,7 +1213,6 @@
                     let totalSalary = clientObj ? clientObj.salary : 0;
                     let totalPaid = clientObj ? clientObj.paid : 0;
                     let totalPending = totalSalary - totalPaid;
-                    let refundDate = clientObj ? (clientObj.refundDate || 'غير محدد') : '-';
 
                     masterWeeklyTbody.innerHTML += `
                         <tr>
@@ -1113,7 +1223,6 @@
                             <td>${totalSalary.toLocaleString()}</td>
                             <td style="color:var(--mint); font-weight:bold;">${totalPaid.toLocaleString()}</td>
                             <td style="color:var(--red); font-weight:bold;">${totalPending.toLocaleString()}</td>
-                            <td style="color:var(--gold);">${refundDate}</td>
                         </tr>
                     `;
                 });
@@ -1124,11 +1233,10 @@
                 <div class="m-card">
                     <div class="m-card-row"><span class="m-value" style="font-size:14px; color:var(--mint);">${c.name}</span><span class="m-label">${c.phone}</span></div>
                     <div class="m-card-row"><span class="m-label">يوم التصوير الثابت:</span><span class="m-value" style="color:var(--gold);">${c.day}</span></div>
-                    <div class="m-card-row"><span class="m-label">تاريخ استرداد المتبقي:</span><span class="m-value" style="color:var(--gold); cursor:pointer;" onclick="updateRefundDate(${c.id})">${c.refundDate || 'غير محدد'} ✏️</span></div>
                     <div class="m-card-row"><span class="m-label">الماليات (المدفوع / الإجمالي):</span><span class="m-value">${c.paid} / ${c.salary} ج.م</span></div>
                     <div class="m-card-row"><span class="m-label">المتبقي في السوق:</span><span class="m-value" style="color:var(--red);">${c.salary - c.paid} ج.م</span></div>
                     <div style="display:flex; justify-content:space-between; margin-top:8px; padding-top:6px; border-top:1px solid var(--card-border);">
-                        <button class="btn-pay" onclick="addPayment(${c.id})">+ إضافة دفعة</button>
+                        <button class="btn-pay" onclick="addPayment(${c.id})">+ دفع مباشر</button>
                         <button class="btn-del" onclick="deleteItem('clients', ${c.id})">حذف</button>
                     </div>
                 </div>
@@ -1210,7 +1318,6 @@
                 <div class="m-card">
                     <div class="m-card-row"><span class="badge badge-mint">عميل اشتراك</span><span class="m-value">${c.name}</span></div>
                     <div class="m-card-row"><span class="m-label">المحصل:</span><span class="m-value" style="color:var(--mint);">${c.paid} ج.م</span></div>
-                    <div class="m-card-row"><span class="m-label">ميعاد استرداد المتبقي:</span><span class="m-value" style="color:var(--gold);">${c.refundDate || 'غير محدد'}</span></div>
                 </div>
             `);
 
@@ -1231,7 +1338,7 @@
 
             setTimeout(() => {
                 let area = document.getElementById('exportable-report-area');
-                html2canvas(area, { backgroundColor: '#28262C', scale: 2 }).then(canvas => {
+                html2canvas(area, { backgroundColor: '#18191A', scale: 2 }).then(canvas => {
                     let image = canvas.toDataURL("image/png");
                     let link = document.createElement('a');
                     link.download = `OFFGRID_Report_${new Date().toISOString().slice(0,10)}.png`;
