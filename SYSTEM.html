@@ -120,7 +120,7 @@
     </header>
 
     <div class="kpi-grid">
-        <div class="kpi-card"><h3>المحصل من العملاء</h3><p id="total-revenue">0 ج.م</p></div>
+        <div class="kpi-card"><h3>إجمالي المحصل</h3><p id="total-revenue">0 ج.م</p></div>
         <div class="kpi-card red"><h3>المتبقي في السوق</h3><p id="total-pending">0 ج.م</p></div>
         <div class="kpi-card red"><h3>المصروفات والرواتب</h3><p id="total-expenses">0 ج.م</p></div>
         <div class="kpi-card blue"><h3>رواتب الموظفين</h3><p id="total-salaries">0 ج.م</p></div>
@@ -128,7 +128,8 @@
     </div>
 
     <div class="tabs-nav">
-        <button class="tab-btn active" onclick="switchTab('month-weeks-tab', this)">📅 جدول الـ 4 أسابيع</button>
+        <button class="tab-btn active" onclick="switchTab('daily-income-tab', this)">💰 الدخل والخدمات اليومية</button>
+        <button class="tab-btn" onclick="switchTab('month-weeks-tab', this)">📅 جدول الـ 4 أسابيع</button>
         <button class="tab-btn" onclick="switchTab('clients-tab', this)">👥 العملاء والاشتراكات</button>
         <button class="tab-btn" onclick="switchTab('tasks-deliveries-tab', this)">🎯 المهام المطلوبة وتسليماتها</button>
         <button class="tab-btn" onclick="switchTab('office-needs-tab', this)">🛒 مطالبات ونواقص المكتب</button>
@@ -137,8 +138,36 @@
         <button class="tab-btn" onclick="switchTab('master-tab', this)">📊 التقرير المجمع</button>
     </div>
 
+    <!-- TAB: الدخل والخدمات اليومية (جديد) -->
+    <div id="daily-income-tab" class="tab-content active">
+        <div class="panel">
+            <div class="panel-header">تسجيل خدمة / دخل يومي جديد (مربوط بالمهام)</div>
+            <form class="form-grid" onsubmit="addDailyIncome(event)">
+                <select id="di-day" required>
+                    <option value="" disabled selected>اختر يوم الطلب</option>
+                    <option value="السبت">السبت</option>
+                    <option value="الأحد">الأحد</option>
+                    <option value="الإثنين">الإثنين</option>
+                    <option value="الثلاثاء">الثلاثاء</option>
+                    <option value="الأربعاء">الأربعاء</option>
+                    <option value="الخميس">الخميس</option>
+                    <option value="الجمعة">الجمعة</option>
+                </select>
+                <input type="text" id="di-client" placeholder="اسم العميل" required>
+                <input type="text" id="di-service" placeholder="نوع الخدمة المطلوبة (مثال: تصميم كارت NFC / المونتاج)" required>
+                <select id="di-emp" required></select>
+                <input type="date" id="di-date" placeholder="تاريخ ميعاد التسليم" required>
+                <input type="number" id="di-cost" placeholder="تكلفة الخدمة (المبلغ المستلم)" required>
+                <button type="submit" class="btn-add">حفظ الخدمة وتسكينها لمهمة الموظف 🚀</button>
+            </form>
+
+            <div class="panel-header" style="margin-top:20px;">سجل الدخل والخدمات اليومية</div>
+            <div id="daily-income-mobile-list" class="mobile-card-list"></div>
+        </div>
+    </div>
+
     <!-- TAB: أسابيع الشهر الأربعة -->
-    <div id="month-weeks-tab" class="tab-content active">
+    <div id="month-weeks-tab" class="tab-content">
         <div class="panel">
             <div class="panel-header">تسكين مواعيد التصوير للأسابيع (مرتبة بالأيام تلقائياً)</div>
             <form class="form-grid" onsubmit="addMonthlySchedule(event)">
@@ -302,6 +331,9 @@
                 </table>
             </div>
 
+            <div class="panel-header">سجل الخدمات والدخل اليومي</div>
+            <div id="master-daily-container" class="mobile-card-list" style="margin-bottom:15px;"></div>
+
             <div class="panel-header">تقرير تسليمات المهام (المسلم والمتبقي)</div>
             <div id="master-tasks-container" class="mobile-card-list" style="margin-bottom:15px;"></div>
 
@@ -334,12 +366,13 @@
 
         let db = JSON.parse(localStorage.getItem('OFFGRID_DB')) || {
             clients: [], monthSchedule: [], taskDeliveries: [], officeNeeds: [],
-            employees: defaultTeam, expenses: []
+            employees: defaultTeam, expenses: [], dailyIncome: []
         };
 
         if (!db.taskDeliveries) db.taskDeliveries = [];
         if (!db.officeNeeds) db.officeNeeds = [];
         if (!db.monthSchedule) db.monthSchedule = [];
+        if (!db.dailyIncome) db.dailyIncome = [];
 
         function setSyncStatus(text) {
             const statusElem = document.getElementById('sync-status');
@@ -379,6 +412,7 @@
                 try {
                     if (data && typeof data === 'object' && (data.clients || data.monthSchedule)) {
                         db = data;
+                        if (!db.dailyIncome) db.dailyIncome = [];
                         localStorage.setItem('OFFGRID_DB', JSON.stringify(db));
                         renderAll();
                         setSyncStatus("تمت المزامنة بنجاح من السحابة ✅");
@@ -412,6 +446,43 @@
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
             document.getElementById(tabId).classList.add('active');
             btn.classList.add('active');
+        }
+
+        // إضافة خدمة اليوم والدخل اليومي وربطها بالمهام تلقائياً
+        function addDailyIncome(e) {
+            e.preventDefault();
+            let day = document.getElementById('di-day').value;
+            let client = document.getElementById('di-client').value;
+            let service = document.getElementById('di-service').value;
+            let empName = document.getElementById('di-emp').value;
+            let dueDate = document.getElementById('di-date').value;
+            let cost = +document.getElementById('di-cost').value || 0;
+
+            let incomeId = Date.now();
+
+            db.dailyIncome.push({
+                id: incomeId,
+                day, client, service, empName, dueDate, cost
+            });
+
+            // ربط تلقائي بقسم المهام والتسليمات
+            db.taskDeliveries.push({
+                id: Date.now() + 1,
+                dailyRefId: incomeId,
+                empName: empName,
+                task: `[خدمة يومية] ${service} - للعميل: ${client}`,
+                dueDate: dueDate,
+                delivered: false
+            });
+
+            e.target.reset(); saveDB();
+            alert("تم تسكيل الخدمة اليومية وإضافتها لمهام الموظف بنجاح 🚀");
+        }
+
+        function deleteDailyIncome(id) {
+            db.dailyIncome = db.dailyIncome.filter(item => item.id !== id);
+            db.taskDeliveries = db.taskDeliveries.filter(item => item.dailyRefId !== id);
+            saveDB();
         }
 
         function addClient(e) {
@@ -525,7 +596,10 @@
         function deleteItem(type, id) { db[type] = db[type].filter(item => item.id !== id); saveDB(); }
 
         function renderAll() {
-            let rev = db.clients.reduce((a, b) => a + b.paid, 0);
+            let clientRev = db.clients.reduce((a, b) => a + b.paid, 0);
+            let dailyRev = db.dailyIncome.reduce((a, b) => a + b.cost, 0);
+            let rev = clientRev + dailyRev;
+
             let pend = db.clients.reduce((a, b) => a + (b.salary - b.paid), 0);
             let empPaidTotal = db.employees.reduce((a, b) => a + b.paid, 0);
             let empBaseTotal = db.employees.reduce((a, b) => a + (b.baseSalary || 0), 0);
@@ -540,13 +614,45 @@
             document.getElementById('net-income').innerText = netIncome.toLocaleString() + " ج.م";
 
             let empOptions = db.employees.map(e => `<option value="${e.name}">${e.name} (${e.role})</option>`).join('');
+            document.getElementById('di-emp').innerHTML = empOptions;
             document.getElementById('td-emp').innerHTML = empOptions;
             document.getElementById('emp-select').innerHTML = db.employees.map((e, i) => `<option value="${i}">${e.name} (${e.role})</option>`).join('');
 
-            // 1. Render 4 Weeks Schedule (Sorted by Days)
+            // Render Daily Income Tab
+            let dailyList = document.getElementById('daily-income-mobile-list');
+            let masterDailyContainer = document.getElementById('master-daily-container');
+            dailyList.innerHTML = ''; masterDailyContainer.innerHTML = '';
+
+            if (db.dailyIncome.length === 0) {
+                dailyList.innerHTML = `<div style="color:rgba(255,255,255,0.4); font-size:11px;">لا يوجد دخل أو خدمات يومية مسجلة</div>`;
+                masterDailyContainer.innerHTML = `<div style="color:rgba(255,255,255,0.4); font-size:11px;">لا توجد خدمات يومية مسجلة</div>`;
+            } else {
+                db.dailyIncome.forEach(di => {
+                    dailyList.innerHTML += `
+                        <div class="m-card">
+                            <div class="m-card-row"><span class="m-value" style="color:var(--mint); font-size:13px;">${di.client}</span><span class="badge badge-gold">${di.day}</span></div>
+                            <div class="m-card-row"><span class="m-label">الخدمة:</span><span class="m-value">${di.service}</span></div>
+                            <div class="m-card-row"><span class="m-label">القائم بالخدمة:</span><span class="m-value" style="color:var(--gold);">${di.empName}</span></div>
+                            <div class="m-card-row"><span class="m-label">تاريخ التسليم:</span><span class="m-value">${di.dueDate}</span></div>
+                            <div class="m-card-row"><span class="m-label">تكلفة الخدمة:</span><span class="m-value" style="color:var(--mint);">${di.cost.toLocaleString()} ج.م</span></div>
+                            <div style="text-align:left; margin-top:6px;"><button class="btn-del" onclick="deleteDailyIncome(${di.id})">حذف الخدمة</button></div>
+                        </div>
+                    `;
+
+                    masterDailyContainer.innerHTML += `
+                        <div class="m-card">
+                            <div class="m-card-row"><span class="m-value">${di.client} (${di.day})</span><span style="color:var(--mint); font-weight:bold;">${di.cost.toLocaleString()} ج.م</span></div>
+                            <div class="m-card-row"><span class="m-label">الخدمة:</span><span class="m-value">${di.service}</span></div>
+                            <div class="m-card-row"><span class="m-label">المسؤول:</span><span class="m-value">${di.empName}</span></div>
+                            <div class="m-card-row"><span class="m-label">التسليم:</span><span class="m-value">${di.dueDate}</span></div>
+                        </div>
+                    `;
+                });
+            }
+
+            // 1. Render 4 Weeks Schedule
             let weeksContainer = document.getElementById('weeks-container');
             weeksContainer.innerHTML = '';
-            
             const weekNames = { '1': 'الأسبوع الأول', '2': 'الأسبوع الثاني', '3': 'الأسبوع الثالث', '4': 'الأسبوع الرابع' };
             
             ['1', '2', '3', '4'].forEach(wNum => {
@@ -575,7 +681,7 @@
                 }
             });
 
-            // 2. Render Weekly Detailed Report Table for Selected Week Only
+            // 2. Render Weekly Detailed Report Table
             let selectedWeek = document.getElementById('report-week-select').value;
             let masterWeeklyTbody = document.getElementById('master-weekly-details-tbody');
             masterWeeklyTbody.innerHTML = '';
@@ -588,7 +694,6 @@
             } else {
                 weekItems.forEach(item => {
                     let clientObj = db.clients.find(c => c.name.trim() === item.client.trim());
-                    
                     let reelsDelivered = clientObj ? clientObj.delivered : 0;
                     let reelsTotal = clientObj ? clientObj.reels : 0;
                     let reelsRemaining = reelsTotal - reelsDelivered;
@@ -726,9 +831,15 @@
             masterList.innerHTML = '';
             db.clients.forEach(c => masterList.innerHTML += `
                 <div class="m-card">
-                    <div class="m-card-row"><span class="badge badge-mint">عميل</span><span class="m-value">${c.name}</span></div>
+                    <div class="m-card-row"><span class="badge badge-mint">عميل اشتراك</span><span class="m-value">${c.name}</span></div>
                     <div class="m-card-row"><span class="m-label">المحصل:</span><span class="m-value" style="color:var(--mint);">${c.paid} ج.م</span></div>
                     <div class="m-card-row"><span class="m-label">المتبقي في السوق:</span><span class="m-value" style="color:var(--red);">${c.salary - c.paid} ج.م</span></div>
+                </div>
+            `);
+            db.dailyIncome.forEach(di => masterList.innerHTML += `
+                <div class="m-card">
+                    <div class="m-card-row"><span class="badge badge-gold">خدمة يومية</span><span class="m-value">${di.client} (${di.service})</span></div>
+                    <div class="m-card-row"><span class="m-label">المحصل:</span><span class="m-value" style="color:var(--mint);">${di.cost} ج.م</span></div>
                 </div>
             `);
             db.employees.forEach(e => masterList.innerHTML += `
@@ -751,7 +862,7 @@
         }
 
         function exportReportImage() {
-            let masterBtn = document.querySelectorAll('.tab-btn')[6];
+            let masterBtn = document.querySelectorAll('.tab-btn')[7];
             switchTab('master-tab', masterBtn);
 
             setTimeout(() => {
