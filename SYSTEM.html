@@ -2,7 +2,7 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>OFFGRID | Business Management System</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -14,82 +14,84 @@
             --red: #C1292E;
             --lavender: #F9F5FF;
             --cobalt: #14248A;
-            --card-bg: rgba(255, 255, 255, 0.03);
+            --card-bg: rgba(255, 255, 255, 0.04);
             --card-border: rgba(255, 255, 255, 0.08);
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Readex Pro', sans-serif; }
-        body { background: var(--bg-dark); color: var(--lavender); padding: 25px; font-size: 13.5px; line-height: 1.6; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Readex Pro', sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background: var(--bg-dark); color: var(--lavender); padding: 12px; font-size: 13px; line-height: 1.5; }
         
-        /* Top Navigation Header */
+        /* Mobile-Optimized Header */
         header { 
-            display: flex; justify-content: space-between; align-items: center; 
+            display: flex; flex-direction: column; gap: 12px; 
             background: var(--card-bg); border: 1px solid var(--card-border); 
-            padding: 15px 25px; border-radius: 12px; margin-bottom: 25px; backdrop-filter: blur(10px);
+            padding: 14px; border-radius: 12px; margin-bottom: 15px; backdrop-filter: blur(10px);
         }
-        .brand { display: flex; align-items: center; gap: 12px; }
-        .brand-logo { background: var(--mint); color: var(--bg-dark); font-weight: 700; padding: 6px 14px; border-radius: 8px; font-size: 18px; letter-spacing: 1px; }
-        .brand-title { font-size: 18px; font-weight: 600; color: var(--lavender); }
+        .brand { display: flex; align-items: center; justify-content: space-between; width: 100%; }
+        .brand-logo { background: var(--mint); color: var(--bg-dark); font-weight: 700; padding: 4px 10px; border-radius: 6px; font-size: 15px; }
+        .brand-title { font-size: 14px; font-weight: 600; color: var(--lavender); }
         
-        .sync-actions { display: flex; gap: 10px; }
-        .btn-sync { background: var(--mint); color: var(--bg-dark); border: none; padding: 8px 16px; border-radius: 8px; font-weight: 600; cursor: pointer; transition: 0.2s; }
-        .btn-sync:hover { opacity: 0.9; transform: translateY(-1px); }
+        .sync-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; width: 100%; }
+        .btn-sync { background: var(--mint); color: var(--bg-dark); border: none; padding: 10px; border-radius: 8px; font-weight: 600; cursor: pointer; text-align: center; font-size: 12px; }
         .btn-sync.cobalt { background: var(--cobalt); color: white; }
 
-        /* KPI Dashboard Cards */
-        .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 15px; margin-bottom: 25px; }
+        /* KPI Dashboard Grid for Mobile */
+        .kpi-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 15px; }
         .kpi-card { 
             background: var(--card-bg); border: 1px solid var(--card-border); 
-            padding: 16px; border-radius: 12px; position: relative; overflow: hidden;
+            padding: 12px; border-radius: 10px; position: relative; overflow: hidden;
         }
         .kpi-card::before { content: ''; position: absolute; top: 0; right: 0; width: 4px; height: 100%; background: var(--mint); }
         .kpi-card.red::before { background: var(--red); }
         .kpi-card.blue::before { background: var(--cobalt); }
-        .kpi-card h3 { font-size: 11px; color: rgba(249, 245, 255, 0.6); margin-bottom: 6px; font-weight: 400; }
-        .kpi-card p { font-size: 18px; font-weight: 700; color: var(--lavender); }
+        .kpi-card.full-width { grid-column: span 2; }
+        .kpi-card h3 { font-size: 10px; color: rgba(249, 245, 255, 0.6); margin-bottom: 4px; }
+        .kpi-card p { font-size: 15px; font-weight: 700; color: var(--lavender); }
 
-        /* Navigation Tabs System */
-        .tabs-nav { display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 1px solid var(--card-border); padding-bottom: 10px; }
+        /* Horizontal Scrollable Tabs for Touch Screen */
+        .tabs-nav { 
+            display: flex; gap: 8px; margin-bottom: 15px; 
+            overflow-x: auto; padding-bottom: 8px; -webkit-overflow-scrolling: touch;
+        }
+        .tabs-nav::-webkit-scrollbar { display: none; }
         .tab-btn { 
-            background: transparent; color: var(--lavender); border: 1px solid transparent; 
-            padding: 8px 18px; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 400; transition: 0.2s;
+            background: var(--card-bg); color: var(--lavender); border: 1px solid var(--card-border); 
+            padding: 8px 14px; border-radius: 20px; cursor: pointer; font-size: 12px; white-space: nowrap; flex-shrink: 0;
         }
         .tab-btn.active { background: var(--cobalt); border-color: var(--cobalt); font-weight: 600; }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
 
-        /* Structured Panels */
-        .panel { 
-            background: var(--card-bg); border: 1px solid var(--card-border); 
-            border-radius: 12px; padding: 20px; margin-bottom: 20px; backdrop-filter: blur(5px);
-        }
-        .panel-header { font-size: 15px; font-weight: 600; color: var(--mint); margin-bottom: 15px; border-bottom: 1px solid var(--card-border); padding-bottom: 8px; }
+        /* Panels and Forms */
+        .panel { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 12px; padding: 14px; margin-bottom: 15px; }
+        .panel-header { font-size: 14px; font-weight: 600; color: var(--mint); margin-bottom: 12px; border-bottom: 1px solid var(--card-border); padding-bottom: 6px; }
 
-        /* Unified Form Styling */
-        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; margin-bottom: 18px; }
+        .form-grid { display: flex; flex-direction: column; gap: 8px; margin-bottom: 15px; }
         input, select { 
-            background: rgba(0, 0, 0, 0.2); border: 1px solid var(--card-border); 
-            padding: 9px 12px; border-radius: 6px; color: var(--lavender); font-size: 12.5px; width: 100%;
+            background: rgba(0, 0, 0, 0.25); border: 1px solid var(--card-border); 
+            padding: 10px 12px; border-radius: 8px; color: var(--lavender); font-size: 13px; width: 100%;
         }
         input:focus, select:focus { border-color: var(--mint); outline: none; }
-        button.btn-add { background: var(--cobalt); color: white; border: none; padding: 9px 16px; border-radius: 6px; font-weight: 600; cursor: pointer; }
+        button.btn-add { background: var(--cobalt); color: white; border: none; padding: 12px; border-radius: 8px; font-weight: 600; cursor: pointer; margin-top: 4px; }
 
-        /* Sleek Tables Styling */
-        .table-responsive { overflow-x: auto; }
-        table { width: 100%; border-collapse: separate; border-spacing: 0; text-align: right; font-size: 12.5px; }
-        th { background: rgba(20, 36, 138, 0.4); color: var(--lavender); padding: 12px; font-weight: 600; border-bottom: 1px solid var(--card-border); }
-        td { padding: 10px 12px; border-bottom: 1px solid var(--card-border); }
-        tr:hover td { background: rgba(255, 255, 255, 0.02); }
-        
-        .badge { display: inline-block; padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; }
+        /* Responsive Mobile Table to Card Converter */
+        .mobile-card-list { display: flex; flex-direction: column; gap: 10px; }
+        .m-card { background: rgba(0,0,0,0.2); border: 1px solid var(--card-border); border-radius: 8px; padding: 12px; }
+        .m-card-row { display: flex; justify-content: space-between; margin-bottom: 6px; font-size: 12px; }
+        .m-card-row:last-child { margin-bottom: 0; }
+        .m-label { color: rgba(249, 245, 255, 0.6); }
+        .m-value { font-weight: 600; }
+
+        .badge { display: inline-block; padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: 600; }
         .badge-mint { background: rgba(78, 166, 153, 0.15); color: var(--mint); }
         .badge-red { background: rgba(193, 41, 46, 0.15); color: var(--red); }
         
-        .btn-del { background: rgba(193, 41, 46, 0.2); color: var(--red); border: 1px solid var(--red); padding: 3px 8px; border-radius: 4px; cursor: pointer; }
-        .btn-pay { background: rgba(78, 166, 153, 0.2); color: var(--mint); border: 1px solid var(--mint); padding: 3px 8px; border-radius: 4px; cursor: pointer; font-weight: 600; }
+        .btn-del { background: rgba(193, 41, 46, 0.2); color: var(--red); border: 1px solid var(--red); padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 11px; }
+        .btn-pay { background: rgba(78, 166, 153, 0.2); color: var(--mint); border: 1px solid var(--mint); padding: 4px 8px; border-radius: 4px; cursor: pointer; font-weight: 600; font-size: 11px; }
 
-        .summary-box { background: rgba(0, 0, 0, 0.3); font-weight: 600; }
-        .summary-box td { color: var(--mint); border-top: 1px solid var(--mint); }
+        .summary-card { background: rgba(0, 0, 0, 0.4); border: 1px solid var(--mint); border-radius: 8px; padding: 12px; margin-top: 10px; }
+        .summary-item { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid var(--card-border); }
+        .summary-item:last-child { border-bottom: none; }
     </style>
 </head>
 <body>
@@ -97,12 +99,12 @@
     <header>
         <div class="brand">
             <span class="brand-logo">OFFGRID</span>
-            <span class="brand-title">نظام إدارة العمليات والماليات</span>
+            <span class="brand-title">إدارة العمليات والماليات</span>
         </div>
         <div class="sync-actions">
             <button class="btn-sync" onclick="exportData()">💾 تصدير JSON</button>
             <input type="file" id="importFile" onchange="importData(event)" style="display:none">
-            <button class="btn-sync cobalt" onclick="document.getElementById('importFile').click()">📂 استيراد</button>
+            <button class="btn-sync cobalt" onclick="document.getElementById('importFile').click()">📂 استيراد JSON</button>
         </div>
     </header>
 
@@ -110,119 +112,97 @@
     <div class="kpi-grid">
         <div class="kpi-card"><div h3>المحصل من العملاء</div><p id="total-revenue">0 ج.م</p></div>
         <div class="kpi-card red"><div h3>المتبقي في السوق</div><p id="total-pending">0 ج.م</p></div>
-        <div class="kpi-card red"><div h3>إجمالي المصروفات والرواتب</div><p id="total-expenses">0 ج.م</p></div>
-        <div class="kpi-card blue"><div h3>إجمالي رواتب الموظفين</div><p id="total-salaries">0 ج.م</p></div>
-        <div class="kpi-card blue"><div h3>صافي دخل المكتب</div><p id="net-income">0 ج.م</p></div>
+        <div class="kpi-card red"><div h3>المصروفات والرواتب</div><p id="total-expenses">0 ج.م</p></div>
+        <div class="kpi-card blue"><div h3>رواتب الموظفين</div><p id="total-salaries">0 ج.م</p></div>
+        <div class="kpi-card blue full-width"><div h3>صافي دخل المكتب التقديري</div><p id="net-income">0 ج.م</p></div>
     </div>
 
-    <!-- Navigation Tabs -->
+    <!-- Scrollable Mobile Tabs -->
     <div class="tabs-nav">
         <button class="tab-btn active" onclick="switchTab('clients-tab', this)">👥 العملاء والاشتراكات</button>
-        <button class="tab-btn" onclick="switchTab('schedule-tab', this)">📅 جدول التصوير اليومي</button>
-        <button class="tab-btn" onclick="switchTab('team-tab', this)">👨‍💼 الموظفين والرواتب</button>
-        <button class="tab-btn" onclick="switchTab('expenses-tab', this)">💸 المصروفات والنواقص</button>
-        <button class="tab-btn" onclick="switchTab('master-tab', this)">📊 التقرير الشامل</button>
+        <button class="tab-btn" onclick="switchTab('schedule-tab', this)">📅 جدول التصوير</button>
+        <button class="tab-btn" onclick="switchTab('team-tab', this)">👨‍💼 الفريق والرواتب</button>
+        <button class="tab-btn" onclick="switchTab('expenses-tab', this)">💸 المصروفات</button>
+        <button class="tab-btn" onclick="switchTab('master-tab', this)">📊 التقرير المجمع</button>
     </div>
 
     <!-- Tab 1: العملاء -->
     <div id="clients-tab" class="tab-content active">
         <div class="panel">
-            <div class="panel-header">إضافة وتتبع بيانات العملاء</div>
+            <div class="panel-header">إضافة عميل جديد</div>
             <form class="form-grid" onsubmit="addClient(event)">
                 <input type="text" id="c-name" placeholder="اسم العميل" required>
-                <input type="text" id="c-phone" placeholder="رقم الهاتف" required>
-                <input type="number" id="c-reels" placeholder="عدد الريلز" required>
-                <input type="number" id="c-salary" placeholder="الإجمالي الاتفاق" required>
+                <input type="tel" id="c-phone" placeholder="رقم الهاتف" required>
+                <input type="number" id="c-reels" placeholder="عدد الريلز المطلوبة" required>
+                <input type="number" id="c-salary" placeholder="إجمالي المبلغ الاتفاق" required>
                 <input type="number" id="c-paid" placeholder="الدفعة الأولى" required>
-                <input type="text" id="c-day" placeholder="يوم التصوير" required>
-                <input type="number" id="c-delivered" placeholder="المسلم" required>
-                <input type="text" id="c-titles" placeholder="عناوين الفيديوهات">
+                <input type="text" id="c-day" placeholder="يوم التصوير الاسبوعي" required>
+                <input type="number" id="c-delivered" placeholder="عدد الفيديوهات المسلمة" required>
+                <input type="text" id="c-titles" placeholder="عناوين الفيديوهات المسلمة">
                 <button type="submit" class="btn-add">حفظ العميل</button>
             </form>
-            <div class="table-responsive">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>العميل</th><th>الهاتف</th><th>الريلز</th><th>الإجمالي</th><th>المحصل</th><th>المتبقي</th><th>التصوير</th><th>المسلم</th><th>المتبقي</th><th>العناوين</th><th>دفعات</th><th>حذف</th>
-                        </tr>
-                    </thead>
-                    <tbody id="clients-tb"></tbody>
-                </table>
-            </div>
+
+            <div class="panel-header" style="margin-top:20px;">قائمة العملاء الحالية</div>
+            <div id="clients-mobile-list" class="mobile-card-list"></div>
         </div>
     </div>
 
     <!-- Tab 2: الجدول -->
     <div id="schedule-tab" class="tab-content">
         <div class="panel">
-            <div class="panel-header">جدول التصوير والاستثناءات اليومية</div>
+            <div class="panel-header">إضافة موعد تصوير</div>
             <form class="form-grid" onsubmit="addSchedule(event)">
                 <input type="date" id="s-date" required>
                 <input type="text" id="s-client" placeholder="العميل / الاستثناء" required>
                 <input type="text" id="s-task" placeholder="المهمة المطلوبة" required>
-                <button type="submit" class="btn-add">إضافة للجدول</button>
+                <button type="submit" class="btn-add">حفظ في الجدول</button>
             </form>
-            <div class="table-responsive">
-                <table>
-                    <thead><tr><th>التاريخ</th><th>العميل</th><th>المهمة المطلوبة</th><th>حذف</th></tr></thead>
-                    <tbody id="schedule-tb"></tbody>
-                </table>
-            </div>
+
+            <div class="panel-header" style="margin-top:20px;">مواعيد التصوير الحالية</div>
+            <div id="schedule-mobile-list" class="mobile-card-list"></div>
         </div>
     </div>
 
     <!-- Tab 3: الموظفين -->
     <div id="team-tab" class="tab-content">
         <div class="panel">
-            <div class="panel-header">إدارة الفريق والرواتب المستلمة</div>
+            <div class="panel-header">تسجيل دفعة راتب لموظف</div>
             <form class="form-grid" onsubmit="paySalary(event)">
                 <select id="emp-select"></select>
                 <input type="number" id="emp-paid-amount" placeholder="المبلغ المستلم" required>
                 <button type="submit" class="btn-add">تسجيل الدفعة</button>
             </form>
-            <div class="table-responsive">
-                <table>
-                    <thead><tr><th>الموظف</th><th>الوظيفة</th><th>الراتب الأساسي (اضغط للتعديل)</th><th>المستلم</th><th>المتبقي</th></tr></thead>
-                    <tbody id="employees-tb"></tbody>
-                </table>
-            </div>
+
+            <div class="panel-header" style="margin-top:20px;">حسابات الفريق والرواتب</div>
+            <div id="team-mobile-list" class="mobile-card-list"></div>
         </div>
     </div>
 
     <!-- Tab 4: المصروفات -->
     <div id="expenses-tab" class="tab-content">
         <div class="panel">
-            <div class="panel-header">مصروفات المكتب والنواقص</div>
+            <div class="panel-header">إضافة مصروف مكتب / ناقص</div>
             <form class="form-grid" onsubmit="addExpense(event)">
-                <input type="text" id="e-title" placeholder="البند / البيان" required>
+                <input type="text" id="e-title" placeholder="البند / بيان المصروف" required>
                 <input type="number" id="e-amount" placeholder="المبلغ" required>
                 <button type="submit" class="btn-add">تسجيل المصروف</button>
             </form>
-            <div class="table-responsive">
-                <table>
-                    <thead><tr><th>البند / الناقص</th><th>المبلغ</th><th>حذف</th></tr></thead>
-                    <tbody id="expenses-tb"></tbody>
-                </table>
-            </div>
+
+            <div class="panel-header" style="margin-top:20px;">مصروفات المكتب المنسقة</div>
+            <div id="expenses-mobile-list" class="mobile-card-list"></div>
         </div>
     </div>
 
     <!-- Tab 5: التقرير النهائي -->
     <div id="master-tab" class="tab-content">
-        <div class="panel" style="border-color: var(--mint);">
-            <div class="panel-header">التقرير المجمع الشامل لجميع المكونات والماليات</div>
-            <div class="table-responsive">
-                <table>
-                    <thead>
-                        <tr><th>القسم</th><th>البيان / الاسم</th><th>التفاصيل</th><th>المبلغ المحصل</th><th>المتبقي / المنصرف</th></tr>
-                    </thead>
-                    <tbody id="master-tb"></tbody>
-                    <tfoot>
-                        <tr class="summary-box"><td colspan="3">إجمالي الدخل المحصل</td><td id="m-total-rev" colspan="2">0 ج.م</td></tr>
-                        <tr class="summary-box"><td colspan="3">إجمالي ديون السوق (العملاء)</td><td id="m-total-pend" colspan="2" style="color:var(--red)">0 ج.م</td></tr>
-                        <tr class="summary-box"><td colspan="3">إجمالي المصروفات والرواتب</td><td id="m-total-exp" colspan="2" style="color:var(--red)">0 ج.م</td></tr>
-                    </tfoot>
-                </table>
+        <div class="panel">
+            <div class="panel-header">التقرير المجمع الشامل للعمليات</div>
+            <div id="master-mobile-list" class="mobile-card-list"></div>
+
+            <div class="summary-card">
+                <div class="summary-item"><span>إجمالي المحصل:</span><span id="m-total-rev" style="color:var(--mint); font-weight:bold;">0 ج.م</span></div>
+                <div class="summary-item"><span>ديون لدى العملاء:</span><span id="m-total-pend" style="color:var(--red); font-weight:bold;">0 ج.م</span></div>
+                <div class="summary-item"><span>إجمالي المصاريف والرواتب:</span><span id="m-total-exp" style="color:var(--red); font-weight:bold;">0 ج.م</span></div>
             </div>
         </div>
     </div>
@@ -305,50 +285,75 @@
             document.getElementById('total-revenue').innerText = rev.toLocaleString() + " ج.م";
             document.getElementById('total-pending').innerText = pend.toLocaleString() + " ج.م";
             document.getElementById('total-expenses').innerText = totalExp.toLocaleString() + " ج.م";
-            document.getElementById('total-salaries').innerText = empPaidTotal.toLocaleString() + " / " + empBaseTotal.toLocaleString() + " ج.م";
+            document.getElementById('total-salaries').innerText = empPaidTotal.toLocaleString() + " / " + empBaseTotal.toLocaleString();
             document.getElementById('net-income').innerText = (rev - totalExp).toLocaleString() + " ج.م";
 
-            // Render Clients
-            document.getElementById('clients-tb').innerHTML = db.clients.map(c => `
-                <tr>
-                    <td><b>${c.name}</b></td><td>${c.phone}</td><td><span class="badge badge-mint">${c.reels}</span></td>
-                    <td>${c.salary}</td><td>${c.paid}</td><td style="color:var(--red)">${c.salary - c.paid}</td>
-                    <td>${c.day}</td><td>${c.delivered}</td><td style="color:var(--mint)">${c.reels - c.delivered}</td>
-                    <td>${c.titles || '-'}</td>
-                    <td><button class="btn-pay" onclick="addPayment(${c.id})">+ دفعة</button></td>
-                    <td><button class="btn-del" onclick="deleteItem('clients', ${c.id})">حذف</button></td>
-                </tr>
+            // Mobile Clients Cards
+            document.getElementById('clients-mobile-list').innerHTML = db.clients.map(c => `
+                <div class="m-card">
+                    <div class="m-card-row"><span class="m-value" style="font-size:14px; color:var(--mint);">${c.name}</span><span class="m-label">${c.phone}</span></div>
+                    <div class="m-card-row"><span class="m-label">يوم التصوير:</span><span class="m-value">${c.day}</span></div>
+                    <div class="m-card-row"><span class="m-label">الريلز (المسلم / المطلوب):</span><span class="m-value">${c.delivered} / ${c.reels} (متبقي ${c.reels - c.delivered})</span></div>
+                    <div class="m-card-row"><span class="m-label">الماليات (المدفوع / الإجمالي):</span><span class="m-value">${c.paid} / ${c.salary} ج.م</span></div>
+                    <div class="m-card-row"><span class="m-label">المتبقي عليه:</span><span class="m-value" style="color:var(--red);">${c.salary - c.paid} ج.م</span></div>
+                    ${c.titles ? `<div class="m-card-row"><span class="m-label">العناوين:</span><span class="m-value">${c.titles}</span></div>` : ''}
+                    <div style="display:flex; justify-content:space-between; margin-top:8px; padding-top:6px; border-top:1px solid var(--card-border);">
+                        <button class="btn-pay" onclick="addPayment(${c.id})">+ إضافة دفعة</button>
+                        <button class="btn-del" onclick="deleteItem('clients', ${c.id})">حذف</button>
+                    </div>
+                </div>
             `).join('');
 
-            // Render Schedule
-            document.getElementById('schedule-tb').innerHTML = db.schedule.map(s => `
-                <tr><td>${s.date}</td><td><b>${s.client}</b></td><td>${s.task}</td>
-                <td><button class="btn-del" onclick="deleteItem('schedule', ${s.id})">حذف</button></td></tr>
+            // Mobile Schedule Cards
+            document.getElementById('schedule-mobile-list').innerHTML = db.schedule.map(s => `
+                <div class="m-card">
+                    <div class="m-card-row"><span class="m-value" style="color:var(--mint);">${s.client}</span><span class="m-label">${s.date}</span></div>
+                    <div class="m-card-row"><span class="m-label">المهمة:</span><span class="m-value">${s.task}</span></div>
+                    <div style="text-align:left; margin-top:6px;"><button class="btn-del" onclick="deleteItem('schedule', ${s.id})">حذف</button></div>
+                </div>
             `).join('');
 
-            // Render Employees
+            // Mobile Team Cards
             document.getElementById('emp-select').innerHTML = db.employees.map((e, i) => `<option value="${i}">${e.name} (${e.role})</option>`).join('');
-            document.getElementById('employees-tb').innerHTML = db.employees.map((e, i) => `
-                <tr>
-                    <td><b>${e.name}</b></td><td>${e.role}</td>
-                    <td><span style="cursor:pointer; text-decoration:underline;" onclick="updateBaseSalary(${i})">${e.baseSalary || 0} ج.م ✏️</span></td>
-                    <td style="color:var(--mint)">${e.paid} ج.م</td>
-                    <td style="color:var(--red)">${(e.baseSalary || 0) - e.paid} ج.م</td>
-                </tr>
+            document.getElementById('team-mobile-list').innerHTML = db.employees.map((e, i) => `
+                <div class="m-card">
+                    <div class="m-card-row"><span class="m-value" style="font-size:13.5px;">${e.name}</span><span class="badge badge-mint">${e.role}</span></div>
+                    <div class="m-card-row"><span class="m-label">الراتب الأساسي:</span><span class="m-value" style="text-decoration:underline;" onclick="updateBaseSalary(${i})">${e.baseSalary || 0} ج.م ✏️</span></div>
+                    <div class="m-card-row"><span class="m-label">المستلم:</span><span class="m-value" style="color:var(--mint);">${e.paid} ج.م</span></div>
+                    <div class="m-card-row"><span class="m-label">المتبقي له:</span><span class="m-value" style="color:var(--red);">${(e.baseSalary || 0) - e.paid} ج.م</span></div>
+                </div>
             `).join('');
 
-            // Render Expenses
-            document.getElementById('expenses-tb').innerHTML = db.expenses.map(e => `
-                <tr><td>${e.title}</td><td>${e.amount} ج.م</td>
-                <td><button class="btn-del" onclick="deleteItem('expenses', ${e.id})">حذف</button></td></tr>
+            // Mobile Expenses Cards
+            document.getElementById('expenses-mobile-list').innerHTML = db.expenses.map(e => `
+                <div class="m-card">
+                    <div class="m-card-row"><span class="m-value">${e.title}</span><span class="m-value" style="color:var(--red);">${e.amount} ج.م</span></div>
+                    <div style="text-align:left; margin-top:4px;"><button class="btn-del" onclick="deleteItem('expenses', ${e.id})">حذف</button></div>
+                </div>
             `).join('');
 
-            // Render Master Table
-            let master = document.getElementById('master-tb');
-            master.innerHTML = '';
-            db.clients.forEach(c => master.innerHTML += `<tr><td><span class="badge badge-mint">عميل</span></td><td>${c.name}</td><td>${c.reels} ريلز - تصوير: ${c.day}</td><td style="color:var(--mint)">${c.paid} ج.م</td><td style="color:var(--red)">متبقي: ${c.salary - c.paid} ج.م</td></tr>`);
-            db.employees.forEach(e => master.innerHTML += `<tr><td><span class="badge badge-red">رواتب</span></td><td>${e.name}</td><td>${e.role}</td><td>-</td><td>مستلم: ${e.paid} ج.م (من أصل ${e.baseSalary || 0})</td></tr>`);
-            db.expenses.forEach(e => master.innerHTML += `<tr><td><span class="badge badge-red">مصروفات</span></td><td>${e.title}</td><td>تجهيزات ومصاريف مكتب</td><td>-</td><td>${e.amount} ج.م</td></tr>`);
+            // Mobile Master List
+            let masterList = document.getElementById('master-mobile-list');
+            masterList.innerHTML = '';
+            db.clients.forEach(c => masterList.innerHTML += `
+                <div class="m-card">
+                    <div class="m-card-row"><span class="badge badge-mint">عميل</span><span class="m-value">${c.name}</span></div>
+                    <div class="m-card-row"><span class="m-label">المحصل:</span><span class="m-value" style="color:var(--mint);">${c.paid} ج.م</span></div>
+                    <div class="m-card-row"><span class="m-label">المتبقي في السوق:</span><span class="m-value" style="color:var(--red);">${c.salary - c.paid} ج.م</span></div>
+                </div>
+            `);
+            db.employees.forEach(e => masterList.innerHTML += `
+                <div class="m-card">
+                    <div class="m-card-row"><span class="badge badge-red">رواتب</span><span class="m-value">${e.name} (${e.role})</span></div>
+                    <div class="m-card-row"><span class="m-label">المبلغ المستلم:</span><span class="m-value" style="color:var(--red);">${e.paid} ج.م</span></div>
+                </div>
+            `);
+            db.expenses.forEach(e => masterList.innerHTML += `
+                <div class="m-card">
+                    <div class="m-card-row"><span class="badge badge-red">مصروفات</span><span class="m-value">${e.title}</span></div>
+                    <div class="m-card-row"><span class="m-label">المبلغ:</span><span class="m-value" style="color:var(--red);">${e.amount} ج.م</span></div>
+                </div>
+            `);
 
             document.getElementById('m-total-rev').innerText = rev.toLocaleString() + " ج.م";
             document.getElementById('m-total-pend').innerText = pend.toLocaleString() + " ج.م";
