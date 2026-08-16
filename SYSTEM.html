@@ -96,6 +96,12 @@
         .summary-item:last-child { border-bottom: none; }
 
         .week-title { color: var(--mint); font-weight: 700; border-right: 3px solid var(--mint); padding-right: 8px; margin: 15px 0 10px 0; font-size: 13px; }
+
+        /* Report Table Styling */
+        .report-table { width: 100%; border-collapse: collapse; margin-bottom: 15px; font-size: 12px; }
+        .report-table th, .report-table td { border: 1px solid var(--card-border); padding: 8px; text-align: center; }
+        .report-table th { background: rgba(20, 36, 138, 0.4); color: var(--mint); font-weight: 600; }
+        .report-table td { background: rgba(0, 0, 0, 0.15); }
     </style>
 </head>
 <body>
@@ -130,7 +136,7 @@
     <!-- TAB: أسابيع الشهر الأربعة -->
     <div id="month-weeks-tab" class="tab-content active">
         <div class="panel">
-            <div class="panel-header">تسكين مواعيد التصوير للأسابيع (يدوي / استثنائي)</div>
+            <div class="panel-header">تسكين مواعيد التصوير للأسابيع (مرتبة بالأيام تلقائياً)</div>
             <form class="form-grid" onsubmit="addMonthlySchedule(event)">
                 <select id="ms-week">
                     <option value="1">الأسبوع الأول</option>
@@ -166,10 +172,10 @@
         </div>
     </div>
 
-    <!-- TAB: العملاء والاشتراكات (مربوط تلقائياً بالجدول) -->
+    <!-- TAB: العملاء والاشتراكات -->
     <div id="clients-tab" class="tab-content">
         <div class="panel">
-            <div class="panel-header">إضافة عميل جديد (سينزل تلقائياً في الجدول الأسبوعي)</div>
+            <div class="panel-header">إضافة عميل جديد (سينزل تلقائياً بالترتيب في الجدول الأسبوعي)</div>
             <form class="form-grid" onsubmit="addClient(event)">
                 <input type="text" id="c-name" placeholder="اسم العميل" required>
                 <input type="tel" id="c-phone" placeholder="رقم الهاتف" required>
@@ -196,13 +202,13 @@
         </div>
     </div>
 
-    <!-- TAB: المهام المطلوبة ومواعيد تسليمها (4 خانات) -->
+    <!-- TAB: المهام المطلوبة ومواعيد تسليمها -->
     <div id="tasks-deliveries-tab" class="tab-content">
         <div class="panel">
             <div class="panel-header">إضافة مهمة موظف جديدة</div>
             <form class="form-grid" onsubmit="addTaskDelivery(event)">
                 <select id="td-emp" required></select>
-                <input type="text" id="td-task" placeholder="شنو المطلوب منه بالضبط؟" required>
+                <input type="text" id="td-task" placeholder="المطلوب منه بالضبط" required>
                 <input type="date" id="td-date" required>
                 <button type="submit" class="btn-add">إضافة المهمة للتسليمات</button>
             </form>
@@ -212,7 +218,7 @@
         </div>
     </div>
 
-    <!-- TAB: مطالبات ونواقص المكتب (قابلة لإعادة الترتيب) -->
+    <!-- TAB: مطالبات ونواقص المكتب -->
     <div id="office-needs-tab" class="tab-content">
         <div class="panel">
             <div class="panel-header">تسجيل مطالبات / نواقص نبي نجيبها للمكتب</div>
@@ -257,16 +263,33 @@
         </div>
     </div>
 
-    <!-- TAB: التقرير النهائي (قابل للتصدير كصورة) -->
+    <!-- TAB: التقرير النهائي المجمع -->
     <div id="master-tab" class="tab-content">
         <div class="panel" id="exportable-report-area" style="background:#28262C; padding:15px;">
             <div style="text-align:center; margin-bottom:15px; border-bottom:1px solid var(--mint); padding-bottom:8px;">
                 <h2 style="color:var(--mint); font-size:16px;">SYSTEM OFFGRID CLOUD AGENCY</h2>
-                <p style="font-size:11px; color:rgba(255,255,255,0.6);">التقرير النهائي المجمع - شامل المواعيد والتسليمات والنواقص</p>
+                <p style="font-size:11px; color:rgba(255,255,255,0.6);">التقرير النهائي المجمع - جدول إحصاء أعداد العملاء بالأسابيع</p>
             </div>
 
-            <div class="panel-header">جدول مواعيد التصوير للأسابيع الأربعة</div>
-            <div id="master-weeks-container" style="margin-bottom:15px;"></div>
+            <!-- الجدول المجمع الجديد لأعداد العملاء بالأيام -->
+            <div class="panel-header">ملخص أعداد العملاء للأسابيع (عدد العملاء في كل يوم)</div>
+            <div style="overflow-x:auto;">
+                <table class="report-table">
+                    <thead>
+                        <tr>
+                            <th>الأسبوع</th>
+                            <th>السبت</th>
+                            <th>الأحد</th>
+                            <th>الإثنين</th>
+                            <th>الثلاثاء</th>
+                            <th>الأربعاء</th>
+                            <th>الخميس</th>
+                            <th>الجمعة</th>
+                        </tr>
+                    </thead>
+                    <tbody id="master-weeks-summary-tbody"></tbody>
+                </table>
+            </div>
 
             <div class="panel-header">تقرير تسليمات المهام (المسلم والمتبقي)</div>
             <div id="master-tasks-container" class="mobile-card-list" style="margin-bottom:15px;"></div>
@@ -287,6 +310,8 @@
     </div>
 
     <script>
+        const daysOrder = ["السبت", "الأحد", "الإثنين", "الثلاثاء", "الأربعاء", "الخميس", "الجمعة"];
+
         let defaultTeam = [
             { name: "الفا", role: "Owner / الشريك المؤسس", isOwner: true, baseSalary: 0, paid: 0 },
             { name: "حمدي", role: "Owner / الشريك المؤسس", isOwner: true, baseSalary: 0, paid: 0 },
@@ -313,7 +338,6 @@
             btn.classList.add('active');
         }
 
-        // إضافة عميل وربطه مباشرة بالجدول الأسبوعي لكل الأسابيع
         function addClient(e) {
             e.preventDefault();
             let name = document.getElementById('c-name').value;
@@ -328,7 +352,6 @@
             let clientId = Date.now();
             db.clients.push({ id: clientId, name, phone, reels, salary, paid, day, delivered, titles });
 
-            // ربط تلقائي بكافة الأسابيع الـ 4
             ['1', '2', '3', '4'].forEach(w => {
                 db.monthSchedule.push({
                     id: Date.now() + Math.random(),
@@ -337,7 +360,7 @@
             });
 
             e.target.reset(); saveDB();
-            alert(`تم حفظ العميل "${name}" وتسكين موعده يوم (${day}) في الجدول لجميع الأسابيع بنجاح!`);
+            alert(`تم حفظ العميل "${name}" وتسكين موعده يوم (${day}) بنجاح!`);
         }
 
         function addMonthlySchedule(e) {
@@ -359,7 +382,6 @@
             e.target.reset(); saveDB();
         }
 
-        // إضافة مهمة موظف للخانات الأربعة
         function addTaskDelivery(e) {
             e.preventDefault();
             db.taskDeliveries.push({
@@ -377,7 +399,6 @@
             if (task) { task.delivered = !task.delivered; saveDB(); }
         }
 
-        // إضافة مطالبات ونواقص المكتب
         function addOfficeNeed(e) {
             e.preventDefault();
             db.officeNeeds.push({
@@ -442,26 +463,27 @@
             document.getElementById('total-salaries').innerText = empPaidTotal.toLocaleString() + " / " + empBaseTotal.toLocaleString();
             document.getElementById('net-income').innerText = netIncome.toLocaleString() + " ج.م";
 
-            // Populate Employee Selects
             let empOptions = db.employees.map(e => `<option value="${e.name}">${e.name} (${e.role})</option>`).join('');
             document.getElementById('td-emp').innerHTML = empOptions;
             document.getElementById('emp-select').innerHTML = db.employees.map((e, i) => `<option value="${i}">${e.name} (${e.role})</option>`).join('');
 
-            // Render 4 Weeks Schedule
+            // 1. Render 4 Weeks Schedule (Sorted by Days)
             let weeksContainer = document.getElementById('weeks-container');
-            let masterWeeksContainer = document.getElementById('master-weeks-container');
-            weeksContainer.innerHTML = ''; masterWeeksContainer.innerHTML = '';
+            weeksContainer.innerHTML = '';
             
             const weekNames = { '1': 'الأسبوع الأول', '2': 'الأسبوع الثاني', '3': 'الأسبوع الثالث', '4': 'الأسبوع الرابع' };
             
             ['1', '2', '3', '4'].forEach(wNum => {
                 let items = db.monthSchedule.filter(m => m.week === wNum);
+                
+                // Sort items according to daysOrder
+                items.sort((a, b) => daysOrder.indexOf(a.day) - daysOrder.indexOf(b.day));
+
                 let weekHeader = `<div class="week-title">${weekNames[wNum]}</div>`;
-                weeksContainer.innerHTML += weekHeader; masterWeeksContainer.innerHTML += weekHeader;
+                weeksContainer.innerHTML += weekHeader;
                 
                 if(items.length === 0) {
-                    let emptyMsg = `<div style="color:rgba(255,255,255,0.4); font-size:11px; margin-bottom:10px;">لا توجد مواعيد مسجلة</div>`;
-                    weeksContainer.innerHTML += emptyMsg; masterWeeksContainer.innerHTML += emptyMsg;
+                    weeksContainer.innerHTML += `<div style="color:rgba(255,255,255,0.4); font-size:11px; margin-bottom:10px;">لا توجد مواعيد مسجلة</div>`;
                 } else {
                     let listHtml = items.map(item => `
                         <div class="m-card ${item.type === 'exceptional' ? 'exceptional' : ''}">
@@ -469,41 +491,50 @@
                                 <span class="m-value" style="color:${item.type === 'exceptional' ? '#ff5252' : 'var(--mint)'}">${item.client}</span>
                                 ${item.type === 'exceptional' ? '<span class="badge badge-red">استثنائي 🚨</span>' : '<span class="badge badge-mint">ثابت</span>'}
                             </div>
-                            <div class="m-card-row"><span class="m-label">يوم التصوير:</span><span class="m-value">${item.day}</span></div>
+                            <div class="m-card-row"><span class="m-label">يوم التصوير:</span><span class="m-value" style="color:var(--gold);">${item.day}</span></div>
                             <div class="m-card-row"><span class="m-label">المهمة:</span><span class="m-value">${item.task}</span></div>
                             <div style="text-align:left; margin-top:4px;"><button class="btn-del" onclick="deleteItem('monthSchedule', ${item.id})">حذف الموعد</button></div>
                         </div>
                     `).join('');
 
-                    let masterListHtml = items.map(item => `
-                        <div class="m-card ${item.type === 'exceptional' ? 'exceptional' : ''}">
-                            <div class="m-card-row"><span class="m-value" style="color:${item.type === 'exceptional' ? '#ff5252' : 'var(--mint)'}">${item.client}</span><span>${item.day}</span></div>
-                            <div class="m-card-row"><span class="m-label">المهمة:</span><span class="m-value">${item.task}</span></div>
-                        </div>
-                    `).join('');
-
                     weeksContainer.innerHTML += `<div class="mobile-card-list" style="margin-bottom:15px;">${listHtml}</div>`;
-                    masterWeeksContainer.innerHTML += `<div class="mobile-card-list" style="margin-bottom:15px;">${masterListHtml}</div>`;
                 }
             });
 
-            // Render Tasks & Deliveries (الخانات الأربعة)
+            // 2. Render Master Report Summary Table (Client Counts Per Day)
+            let masterTbody = document.getElementById('master-weeks-summary-tbody');
+            masterTbody.innerHTML = '';
+            
+            ['1', '2', '3', '4'].forEach(wNum => {
+                let weekItems = db.monthSchedule.filter(m => m.week === wNum);
+                let rowHtml = `<tr><td style="font-weight:bold; color:var(--mint);">${weekNames[wNum]}</td>`;
+                
+                daysOrder.forEach(day => {
+                    let count = weekItems.filter(i => i.day === day).length;
+                    rowHtml += `<td style="${count > 0 ? 'color:var(--gold); font-weight:bold;' : 'color:rgba(255,255,255,0.3);'}">${count} عملاء</td>`;
+                });
+                
+                rowHtml += `</tr>`;
+                masterTbody.innerHTML += rowHtml;
+            });
+
+            // 3. Render Tasks & Deliveries
             let tasksList = document.getElementById('tasks-mobile-list');
             let masterTasksContainer = document.getElementById('master-tasks-container');
             tasksList.innerHTML = ''; masterTasksContainer.innerHTML = '';
 
             if (db.taskDeliveries.length === 0) {
-                tasksList.innerHTML = `<div style="color:rgba(255,255,255,0.4); font-size:11px;">لا توجد مهام مسجلة حتى الآن</div>`;
+                tasksList.innerHTML = `<div style="color:rgba(255,255,255,0.4); font-size:11px;">لا توجد مهام مسجلة</div>`;
                 masterTasksContainer.innerHTML = `<div style="color:rgba(255,255,255,0.4); font-size:11px;">لا توجد مهام تسليم مسجلة</div>`;
             } else {
                 db.taskDeliveries.forEach(t => {
-                    let cardHtml = `
+                    tasksList.innerHTML += `
                         <div class="m-card" style="border-right: 4px solid ${t.delivered ? 'var(--mint)' : 'var(--red)'};">
-                            <div class="m-card-row"><span class="m-label">1. اسم الموظف:</span><span class="m-value" style="color:var(--gold);">${t.empName}</span></div>
-                            <div class="m-card-row"><span class="m-label">2. المطلوب منه:</span><span class="m-value">${t.task}</span></div>
+                            <div class="m-card-row"><span class="m-label">1. الموظف:</span><span class="m-value" style="color:var(--gold);">${t.empName}</span></div>
+                            <div class="m-card-row"><span class="m-label">2. المطلوب:</span><span class="m-value">${t.task}</span></div>
                             <div class="m-card-row"><span class="m-label">3. ميعاد التسليم:</span><span class="m-value">${t.dueDate}</span></div>
                             <div class="m-card-row">
-                                <span class="m-label">4. حالة التسليم:</span>
+                                <span class="m-label">4. الحالة:</span>
                                 <span class="badge ${t.delivered ? 'badge-mint' : 'badge-red'}">${t.delivered ? '✅ تم التسليم للعميل' : '❌ لم يتم التسليم'}</span>
                             </div>
                             <div style="display:flex; justify-content:space-between; margin-top:8px; padding-top:6px; border-top:1px solid var(--card-border);">
@@ -512,9 +543,7 @@
                             </div>
                         </div>
                     `;
-                    tasksList.innerHTML += cardHtml;
 
-                    // Master Version (without buttons)
                     masterTasksContainer.innerHTML += `
                         <div class="m-card" style="border-right: 4px solid ${t.delivered ? 'var(--mint)' : 'var(--red)'};">
                             <div class="m-card-row"><span class="m-value">${t.empName}</span><span class="badge ${t.delivered ? 'badge-mint' : 'badge-red'}">${t.delivered ? 'تم التسليم للعميل' : 'لم يتم التسليم'}</span></div>
@@ -525,14 +554,14 @@
                 });
             }
 
-            // Render Office Needs (مع إمكانية إعادة الترتيب)
+            // 4. Render Office Needs
             let needsList = document.getElementById('needs-mobile-list');
             let masterNeedsContainer = document.getElementById('master-needs-container');
             needsList.innerHTML = ''; masterNeedsContainer.innerHTML = '';
 
             if (db.officeNeeds.length === 0) {
-                needsList.innerHTML = `<div style="color:rgba(255,255,255,0.4); font-size:11px;">لا توجد مطالبات أو نواقص مسجلة</div>`;
-                masterNeedsContainer.innerHTML = `<div style="color:rgba(255,255,255,0.4); font-size:11px;">لا توجد نواقص مطاوبة</div>`;
+                needsList.innerHTML = `<div style="color:rgba(255,255,255,0.4); font-size:11px;">لا توجد مطالبات أو نواقص</div>`;
+                masterNeedsContainer.innerHTML = `<div style="color:rgba(255,255,255,0.4); font-size:11px;">لا توجد نواقص مطلوبة</div>`;
             } else {
                 db.officeNeeds.forEach((item, index) => {
                     needsList.innerHTML += `
@@ -562,7 +591,7 @@
                 });
             }
 
-            // Render Clients List
+            // 5. Render Clients List
             document.getElementById('clients-mobile-list').innerHTML = db.clients.map(c => `
                 <div class="m-card">
                     <div class="m-card-row"><span class="m-value" style="font-size:14px; color:var(--mint);">${c.name}</span><span class="m-label">${c.phone}</span></div>
@@ -578,7 +607,7 @@
                 </div>
             `).join('');
 
-            // Render Team Cards
+            // 6. Render Team Cards
             document.getElementById('team-mobile-list').innerHTML = db.employees.map((e, i) => `
                 <div class="m-card">
                     <div class="m-card-row">
@@ -591,7 +620,7 @@
                 </div>
             `).join('');
 
-            // Render Expenses Cards
+            // 7. Render Expenses Cards
             document.getElementById('expenses-mobile-list').innerHTML = db.expenses.map(e => `
                 <div class="m-card">
                     <div class="m-card-row"><span class="m-value">${e.title}</span><span class="m-value" style="color:var(--red);">${e.amount} ج.م</span></div>
@@ -599,7 +628,7 @@
                 </div>
             `).join('');
 
-            // Render Master Report List
+            // 8. Render Master Report Financial List
             let masterList = document.getElementById('master-mobile-list');
             masterList.innerHTML = '';
             db.clients.forEach(c => masterList.innerHTML += `
