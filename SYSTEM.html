@@ -43,6 +43,7 @@
         .kpi-card::before { content: ''; position: absolute; top: 0; right: 0; width: 4px; height: 100%; background: var(--mint); }
         .kpi-card.red::before { background: var(--red); }
         .kpi-card.blue::before { background: var(--cobalt); }
+        .kpi-card.gold::before { background: var(--gold); }
         .kpi-card.full-width { grid-column: span 2; }
         .kpi-card h3 { font-size: 10px; color: rgba(249, 245, 255, 0.6); margin-bottom: 4px; }
         .kpi-card p { font-size: 15px; font-weight: 700; color: var(--lavender); }
@@ -90,7 +91,6 @@
         
         .btn-del { background: rgba(193, 41, 46, 0.2); color: var(--red); border: 1px solid var(--red); padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 11px; }
         .btn-pay { background: rgba(78, 166, 153, 0.2); color: var(--mint); border: 1px solid var(--mint); padding: 4px 8px; border-radius: 4px; cursor: pointer; font-weight: 600; font-size: 11px; }
-        .btn-move { background: rgba(255,255,255,0.1); border: 1px solid var(--card-border); color: white; padding: 2px 6px; border-radius: 4px; cursor: pointer; font-size: 12px; }
 
         .summary-card { background: rgba(0, 0, 0, 0.4); border: 1px solid var(--mint); border-radius: 8px; padding: 12px; margin-top: 10px; }
         .summary-item { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid var(--card-border); }
@@ -120,11 +120,11 @@
     </header>
 
     <div class="kpi-grid">
-        <div class="kpi-card"><h3>إجمالي المحصل</h3><p id="total-revenue">0 ج.م</p></div>
+        <div class="kpi-card"><h3>إجمالي المحصل الكلي</h3><p id="total-revenue">0 ج.م</p></div>
         <div class="kpi-card red"><h3>المتبقي في السوق</h3><p id="total-pending">0 ج.م</p></div>
+        <div class="kpi-card gold"><h3>دخل هذا الأسبوع</h3><p id="weekly-expected-income">0 ج.م</p></div>
         <div class="kpi-card red"><h3>المصروفات والرواتب</h3><p id="total-expenses">0 ج.م</p></div>
-        <div class="kpi-card blue"><h3>رواتب الموظفين</h3><p id="total-salaries">0 ج.م</p></div>
-        <div class="kpi-card blue full-width"><h3>صافي دخل المكتب التقديري</h3><p id="net-income">0 ج.م</p></div>
+        <div class="kpi-card blue full-width"><h3>صافي دخل المكتب الإجمالي</h3><p id="net-income">0 ج.م</p></div>
     </div>
 
     <div class="tabs-nav">
@@ -138,7 +138,7 @@
         <button class="tab-btn" onclick="switchTab('master-tab', this)">📊 التقرير المجمع</button>
     </div>
 
-    <!-- TAB: الدخل والخدمات اليومية (جديد) -->
+    <!-- TAB: الدخل والخدمات اليومية -->
     <div id="daily-income-tab" class="tab-content active">
         <div class="panel">
             <div class="panel-header">تسجيل خدمة / دخل يومي جديد (مربوط بالمهام)</div>
@@ -154,11 +154,11 @@
                     <option value="الجمعة">الجمعة</option>
                 </select>
                 <input type="text" id="di-client" placeholder="اسم العميل" required>
-                <input type="text" id="di-service" placeholder="نوع الخدمة المطلوبة (مثال: تصميم كارت NFC / المونتاج)" required>
+                <input type="text" id="di-service" placeholder="نوع الخدمة المطلوبة" required>
                 <select id="di-emp" required></select>
                 <input type="date" id="di-date" placeholder="تاريخ ميعاد التسليم" required>
                 <input type="number" id="di-cost" placeholder="تكلفة الخدمة (المبلغ المستلم)" required>
-                <button type="submit" class="btn-add">حفظ الخدمة وتسكينها لمهمة الموظف 🚀</button>
+                <button type="submit" class="btn-add">حفظ الخدمة وتسكينها 🚀</button>
             </form>
 
             <div class="panel-header" style="margin-top:20px;">سجل الدخل والخدمات اليومية</div>
@@ -169,7 +169,7 @@
     <!-- TAB: أسابيع الشهر الأربعة -->
     <div id="month-weeks-tab" class="tab-content">
         <div class="panel">
-            <div class="panel-header">تسكين مواعيد التصوير للأسابيع (مرتبة بالأيام تلقائياً)</div>
+            <div class="panel-header">تسكين مواعيد التصوير للأسابيع</div>
             <form class="form-grid" onsubmit="addMonthlySchedule(event)">
                 <select id="ms-week">
                     <option value="1">الأسبوع الأول</option>
@@ -214,7 +214,8 @@
                 <input type="tel" id="c-phone" placeholder="رقم الهاتف" required>
                 <input type="number" id="c-reels" placeholder="عدد الريلز المطلوبة" required>
                 <input type="number" id="c-salary" placeholder="إجمالي المبلغ الاتفاق" required>
-                <input type="number" id="c-paid" placeholder="الدفعة الأولى" required>
+                <input type="number" id="c-paid" placeholder="الدفعة الأولى المستلمة" required>
+                <input type="date" id="c-refund-date" placeholder="ميعاد استرداد الفلوس المتبقية في السوق">
                 <select id="c-day" required>
                     <option value="" disabled selected>اختر يوم التصوير الأسبوعي الثابت</option>
                     <option value="السبت">السبت</option>
@@ -230,7 +231,7 @@
                 <button type="submit" class="btn-add">حفظ العميل وتنزيله في جدول الأسابيع 🔄</button>
             </form>
 
-            <div class="panel-header" style="margin-top:20px;">قائمة العملاء الحالية</div>
+            <div class="panel-header" style="margin-top:20px;">قائمة العملاء الحالية ومواعيد الاسترداد</div>
             <div id="clients-mobile-list" class="mobile-card-list"></div>
         </div>
     </div>
@@ -254,7 +255,7 @@
     <!-- TAB: مطالبات ونواقص المكتب -->
     <div id="office-needs-tab" class="tab-content">
         <div class="panel">
-            <div class="panel-header">تسجيل مطالبات / نواقص نبي نجيبها للمكتب</div>
+            <div class="panel-header">تسجيل مطالبات / نواقص للمكتب</div>
             <form class="form-grid" onsubmit="addOfficeNeed(event)">
                 <input type="text" id="on-item" placeholder="اسم الغرض / الأداة المطلوبة" required>
                 <input type="number" id="on-cost" placeholder="السعر التقديري (اختياري)">
@@ -305,7 +306,7 @@
             </div>
 
             <div class="panel-header">
-                <span>جدول بيانات تفاصيل الأسبوع</span>
+                <span>عرض تفاصيل الأسبوع وتكلفة دخله:</span>
                 <select id="report-week-select" style="width: 130px; padding: 4px 8px; font-size: 11px;" onchange="renderAll()">
                     <option value="1">الأسبوع الأول</option>
                     <option value="2">الأسبوع الثاني</option>
@@ -325,6 +326,7 @@
                             <th>الاتفاق</th>
                             <th>المستلم</th>
                             <th>المتبقي فلوس</th>
+                            <th>تاريخ الاسترداد</th>
                         </tr>
                     </thead>
                     <tbody id="master-weekly-details-tbody"></tbody>
@@ -344,10 +346,11 @@
             <div id="master-mobile-list" class="mobile-card-list"></div>
 
             <div class="summary-card">
-                <div class="summary-item"><span>إجمالي المحصل:</span><span id="m-total-rev" style="color:var(--mint); font-weight:bold;">0 ج.م</span></div>
-                <div class="summary-item"><span>ديون لدى العملاء:</span><span id="m-total-pend" style="color:var(--red); font-weight:bold;">0 ج.م</span></div>
+                <div class="summary-item"><span>إجمالي المحصل الكلي:</span><span id="m-total-rev" style="color:var(--mint); font-weight:bold;">0 ج.م</span></div>
+                <div class="summary-item"><span>دخل هذا الأسبوع المختار:</span><span id="m-week-income" style="color:var(--gold); font-weight:bold;">0 ج.م</span></div>
+                <div class="summary-item"><span>ديون متبقية لدى العملاء (السوق):</span><span id="m-total-pend" style="color:var(--red); font-weight:bold;">0 ج.م</span></div>
                 <div class="summary-item"><span>إجمالي المصاريف والرواتب:</span><span id="m-total-exp" style="color:var(--red); font-weight:bold;">0 ج.م</span></div>
-                <div class="summary-item"><span>صافي الأرباح المتبقية:</span><span id="m-net-income" style="color:var(--gold); font-weight:bold;">0 ج.م</span></div>
+                <div class="summary-item"><span>صافي الأرباح الكلية المتبقية:</span><span id="m-net-income" style="color:var(--mint); font-weight:bold;">0 ج.م</span></div>
             </div>
         </div>
     </div>
@@ -448,7 +451,6 @@
             btn.classList.add('active');
         }
 
-        // إضافة خدمة اليوم والدخل اليومي وربطها بالمهام تلقائياً
         function addDailyIncome(e) {
             e.preventDefault();
             let day = document.getElementById('di-day').value;
@@ -465,7 +467,6 @@
                 day, client, service, empName, dueDate, cost
             });
 
-            // ربط تلقائي بقسم المهام والتسليمات
             db.taskDeliveries.push({
                 id: Date.now() + 1,
                 dailyRefId: incomeId,
@@ -476,7 +477,7 @@
             });
 
             e.target.reset(); saveDB();
-            alert("تم تسكيل الخدمة اليومية وإضافتها لمهام الموظف بنجاح 🚀");
+            alert("تم تسجيل الخدمة وتسكينها لمهام الموظف بنجاح 🚀");
         }
 
         function deleteDailyIncome(id) {
@@ -492,12 +493,13 @@
             let reels = +document.getElementById('c-reels').value;
             let salary = +document.getElementById('c-salary').value;
             let paid = +document.getElementById('c-paid').value;
+            let refundDate = document.getElementById('c-refund-date').value || 'غير محدد';
             let day = document.getElementById('c-day').value;
             let delivered = +document.getElementById('c-delivered').value || 0;
             let titles = document.getElementById('c-titles').value;
 
             let clientId = Date.now();
-            db.clients.push({ id: clientId, name, phone, reels, salary, paid, day, delivered, titles });
+            db.clients.push({ id: clientId, name, phone, reels, salary, paid, refundDate, day, delivered, titles });
 
             ['1', '2', '3', '4'].forEach(w => {
                 db.monthSchedule.push({
@@ -507,7 +509,18 @@
             });
 
             e.target.reset(); saveDB();
-            alert(`تم حفظ العميل "${name}" وتسكين موعده بنجاح!`);
+            alert(`تم حفظ العميل "${name}" وتحديد ميعاد استرداد المتبقي!`);
+        }
+
+        function updateRefundDate(clientId) {
+            let client = db.clients.find(c => c.id === clientId);
+            if (client) {
+                let newDate = prompt("تعديل تاريخ استرداد الفلوس المتبقية (YYYY-MM-DD):", client.refundDate || '');
+                if (newDate !== null) {
+                    client.refundDate = newDate || 'غير محدد';
+                    saveDB();
+                }
+            }
         }
 
         function addMonthlySchedule(e) {
@@ -556,16 +569,6 @@
             e.target.reset(); saveDB();
         }
 
-        function moveNeed(index, direction) {
-            let targetIndex = index + direction;
-            if (targetIndex >= 0 && targetIndex < db.officeNeeds.length) {
-                let temp = db.officeNeeds[index];
-                db.officeNeeds[index] = db.officeNeeds[targetIndex];
-                db.officeNeeds[targetIndex] = temp;
-                saveDB();
-            }
-        }
-
         function addPayment(clientId) {
             let amount = prompt("أدخل الدفعة المستلمة الجديدة:");
             if (amount && !isNaN(amount) && +amount > 0) {
@@ -602,15 +605,26 @@
 
             let pend = db.clients.reduce((a, b) => a + (b.salary - b.paid), 0);
             let empPaidTotal = db.employees.reduce((a, b) => a + b.paid, 0);
-            let empBaseTotal = db.employees.reduce((a, b) => a + (b.baseSalary || 0), 0);
             let expOffice = db.expenses.reduce((a, b) => a + b.amount, 0);
             let totalExp = expOffice + empPaidTotal;
             let netIncome = rev - totalExp;
+
+            // حساب دخل الأسبوع المختار بالتفصيل
+            let selectedWeek = document.getElementById('report-week-select') ? document.getElementById('report-week-select').value : '1';
+            let selectedWeekClients = db.monthSchedule.filter(m => m.week === selectedWeek).map(m => m.client.trim());
+            let currentWeekClientIncome = 0;
             
+            db.clients.forEach(c => {
+                if (selectedWeekClients.includes(c.name.trim())) {
+                    currentWeekClientIncome += (c.paid / 4); // توزيع متوسط دخل العميل على الأسابيع الأربعة
+                }
+            });
+            let weeklyExpectedIncome = currentWeekClientIncome + dailyRev;
+
             document.getElementById('total-revenue').innerText = rev.toLocaleString() + " ج.م";
             document.getElementById('total-pending').innerText = pend.toLocaleString() + " ج.م";
+            document.getElementById('weekly-expected-income').innerText = Math.round(weeklyExpectedIncome).toLocaleString() + " ج.م";
             document.getElementById('total-expenses').innerText = totalExp.toLocaleString() + " ج.م";
-            document.getElementById('total-salaries').innerText = empPaidTotal.toLocaleString() + " / " + empBaseTotal.toLocaleString();
             document.getElementById('net-income').innerText = netIncome.toLocaleString() + " ج.م";
 
             let empOptions = db.employees.map(e => `<option value="${e.name}">${e.name} (${e.role})</option>`).join('');
@@ -618,39 +632,33 @@
             document.getElementById('td-emp').innerHTML = empOptions;
             document.getElementById('emp-select').innerHTML = db.employees.map((e, i) => `<option value="${i}">${e.name} (${e.role})</option>`).join('');
 
-            // Render Daily Income Tab
+            // Render Daily Income
             let dailyList = document.getElementById('daily-income-mobile-list');
             let masterDailyContainer = document.getElementById('master-daily-container');
             dailyList.innerHTML = ''; masterDailyContainer.innerHTML = '';
 
-            if (db.dailyIncome.length === 0) {
-                dailyList.innerHTML = `<div style="color:rgba(255,255,255,0.4); font-size:11px;">لا يوجد دخل أو خدمات يومية مسجلة</div>`;
-                masterDailyContainer.innerHTML = `<div style="color:rgba(255,255,255,0.4); font-size:11px;">لا توجد خدمات يومية مسجلة</div>`;
-            } else {
-                db.dailyIncome.forEach(di => {
-                    dailyList.innerHTML += `
-                        <div class="m-card">
-                            <div class="m-card-row"><span class="m-value" style="color:var(--mint); font-size:13px;">${di.client}</span><span class="badge badge-gold">${di.day}</span></div>
-                            <div class="m-card-row"><span class="m-label">الخدمة:</span><span class="m-value">${di.service}</span></div>
-                            <div class="m-card-row"><span class="m-label">القائم بالخدمة:</span><span class="m-value" style="color:var(--gold);">${di.empName}</span></div>
-                            <div class="m-card-row"><span class="m-label">تاريخ التسليم:</span><span class="m-value">${di.dueDate}</span></div>
-                            <div class="m-card-row"><span class="m-label">تكلفة الخدمة:</span><span class="m-value" style="color:var(--mint);">${di.cost.toLocaleString()} ج.م</span></div>
-                            <div style="text-align:left; margin-top:6px;"><button class="btn-del" onclick="deleteDailyIncome(${di.id})">حذف الخدمة</button></div>
-                        </div>
-                    `;
+            db.dailyIncome.forEach(di => {
+                dailyList.innerHTML += `
+                    <div class="m-card">
+                        <div class="m-card-row"><span class="m-value" style="color:var(--mint); font-size:13px;">${di.client}</span><span class="badge badge-gold">${di.day}</span></div>
+                        <div class="m-card-row"><span class="m-label">الخدمة:</span><span class="m-value">${di.service}</span></div>
+                        <div class="m-card-row"><span class="m-label">القائم بالخدمة:</span><span class="m-value" style="color:var(--gold);">${di.empName}</span></div>
+                        <div class="m-card-row"><span class="m-label">تاريخ التسليم:</span><span class="m-value">${di.dueDate}</span></div>
+                        <div class="m-card-row"><span class="m-label">تكلفة الخدمة:</span><span class="m-value" style="color:var(--mint);">${di.cost.toLocaleString()} ج.م</span></div>
+                        <div style="text-align:left; margin-top:6px;"><button class="btn-del" onclick="deleteDailyIncome(${di.id})">حذف الخدمة</button></div>
+                    </div>
+                `;
 
-                    masterDailyContainer.innerHTML += `
-                        <div class="m-card">
-                            <div class="m-card-row"><span class="m-value">${di.client} (${di.day})</span><span style="color:var(--mint); font-weight:bold;">${di.cost.toLocaleString()} ج.م</span></div>
-                            <div class="m-card-row"><span class="m-label">الخدمة:</span><span class="m-value">${di.service}</span></div>
-                            <div class="m-card-row"><span class="m-label">المسؤول:</span><span class="m-value">${di.empName}</span></div>
-                            <div class="m-card-row"><span class="m-label">التسليم:</span><span class="m-value">${di.dueDate}</span></div>
-                        </div>
-                    `;
-                });
-            }
+                masterDailyContainer.innerHTML += `
+                    <div class="m-card">
+                        <div class="m-card-row"><span class="m-value">${di.client} (${di.day})</span><span style="color:var(--mint); font-weight:bold;">${di.cost.toLocaleString()} ج.م</span></div>
+                        <div class="m-card-row"><span class="m-label">الخدمة:</span><span class="m-value">${di.service}</span></div>
+                        <div class="m-card-row"><span class="m-label">المسؤول:</span><span class="m-value">${di.empName}</span></div>
+                    </div>
+                `;
+            });
 
-            // 1. Render 4 Weeks Schedule
+            // Render 4 Weeks Schedule
             let weeksContainer = document.getElementById('weeks-container');
             weeksContainer.innerHTML = '';
             const weekNames = { '1': 'الأسبوع الأول', '2': 'الأسبوع الثاني', '3': 'الأسبوع الثالث', '4': 'الأسبوع الرابع' };
@@ -659,8 +667,7 @@
                 let items = db.monthSchedule.filter(m => m.week === wNum);
                 items.sort((a, b) => daysOrder.indexOf(a.day) - daysOrder.indexOf(b.day));
 
-                let weekHeader = `<div class="week-title">${weekNames[wNum]}</div>`;
-                weeksContainer.innerHTML += weekHeader;
+                weeksContainer.innerHTML += `<div class="week-title">${weekNames[wNum]}</div>`;
                 
                 if(items.length === 0) {
                     weeksContainer.innerHTML += `<div style="color:rgba(255,255,255,0.4); font-size:11px; margin-bottom:10px;">لا توجد مواعيد مسجلة</div>`;
@@ -681,8 +688,7 @@
                 }
             });
 
-            // 2. Render Weekly Detailed Report Table
-            let selectedWeek = document.getElementById('report-week-select').value;
+            // Render Table for Master Weekly Details
             let masterWeeklyTbody = document.getElementById('master-weekly-details-tbody');
             masterWeeklyTbody.innerHTML = '';
 
@@ -690,7 +696,7 @@
             weekItems.sort((a, b) => daysOrder.indexOf(a.day) - daysOrder.indexOf(b.day));
 
             if (weekItems.length === 0) {
-                masterWeeklyTbody.innerHTML = `<tr><td colspan="7" style="color:rgba(255,255,255,0.4);">لا توجد مواعيد تسكين في هذا الأسبوع</td></tr>`;
+                masterWeeklyTbody.innerHTML = `<tr><td colspan="8" style="color:rgba(255,255,255,0.4);">لا توجد مواعيد تسكين في هذا الأسبوع</td></tr>`;
             } else {
                 weekItems.forEach(item => {
                     let clientObj = db.clients.find(c => c.name.trim() === item.client.trim());
@@ -700,8 +706,9 @@
                     let totalSalary = clientObj ? clientObj.salary : 0;
                     let totalPaid = clientObj ? clientObj.paid : 0;
                     let totalPending = totalSalary - totalPaid;
+                    let refundDate = clientObj ? (clientObj.refundDate || 'غير محدد') : '-';
 
-                    let rowHtml = `
+                    masterWeeklyTbody.innerHTML += `
                         <tr>
                             <td style="font-weight:bold; color:var(--mint);">${item.client}</td>
                             <td style="color:var(--gold); font-weight:bold;">${item.day}</td>
@@ -710,94 +717,21 @@
                             <td>${totalSalary.toLocaleString()}</td>
                             <td style="color:var(--mint); font-weight:bold;">${totalPaid.toLocaleString()}</td>
                             <td style="color:var(--red); font-weight:bold;">${totalPending.toLocaleString()}</td>
+                            <td style="color:var(--gold);">${refundDate}</td>
                         </tr>
                     `;
-                    masterWeeklyTbody.innerHTML += rowHtml;
                 });
             }
 
-            // 3. Render Tasks & Deliveries
-            let tasksList = document.getElementById('tasks-mobile-list');
-            let masterTasksContainer = document.getElementById('master-tasks-container');
-            tasksList.innerHTML = ''; masterTasksContainer.innerHTML = '';
-
-            if (db.taskDeliveries.length === 0) {
-                tasksList.innerHTML = `<div style="color:rgba(255,255,255,0.4); font-size:11px;">لا توجد مهام مسجلة</div>`;
-                masterTasksContainer.innerHTML = `<div style="color:rgba(255,255,255,0.4); font-size:11px;">لا توجد مهام تسليم مسجلة</div>`;
-            } else {
-                db.taskDeliveries.forEach(t => {
-                    tasksList.innerHTML += `
-                        <div class="m-card" style="border-right: 4px solid ${t.delivered ? 'var(--mint)' : 'var(--red)'};">
-                            <div class="m-card-row"><span class="m-label">1. الموظف:</span><span class="m-value" style="color:var(--gold);">${t.empName}</span></div>
-                            <div class="m-card-row"><span class="m-label">2. المطلـوب:</span><span class="m-value">${t.task}</span></div>
-                            <div class="m-card-row"><span class="m-label">3. ميعاد التسليم:</span><span class="m-value">${t.dueDate}</span></div>
-                            <div class="m-card-row">
-                                <span class="m-label">4. الحالة:</span>
-                                <span class="badge ${t.delivered ? 'badge-mint' : 'badge-red'}">${t.delivered ? '✅ تم التسليم للعميل' : '❌ لم يتم التسليم'}</span>
-                            </div>
-                            <div style="display:flex; justify-content:space-between; margin-top:8px; padding-top:6px; border-top:1px solid var(--card-border);">
-                                <button class="btn-pay" onclick="toggleTaskDelivery(${t.id})">${t.delivered ? 'إعادة لـ لم يتم التسليم' : 'تحويل لـ تم التسليم للعميل 🚀'}</button>
-                                <button class="btn-del" onclick="deleteItem('taskDeliveries', ${t.id})">حذف</button>
-                            </div>
-                        </div>
-                    `;
-
-                    masterTasksContainer.innerHTML += `
-                        <div class="m-card" style="border-right: 4px solid ${t.delivered ? 'var(--mint)' : 'var(--red)'};">
-                            <div class="m-card-row"><span class="m-value">${t.empName}</span><span class="badge ${t.delivered ? 'badge-mint' : 'badge-red'}">${t.delivered ? 'تم التسليم للعميل' : 'لم يتم التسليم'}</span></div>
-                            <div class="m-card-row"><span class="m-label">المهمة:</span><span class="m-value">${t.task}</span></div>
-                            <div class="m-card-row"><span class="m-label">موعد التسليم:</span><span class="m-value">${t.dueDate}</span></div>
-                        </div>
-                    `;
-                });
-            }
-
-            // 4. Render Office Needs
-            let needsList = document.getElementById('needs-mobile-list');
-            let masterNeedsContainer = document.getElementById('master-needs-container');
-            needsList.innerHTML = ''; masterNeedsContainer.innerHTML = '';
-
-            if (db.officeNeeds.length === 0) {
-                needsList.innerHTML = `<div style="color:rgba(255,255,255,0.4); font-size:11px;">لا توجد مطالبات أو نواقص</div>`;
-                masterNeedsContainer.innerHTML = `<div style="color:rgba(255,255,255,0.4); font-size:11px;">لا توجد نواقص مطلوبة</div>`;
-            } else {
-                db.officeNeeds.forEach((item, index) => {
-                    needsList.innerHTML += `
-                        <div class="m-card">
-                            <div class="m-card-row">
-                                <span class="m-value" style="font-size:13px; color:var(--mint);">${index + 1}. ${item.item}</span>
-                                <span class="m-value" style="color:var(--gold);">${item.cost ? item.cost + ' ج.م' : 'غير محدد'}</span>
-                            </div>
-                            <div style="display:flex; justify-content:space-between; margin-top:8px; padding-top:6px; border-top:1px solid var(--card-border);">
-                                <div>
-                                    <button class="btn-move" onclick="moveNeed(${index}, -1)">⬆️ أعلى</button>
-                                    <button class="btn-move" onclick="moveNeed(${index}, 1)">⬇️ أسفل</button>
-                                </div>
-                                <button class="btn-del" onclick="deleteItem('officeNeeds', ${item.id})">تم الشراء/حذف</button>
-                            </div>
-                        </div>
-                    `;
-
-                    masterNeedsContainer.innerHTML += `
-                        <div class="m-card">
-                            <div class="m-card-row">
-                                <span>${index + 1}. ${item.item}</span>
-                                <span style="color:var(--gold);">${item.cost ? item.cost + ' ج.م' : '-'}</span>
-                            </div>
-                        </div>
-                    `;
-                });
-            }
-
-            // 5. Render Clients List
+            // Render Clients List with Refund Date
             document.getElementById('clients-mobile-list').innerHTML = db.clients.map(c => `
                 <div class="m-card">
                     <div class="m-card-row"><span class="m-value" style="font-size:14px; color:var(--mint);">${c.name}</span><span class="m-label">${c.phone}</span></div>
                     <div class="m-card-row"><span class="m-label">يوم التصوير الثابت:</span><span class="m-value" style="color:var(--gold);">${c.day}</span></div>
-                    <div class="m-card-row"><span class="m-label">الريلز (المسلم / المطلوب):</span><span class="m-value">${c.delivered} / ${c.reels} (متبقي ${c.reels - c.delivered})</span></div>
+                    <div class="m-card-row"><span class="m-label">تاريخ استرداد المتبقي:</span><span class="m-value" style="color:var(--gold); cursor:pointer;" onclick="updateRefundDate(${c.id})">${c.refundDate || 'غير محدد'} ✏️</span></div>
+                    <div class="m-card-row"><span class="m-label">الريلز (المسلم / المطلوب):</span><span class="m-value">${c.delivered} / ${c.reels}</span></div>
                     <div class="m-card-row"><span class="m-label">الماليات (المدفوع / الإجمالي):</span><span class="m-value">${c.paid} / ${c.salary} ج.م</span></div>
-                    <div class="m-card-row"><span class="m-label">المتبقي عليه:</span><span class="m-value" style="color:var(--red);">${c.salary - c.paid} ج.م</span></div>
-                    ${c.titles ? `<div class="m-card-row"><span class="m-label">العناوين:</span><span class="m-value">${c.titles}</span></div>` : ''}
+                    <div class="m-card-row"><span class="m-label">المتبقي في السوق:</span><span class="m-value" style="color:var(--red);">${c.salary - c.paid} ج.م</span></div>
                     <div style="display:flex; justify-content:space-between; margin-top:8px; padding-top:6px; border-top:1px solid var(--card-border);">
                         <button class="btn-pay" onclick="addPayment(${c.id})">+ إضافة دفعة</button>
                         <button class="btn-del" onclick="deleteItem('clients', ${c.id})">حذف</button>
@@ -805,20 +739,52 @@
                 </div>
             `).join('');
 
-            // 6. Render Team Cards
-            document.getElementById('team-mobile-list').innerHTML = db.employees.map((e, i) => `
-                <div class="m-card">
-                    <div class="m-card-row">
-                        <span class="m-value" style="font-size:14px; color:${e.isOwner ? 'var(--gold)' : 'var(--lavender)'};">${e.name} ${e.isOwner ? '👑' : ''}</span>
-                        <span class="badge ${e.isOwner ? 'badge-gold' : 'badge-mint'}">${e.role}</span>
+            // Tasks, Needs, Team, Expenses Renders
+            let tasksList = document.getElementById('tasks-mobile-list');
+            let masterTasksContainer = document.getElementById('master-tasks-container');
+            tasksList.innerHTML = ''; masterTasksContainer.innerHTML = '';
+
+            db.taskDeliveries.forEach(t => {
+                tasksList.innerHTML += `
+                    <div class="m-card" style="border-right: 4px solid ${t.delivered ? 'var(--mint)' : 'var(--red)'};">
+                        <div class="m-card-row"><span class="m-label">الموظف:</span><span class="m-value" style="color:var(--gold);">${t.empName}</span></div>
+                        <div class="m-card-row"><span class="m-label">المطلـوب:</span><span class="m-value">${t.task}</span></div>
+                        <div class="m-card-row"><span class="m-label">ميعاد التسليم:</span><span class="m-value">${t.dueDate}</span></div>
+                        <div class="m-card-row"><span class="badge ${t.delivered ? 'badge-mint' : 'badge-red'}">${t.delivered ? '✅ تم التسليم' : '❌ لم يتم التسليم'}</span></div>
+                        <div style="display:flex; justify-content:space-between; margin-top:8px; padding-top:6px; border-top:1px solid var(--card-border);">
+                            <button class="btn-pay" onclick="toggleTaskDelivery(${t.id})">تغيير الحالة</button>
+                            <button class="btn-del" onclick="deleteItem('taskDeliveries', ${t.id})">حذف</button>
+                        </div>
                     </div>
-                    <div class="m-card-row"><span class="m-label">${e.isOwner ? 'الاتفاق/المستهدف:' : 'الراتب الأساسي:'}</span><span class="m-value" style="text-decoration:underline;" onclick="updateBaseSalary(${i})">${e.baseSalary || 0} ج.م ✏️</span></div>
-                    <div class="m-card-row"><span class="m-label">المسحوب / المستلم:</span><span class="m-value" style="color:var(--mint);">${e.paid} ج.م</span></div>
-                    <div class="m-card-row"><span class="m-label">المتبقي:</span><span class="m-value" style="color:var(--red);">${(e.baseSalary || 0) - e.paid} ج.م</span></div>
+                `;
+
+                masterTasksContainer.innerHTML += `
+                    <div class="m-card">
+                        <div class="m-card-row"><span class="m-value">${t.empName}</span><span class="badge ${t.delivered ? 'badge-mint' : 'badge-red'}">${t.delivered ? 'تم التسليم' : 'لم يتم التسليم'}</span></div>
+                        <div class="m-card-row"><span class="m-label">المهمة:</span><span class="m-value">${t.task}</span></div>
+                    </div>
+                `;
+            });
+
+            document.getElementById('needs-mobile-list').innerHTML = db.officeNeeds.map((item, index) => `
+                <div class="m-card">
+                    <div class="m-card-row"><span class="m-value">${index + 1}. ${item.item}</span><span class="m-value" style="color:var(--gold);">${item.cost ? item.cost + ' ج.م' : '-'}</span></div>
+                    <div style="text-align:left; margin-top:4px;"><button class="btn-del" onclick="deleteItem('officeNeeds', ${item.id})">حذف</button></div>
                 </div>
             `).join('');
 
-            // 7. Render Expenses Cards
+            document.getElementById('master-needs-container').innerHTML = db.officeNeeds.map((item, index) => `
+                <div class="m-card"><div class="m-card-row"><span>${index + 1}. ${item.item}</span><span style="color:var(--gold);">${item.cost ? item.cost + ' ج.م' : '-'}</span></div></div>
+            `).join('');
+
+            document.getElementById('team-mobile-list').innerHTML = db.employees.map((e, i) => `
+                <div class="m-card">
+                    <div class="m-card-row"><span class="m-value">${e.name} ${e.isOwner ? '👑' : ''}</span><span class="badge ${e.isOwner ? 'badge-gold' : 'badge-mint'}">${e.role}</span></div>
+                    <div class="m-card-row"><span class="m-label">المستهدف/الراتب:</span><span class="m-value" onclick="updateBaseSalary(${i})">${e.baseSalary || 0} ج.م ✏️</span></div>
+                    <div class="m-card-row"><span class="m-label">المسحوب:</span><span class="m-value" style="color:var(--mint);">${e.paid} ج.م</span></div>
+                </div>
+            `).join('');
+
             document.getElementById('expenses-mobile-list').innerHTML = db.expenses.map(e => `
                 <div class="m-card">
                     <div class="m-card-row"><span class="m-value">${e.title}</span><span class="m-value" style="color:var(--red);">${e.amount} ج.م</span></div>
@@ -826,36 +792,18 @@
                 </div>
             `).join('');
 
-            // 8. Render Master Report Financial List
             let masterList = document.getElementById('master-mobile-list');
             masterList.innerHTML = '';
             db.clients.forEach(c => masterList.innerHTML += `
                 <div class="m-card">
                     <div class="m-card-row"><span class="badge badge-mint">عميل اشتراك</span><span class="m-value">${c.name}</span></div>
                     <div class="m-card-row"><span class="m-label">المحصل:</span><span class="m-value" style="color:var(--mint);">${c.paid} ج.م</span></div>
-                    <div class="m-card-row"><span class="m-label">المتبقي في السوق:</span><span class="m-value" style="color:var(--red);">${c.salary - c.paid} ج.م</span></div>
-                </div>
-            `);
-            db.dailyIncome.forEach(di => masterList.innerHTML += `
-                <div class="m-card">
-                    <div class="m-card-row"><span class="badge badge-gold">خدمة يومية</span><span class="m-value">${di.client} (${di.service})</span></div>
-                    <div class="m-card-row"><span class="m-label">المحصل:</span><span class="m-value" style="color:var(--mint);">${di.cost} ج.م</span></div>
-                </div>
-            `);
-            db.employees.forEach(e => masterList.innerHTML += `
-                <div class="m-card">
-                    <div class="m-card-row"><span class="badge ${e.isOwner ? 'badge-gold' : 'badge-red'}">${e.isOwner ? 'مسحوبات مالك' : 'رواتب'}</span><span class="m-value">${e.name}</span></div>
-                    <div class="m-card-row"><span class="m-label">المبلغ المستلم:</span><span class="m-value" style="color:var(--red);">${e.paid} ج.م</span></div>
-                </div>
-            `);
-            db.expenses.forEach(e => masterList.innerHTML += `
-                <div class="m-card">
-                    <div class="m-card-row"><span class="badge badge-red">مصروفات</span><span class="m-value">${e.title}</span></div>
-                    <div class="m-card-row"><span class="m-label">المبلغ:</span><span class="m-value" style="color:var(--red);">${e.amount} ج.م</span></div>
+                    <div class="m-card-row"><span class="m-label">ميعاد استرداد المتبقي:</span><span class="m-value" style="color:var(--gold);">${c.refundDate || 'غير محدد'}</span></div>
                 </div>
             `);
 
             document.getElementById('m-total-rev').innerText = rev.toLocaleString() + " ج.م";
+            document.getElementById('m-week-income').innerText = Math.round(weeklyExpectedIncome).toLocaleString() + " ج.م";
             document.getElementById('m-total-pend').innerText = pend.toLocaleString() + " ج.م";
             document.getElementById('m-total-exp').innerText = totalExp.toLocaleString() + " ج.م";
             document.getElementById('m-net-income').innerText = netIncome.toLocaleString() + " ج.م";
