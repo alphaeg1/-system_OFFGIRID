@@ -16,8 +16,10 @@
             --lavender: #F9F5FF;
             --cobalt: #14248A;
             --gold: #FFD700;
+            --gold-light: #FFF0B1;
             --card-bg: rgba(255, 255, 255, 0.04);
             --card-border: rgba(255, 255, 255, 0.08);
+            --text-gray: #B0B3B8;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Readex Pro', sans-serif; -webkit-tap-highlight-color: transparent; }
@@ -65,6 +67,8 @@
         .panel-header { font-size: 14px; font-weight: 600; color: var(--mint); margin-bottom: 12px; border-bottom: 1px solid var(--card-border); padding-bottom: 6px; display: flex; justify-content: space-between; align-items: center; }
 
         .form-grid { display: flex; flex-direction: column; gap: 8px; margin-bottom: 15px; }
+        .form-group { margin-bottom: 10px; }
+        label { display: block; font-size: 11px; color: var(--text-gray); margin-bottom: 4px; }
         input, select, textarea { 
             background: rgba(0, 0, 0, 0.25); border: 1px solid var(--card-border); 
             padding: 10px 12px; border-radius: 8px; color: var(--lavender); font-size: 13px; width: 100%;
@@ -74,7 +78,8 @@
         .checkbox-container { display: flex; align-items: center; gap: 8px; background: rgba(0,0,0,0.15); padding: 8px 12px; border-radius: 8px; border: 1px solid var(--card-border); }
         .checkbox-container input { width: auto; cursor: pointer; }
 
-        button.btn-add { background: var(--cobalt); color: white; border: none; padding: 12px; border-radius: 8px; font-weight: 600; cursor: pointer; margin-top: 4px; }
+        button.btn-add { background: var(--cobalt); color: white; border: none; padding: 12px; border-radius: 8px; font-weight: 600; cursor: pointer; margin-top: 4px; width: 100%; }
+        button.btn-add:hover { background: var(--mint); color: #000; }
 
         .mobile-card-list { display: flex; flex-direction: column; gap: 10px; }
         .m-card { background: rgba(0,0,0,0.2); border: 1px solid var(--card-border); border-radius: 8px; padding: 12px; }
@@ -104,6 +109,45 @@
         .report-table td { background: rgba(0, 0, 0, 0.15); }
         
         #sync-status { font-size: 10px; text-align: center; color: var(--gold); margin-top: 4px; }
+
+        /* Invoice Section CSS */
+        .invoice-grid-layout { display: grid; grid-template-columns: 1fr; gap: 15px; }
+        @media (min-width: 900px) { .invoice-grid-layout { grid-template-columns: 1fr 1fr; } }
+
+        .price-table { width: 100%; border-collapse: collapse; margin-bottom: 10px; font-size: 12px; }
+        .price-table th, .price-table td { border: 1px solid var(--card-border); padding: 8px; text-align: right; }
+        .price-table th { background: rgba(20, 36, 138, 0.3); color: var(--gold); }
+        .price-table input { width: 80px; padding: 4px 6px; border-radius: 4px; border: 1px solid var(--card-border); background: #18191A; color: var(--mint); text-align: center; font-weight: bold; }
+
+        .cart-list { margin-top: 10px; display: flex; flex-direction: column; gap: 8px; }
+        .cart-item { background: #18191A; border: 1px solid var(--card-border); border-radius: 8px; padding: 10px; display: flex; justify-content: space-between; align-items: center; }
+        .cart-item-info strong { color: var(--gold); display: block; font-size: 12px; }
+        .cart-item-info span { font-size: 11px; color: var(--text-gray); }
+
+        #invoice-preview-wrapper { margin-top: 15px; }
+        
+        .invoice-card {
+            background: linear-gradient(145deg, #121314 0%, #1c1d1f 100%);
+            border: 2px solid var(--gold); border-radius: 12px; padding: 25px;
+            color: #fff; position: relative; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        .invoice-header { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2px dashed var(--gold); padding-bottom: 15px; margin-bottom: 15px; }
+        .invoice-logo { font-size: 18px; font-weight: 800; color: var(--gold-light); letter-spacing: 1px; }
+        .invoice-sub { font-size: 10px; color: var(--mint); }
+        .invoice-meta { text-align: left; font-size: 11px; color: var(--text-gray); }
+
+        .invoice-client-info { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(212, 175, 55, 0.3); border-radius: 8px; padding: 10px 15px; margin-bottom: 15px; display: flex; justify-content: space-between; }
+
+        .invoice-table { width: 100%; border-collapse: collapse; margin-bottom: 15px; }
+        .invoice-table th { background: rgba(212, 175, 55, 0.15); color: var(--gold-light); padding: 8px; font-size: 11px; text-align: right; border-bottom: 1px solid var(--gold); }
+        .invoice-table td { padding: 8px; font-size: 11px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+
+        .invoice-summary { display: flex; flex-direction: column; align-items: flex-end; gap: 5px; border-top: 2px solid var(--gold); padding-top: 10px; }
+        .invoice-total-row { display: flex; justify-content: space-between; width: 220px; font-size: 14px; font-weight: 700; color: var(--gold-light); }
+
+        .invoice-footer { margin-top: 20px; text-align: center; font-size: 10px; color: var(--text-gray); border-top: 1px solid var(--card-border); padding-top: 10px; }
+
+        .btn-download { background: linear-gradient(90deg, #D4AF37, #FFD700); color: #000; border: none; padding: 12px; border-radius: 8px; font-weight: 700; font-size: 13px; cursor: pointer; width: 100%; margin-top: 10px; box-shadow: 0 4px 10px rgba(212, 175, 55, 0.3); }
     </style>
 </head>
 <body>
@@ -129,6 +173,7 @@
 
     <div class="tabs-nav">
         <button class="tab-btn active" onclick="switchTab('daily-income-tab', this)">💰 الدخل والخدمات اليومية</button>
+        <button class="tab-btn" onclick="switchTab('invoice-system-tab', this)">🧾 الفواتير وبناء الباقات</button>
         <button class="tab-btn" onclick="switchTab('month-weeks-tab', this)">📅 جدول الـ 4 أسابيع</button>
         <button class="tab-btn" onclick="switchTab('clients-tab', this)">👥 العملاء والاشتراكات</button>
         <button class="tab-btn" onclick="switchTab('reels-deliveries-tab', this)">🎬 تسليمات الفيديو والإنتاج</button>
@@ -164,6 +209,105 @@
 
             <div class="panel-header" style="margin-top:20px;">سجل الدخل والخدمات اليومية</div>
             <div id="daily-income-mobile-list" class="mobile-card-list"></div>
+        </div>
+    </div>
+
+    <!-- TAB: نظام إدارة الفواتير والخدمات -->
+    <div id="invoice-system-tab" class="tab-content">
+        <div class="invoice-grid-layout">
+            <!-- قسم التحكم بالأسعار وإنشاء الباقة -->
+            <div>
+                <!-- التحكم في الأسعار -->
+                <div class="panel">
+                    <div class="panel-header">⚙️ التحكم في قائمة أسعار الخدمات (سعر الوحدة)</div>
+                    <div style="overflow-x: auto;">
+                        <table class="price-table">
+                            <thead>
+                                <tr>
+                                    <th>القسم</th>
+                                    <th>اسم الخدمة</th>
+                                    <th>سعر الوحدة / الساعة (ج.م)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="price-control-tbody"></tbody>
+                        </table>
+                    </div>
+                    <button class="btn-add" style="background: rgba(78, 166, 153, 0.2); color: var(--mint);" onclick="saveCustomPrices()">حفظ الأسعار المعدلة 💾</button>
+                </div>
+
+                <!-- تركيب الباقة للعميل -->
+                <div class="panel">
+                    <div class="panel-header">📦 بناء باقة العميل والتخصيص</div>
+                    <div class="form-group">
+                        <label>اسم العميل / الشركة:</label>
+                        <input type="text" id="client-name-input" placeholder="أدخل اسم العميل" oninput="updateInvoiceHeader()">
+                    </div>
+                    <div class="form-group">
+                        <label>اختر الخدمة:</label>
+                        <select id="service-select"></select>
+                    </div>
+                    <div class="form-group">
+                        <label>العدد / عدد الساعات:</label>
+                        <input type="number" id="service-qty" value="1" min="1">
+                    </div>
+                    <button class="btn-add" onclick="addItemToPackage()">+ إضافة الخدمة للباقة</button>
+
+                    <div class="panel-header" style="margin-top: 15px;">محتويات الباقة الحالية</div>
+                    <div id="cart-items-container" class="cart-list"></div>
+                </div>
+            </div>
+
+            <!-- معاينة وتصدير الفاتورة -->
+            <div>
+                <div class="panel">
+                    <div class="panel-header">📄 معاينة الفاتورة الفخمة (جاهزة للعميل)</div>
+                    
+                    <div id="invoice-preview-wrapper">
+                        <div class="invoice-card" id="invoice-card-element">
+                            <div class="invoice-header">
+                                <div>
+                                    <div class="invoice-logo">OFFGRID AGENCY</div>
+                                    <div class="invoice-sub">MEDIA & CREATIVE SOLUTIONS</div>
+                                </div>
+                                <div class="invoice-meta">
+                                    <div>رقم الفاتورة: <strong style="color:var(--gold);" id="inv-number">#OG-001</strong></div>
+                                    <div>التاريخ: <span id="inv-date"></span></div>
+                                </div>
+                            </div>
+
+                            <div class="invoice-client-info">
+                                <div>العميل المحترم: <strong style="color:var(--gold-light);" id="inv-client-name">عميل جديد</strong></div>
+                                <div style="font-size:10px; color:var(--mint);">حالة الدفع: طلب عرض سعر / فاتورة</div>
+                            </div>
+
+                            <table class="invoice-table">
+                                <thead>
+                                    <tr>
+                                        <th>الخدمة / البيان</th>
+                                        <th style="text-align:center;">العدد/الساعات</th>
+                                        <th style="text-align:center;">السعر</th>
+                                        <th style="text-align:left;">الإجمالي</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="invoice-tbody"></tbody>
+                            </table>
+
+                            <div class="invoice-summary">
+                                <div class="invoice-total-row">
+                                    <span>الإجمالي الكلي:</span>
+                                    <span id="inv-total-price">0 ج.م</span>
+                                </div>
+                            </div>
+
+                            <div class="invoice-footer">
+                                شكراً لثقتكم بشركة OFFGRID AGENCY | نعمل بشغف لتحقيق أفضل النتائج لمشروعكم 🚀
+                            </div>
+                        </div>
+                    </div>
+
+                    <button class="btn-download" onclick="downloadInvoice()">تحميل فاتورة العميل 📥</button>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -235,7 +379,7 @@
         </div>
     </div>
 
-    <!-- TAB NEW: تسليمات الفيديو والإنتاج -->
+    <!-- TAB: تسليمات الفيديو والإنتاج -->
     <div id="reels-deliveries-tab" class="tab-content">
         <div class="panel">
             <div class="panel-header">تحديث عدد وعناوين الفيديوهات المسلمة للعميل</div>
@@ -330,7 +474,6 @@
                 </select>
             </div>
 
-            <!-- تفكيك الدخل الأسبوعي المباشر -->
             <div style="background: rgba(255, 215, 0, 0.05); border: 1px solid var(--gold); border-radius: 8px; padding: 12px; margin-bottom: 15px;">
                 <div style="font-size: 13px; font-weight: 700; color: var(--gold); margin-bottom: 8px; border-bottom: 1px dashed var(--gold); padding-bottom: 4px;">
                     💰 تفاصيل الدخل الأسبوعي (كام ومن مين):
@@ -400,6 +543,36 @@
         if (!db.officeNeeds) db.officeNeeds = [];
         if (!db.monthSchedule) db.monthSchedule = [];
         if (!db.dailyIncome) db.dailyIncome = [];
+
+        // بيانات أسعار الفواتير وبناء الباقات
+        let servicesData = {
+            "شغل الشارع": [
+                { name: "شباب اسكيت", price: 300 },
+                { name: "بنات اسكيت", price: 350 },
+                { name: "اعلان", price: 500 },
+                { name: "شنط ايجار", price: 150 },
+                { name: "فلايرز", price: 200 },
+                { name: "عربيات دودج", price: 1500 },
+                { name: "عدد سعات (خدمات شاردة)", price: 100 }
+            ],
+            "السوشيال ميديا": [
+                { name: "ريلز (فيديو تفاعلي)", price: 400 },
+                { name: "بوسترات تصاميم", price: 150 },
+                { name: "مانجر (إدارة صفحات)", price: 3000 },
+                { name: "ايسبونسر (حملات ممولة)", price: 500 }
+            ],
+            "البرمجيات": [
+                { name: "كارد NFC ذكي", price: 350 },
+                { name: "لاندينج بيدج", price: 2500 },
+                { name: "برتفوليو شخصي", price: 2000 },
+                { name: "سيستم إداري متكامل", price: 5000 }
+            ]
+        };
+
+        let savedPrices = JSON.parse(localStorage.getItem('OFFGRID_PRICES'));
+        if (savedPrices) servicesData = savedPrices;
+
+        let currentPackage = [];
 
         function setSyncStatus(text) {
             const statusElem = document.getElementById('sync-status');
@@ -475,6 +648,119 @@
             if(btn) btn.classList.add('active');
         }
 
+        /* ووظائف نظام الفواتير */
+        function renderPriceControlTable() {
+            let tbody = document.getElementById('price-control-tbody');
+            if (!tbody) return;
+            tbody.innerHTML = '';
+            let selectElem = document.getElementById('service-select');
+            selectElem.innerHTML = '';
+
+            for (let category in servicesData) {
+                servicesData[category].forEach((item, index) => {
+                    tbody.innerHTML += `
+                        <tr>
+                            <td style="color:var(--mint); font-weight:bold;">${category}</td>
+                            <td>${item.name}</td>
+                            <td>
+                                <input type="number" value="${item.price}" onchange="updateServicePrice('${category}', ${index}, this.value)">
+                            </td>
+                        </tr>
+                    `;
+
+                    selectElem.innerHTML += `<option value="${category}|${item.name}|${item.price}">[${category}] ${item.name} (${item.price} ج.م)</option>`;
+                });
+            }
+        }
+
+        function updateServicePrice(category, index, newPrice) {
+            servicesData[category][index].price = +newPrice || 0;
+        }
+
+        function saveCustomPrices() {
+            localStorage.setItem('OFFGRID_PRICES', JSON.stringify(servicesData));
+            renderPriceControlTable();
+            alert("تم حفظ الأسعار الجديدة بنجاح! 💾");
+        }
+
+        function addItemToPackage() {
+            let selectVal = document.getElementById('service-select').value;
+            let qty = +document.getElementById('service-qty').value || 1;
+
+            if (!selectVal) return;
+            let [category, name, price] = selectVal.split('|');
+
+            currentPackage.push({
+                category,
+                name,
+                price: +price,
+                qty: qty,
+                total: +price * qty
+            });
+
+            renderPackageCart();
+        }
+
+        function deleteCartItem(index) {
+            currentPackage.splice(index, 1);
+            renderPackageCart();
+        }
+
+        function renderPackageCart() {
+            let container = document.getElementById('cart-items-container');
+            let invoiceTbody = document.getElementById('invoice-tbody');
+            container.innerHTML = '';
+            invoiceTbody.innerHTML = '';
+
+            let grandTotal = 0;
+
+            currentPackage.forEach((item, idx) => {
+                grandTotal += item.total;
+
+                container.innerHTML += `
+                    <div class="cart-item">
+                        <div class="cart-item-info">
+                            <strong>${item.name} (${item.category})</strong>
+                            <span>العدد: ${item.qty} × ${item.price} = ${item.total} ج.م</span>
+                        </div>
+                        <button class="btn-del" onclick="deleteCartItem(${idx})">حذف</button>
+                    </div>
+                `;
+
+                invoiceTbody.innerHTML += `
+                    <tr>
+                        <td><strong>${item.name}</strong> <br><small style="color:var(--text-gray);">${item.category}</small></td>
+                        <td style="text-align:center;">${item.qty}</td>
+                        <td style="text-align:center;">${item.price.toLocaleString()} ج.م</td>
+                        <td style="text-align:left; font-weight:bold; color:var(--gold-light);">${item.total.toLocaleString()} ج.م</td>
+                    </tr>
+                `;
+            });
+
+            document.getElementById('inv-total-price').innerText = grandTotal.toLocaleString() + " ج.م";
+        }
+
+        function updateInvoiceHeader() {
+            let clientName = document.getElementById('client-name-input').value || "عميل جديد";
+            document.getElementById('inv-client-name').innerText = clientName;
+        }
+
+        function downloadInvoice() {
+            let invoiceElement = document.getElementById('invoice-card-element');
+            let clientName = document.getElementById('client-name-input').value || "Client";
+
+            html2canvas(invoiceElement, {
+                backgroundColor: '#121314',
+                scale: 2
+            }).then(canvas => {
+                let link = document.createElement('a');
+                link.download = `Invoice_OFFGRID_${clientName}.png`;
+                link.href = canvas.toDataURL("image/png");
+                link.click();
+            });
+        }
+
+        /* ووظائف الموديولات الأخرى */
         function addDailyIncome(e) {
             e.preventDefault();
             let day = document.getElementById('di-day').value;
@@ -706,7 +992,6 @@
             document.getElementById('td-emp').innerHTML = empOptions;
             document.getElementById('emp-select').innerHTML = db.employees.map((e, i) => `<option value="${i}">${e.name} (${e.role})</option>`).join('');
 
-            // Populating Client Dropdown for Reels Tab
             let reelsClientSelect = document.getElementById('rd-client-select');
             let currentSelected = reelsClientSelect.value;
             reelsClientSelect.innerHTML = `<option value="" disabled ${!currentSelected ? 'selected' : ''}>اختر العميل لتعديل تسليماته</option>` +
@@ -819,7 +1104,7 @@
                 </div>
             `).join('');
 
-            // Render Reels Deliveries List (NEW)
+            // Render Reels Deliveries List
             document.getElementById('reels-deliveries-mobile-list').innerHTML = db.clients.map(c => {
                 let delivered = c.delivered || 0;
                 let remaining = c.reels - delivered;
@@ -904,10 +1189,15 @@
             document.getElementById('m-total-pend').innerText = pend.toLocaleString() + " ج.م";
             document.getElementById('m-total-exp').innerText = totalExp.toLocaleString() + " ج.م";
             document.getElementById('m-net-income').innerText = netIncome.toLocaleString() + " ج.م";
+
+            // Render invoice control table & date
+            renderPriceControlTable();
+            let invDateElem = document.getElementById('inv-date');
+            if (invDateElem) invDateElem.innerText = new Date().toLocaleDateString('ar-EG');
         }
 
         function exportReportImage() {
-            let masterBtn = document.querySelectorAll('.tab-btn')[8];
+            let masterBtn = document.querySelectorAll('.tab-btn')[9];
             switchTab('master-tab', masterBtn);
 
             setTimeout(() => {
@@ -924,6 +1214,7 @@
 
         window.onload = function() {
             loadDBFromSheet();
+            document.getElementById('inv-number').innerText = "#OG-" + Math.floor(1000 + Math.random() * 9000);
         };
     </script>
 </body>
