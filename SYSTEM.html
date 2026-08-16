@@ -65,11 +65,11 @@
         .panel-header { font-size: 14px; font-weight: 600; color: var(--mint); margin-bottom: 12px; border-bottom: 1px solid var(--card-border); padding-bottom: 6px; display: flex; justify-content: space-between; align-items: center; }
 
         .form-grid { display: flex; flex-direction: column; gap: 8px; margin-bottom: 15px; }
-        input, select { 
+        input, select, textarea { 
             background: rgba(0, 0, 0, 0.25); border: 1px solid var(--card-border); 
             padding: 10px 12px; border-radius: 8px; color: var(--lavender); font-size: 13px; width: 100%;
         }
-        input:focus, select:focus { border-color: var(--mint); outline: none; }
+        input:focus, select:focus, textarea:focus { border-color: var(--mint); outline: none; }
         
         .checkbox-container { display: flex; align-items: center; gap: 8px; background: rgba(0,0,0,0.15); padding: 8px 12px; border-radius: 8px; border: 1px solid var(--card-border); }
         .checkbox-container input { width: auto; cursor: pointer; }
@@ -131,6 +131,7 @@
         <button class="tab-btn active" onclick="switchTab('daily-income-tab', this)">💰 الدخل والخدمات اليومية</button>
         <button class="tab-btn" onclick="switchTab('month-weeks-tab', this)">📅 جدول الـ 4 أسابيع</button>
         <button class="tab-btn" onclick="switchTab('clients-tab', this)">👥 العملاء والاشتراكات</button>
+        <button class="tab-btn" onclick="switchTab('reels-deliveries-tab', this)">🎬 تسليمات الفيديو والإنتاج</button>
         <button class="tab-btn" onclick="switchTab('tasks-deliveries-tab', this)">🎯 المهام المطلوبة وتسليماتها</button>
         <button class="tab-btn" onclick="switchTab('office-needs-tab', this)">🛒 مطالبات ونواقص المكتب</button>
         <button class="tab-btn" onclick="switchTab('team-tab', this)">👑 الملاّك والفريق</button>
@@ -226,13 +227,27 @@
                     <option value="الخميس">الخميس</option>
                     <option value="الجمعة">الجمعة</option>
                 </select>
-                <input type="number" id="c-delivered" placeholder="عدد الفيديوهات المسلمة" value="0">
-                <input type="text" id="c-titles" placeholder="عناوين الفيديوهات المسلمة">
                 <button type="submit" class="btn-add">حفظ العميل وتنزيله في جدول الأسابيع 🔄</button>
             </form>
 
             <div class="panel-header" style="margin-top:20px;">قائمة العملاء الحالية ومواعيد الاسترداد</div>
             <div id="clients-mobile-list" class="mobile-card-list"></div>
+        </div>
+    </div>
+
+    <!-- TAB NEW: تسليمات الفيديو والإنتاج -->
+    <div id="reels-deliveries-tab" class="tab-content">
+        <div class="panel">
+            <div class="panel-header">تحديث عدد وعناوين الفيديوهات المسلمة للعميل</div>
+            <form class="form-grid" onsubmit="updateClientReelsDelivery(event)">
+                <select id="rd-client-select" required onchange="onReelsClientSelectChange(this)"></select>
+                <input type="number" id="rd-delivered" placeholder="عدد الفيديوهات المسلمة حالياً" required>
+                <textarea id="rd-titles" placeholder="عناوين الفيديوهات المسلمة (افصل بينها بسطر جديد أو فاصلة)" rows="3"></textarea>
+                <button type="submit" class="btn-add">تحديث حالة وتسليمات الفيديو 🎬</button>
+            </form>
+
+            <div class="panel-header" style="margin-top:20px;">متابعة حالة الإنتاج وتسليمات الريلز للعملاء</div>
+            <div id="reels-deliveries-mobile-list" class="mobile-card-list"></div>
         </div>
     </div>
 
@@ -457,7 +472,7 @@
             document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
             document.getElementById(tabId).classList.add('active');
-            btn.classList.add('active');
+            if(btn) btn.classList.add('active');
         }
 
         function addDailyIncome(e) {
@@ -504,8 +519,8 @@
             let paid = +document.getElementById('c-paid').value;
             let refundDate = document.getElementById('c-refund-date').value || 'غير محدد';
             let day = document.getElementById('c-day').value;
-            let delivered = +document.getElementById('c-delivered').value || 0;
-            let titles = document.getElementById('c-titles').value;
+            let delivered = 0;
+            let titles = '';
 
             let clientId = Date.now();
             db.clients.push({ id: clientId, name, phone, reels, salary, paid, refundDate, day, delivered, titles });
@@ -529,6 +544,33 @@
                     client.refundDate = newDate || 'غير محدد';
                     saveDB();
                 }
+            }
+        }
+
+        function onReelsClientSelectChange(selectElem) {
+            let clientId = +selectElem.value;
+            let client = db.clients.find(c => c.id === clientId);
+            if (client) {
+                document.getElementById('rd-delivered').value = client.delivered || 0;
+                document.getElementById('rd-titles').value = client.titles || '';
+            } else {
+                document.getElementById('rd-delivered').value = '';
+                document.getElementById('rd-titles').value = '';
+            }
+        }
+
+        function updateClientReelsDelivery(e) {
+            e.preventDefault();
+            let clientId = +document.getElementById('rd-client-select').value;
+            let delivered = +document.getElementById('rd-delivered').value || 0;
+            let titles = document.getElementById('rd-titles').value;
+
+            let client = db.clients.find(c => c.id === clientId);
+            if (client) {
+                client.delivered = delivered;
+                client.titles = titles;
+                saveDB();
+                alert(`تم تحديث تسليمات الريلز للعميل "${client.name}" بنجاح 🎬`);
             }
         }
 
@@ -618,7 +660,6 @@
             let totalExp = expOffice + empPaidTotal;
             let netIncome = rev - totalExp;
 
-            // حساب دخل الأسبوع المختار والتفاصيل المفككة
             let selectedWeek = document.getElementById('report-week-select') ? document.getElementById('report-week-select').value : '1';
             let selectedWeekClients = db.monthSchedule.filter(m => m.week === selectedWeek).map(m => m.client.trim());
             
@@ -626,7 +667,6 @@
             let breakdownContainer = document.getElementById('master-weekly-breakdown-list');
             breakdownContainer.innerHTML = '';
 
-            // 1. حساب وتحليل القسط الأسبوعي لعملاء الاشتراكات
             db.clients.forEach(c => {
                 if (selectedWeekClients.includes(c.name.trim())) {
                     let share = (c.paid / 4);
@@ -641,7 +681,6 @@
                 }
             });
 
-            // 2. حساب وإضافة الخدمات اليومية
             db.dailyIncome.forEach(di => {
                 weeklyExpectedIncome += di.cost;
                 breakdownContainer.innerHTML += `
@@ -666,6 +705,13 @@
             document.getElementById('di-emp').innerHTML = empOptions;
             document.getElementById('td-emp').innerHTML = empOptions;
             document.getElementById('emp-select').innerHTML = db.employees.map((e, i) => `<option value="${i}">${e.name} (${e.role})</option>`).join('');
+
+            // Populating Client Dropdown for Reels Tab
+            let reelsClientSelect = document.getElementById('rd-client-select');
+            let currentSelected = reelsClientSelect.value;
+            reelsClientSelect.innerHTML = `<option value="" disabled ${!currentSelected ? 'selected' : ''}>اختر العميل لتعديل تسليماته</option>` +
+                db.clients.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+            if (currentSelected) reelsClientSelect.value = currentSelected;
 
             // Render Daily Income
             let dailyList = document.getElementById('daily-income-mobile-list');
@@ -735,7 +781,7 @@
             } else {
                 weekItems.forEach(item => {
                     let clientObj = db.clients.find(c => c.name.trim() === item.client.trim());
-                    let reelsDelivered = clientObj ? clientObj.delivered : 0;
+                    let reelsDelivered = clientObj ? (clientObj.delivered || 0) : 0;
                     let reelsTotal = clientObj ? clientObj.reels : 0;
                     let reelsRemaining = reelsTotal - reelsDelivered;
                     let totalSalary = clientObj ? clientObj.salary : 0;
@@ -758,13 +804,12 @@
                 });
             }
 
-            // Render Clients List with Refund Date
+            // Render Clients List
             document.getElementById('clients-mobile-list').innerHTML = db.clients.map(c => `
                 <div class="m-card">
                     <div class="m-card-row"><span class="m-value" style="font-size:14px; color:var(--mint);">${c.name}</span><span class="m-label">${c.phone}</span></div>
                     <div class="m-card-row"><span class="m-label">يوم التصوير الثابت:</span><span class="m-value" style="color:var(--gold);">${c.day}</span></div>
                     <div class="m-card-row"><span class="m-label">تاريخ استرداد المتبقي:</span><span class="m-value" style="color:var(--gold); cursor:pointer;" onclick="updateRefundDate(${c.id})">${c.refundDate || 'غير محدد'} ✏️</span></div>
-                    <div class="m-card-row"><span class="m-label">الريلز (المسلم / المطلوب):</span><span class="m-value">${c.delivered} / ${c.reels}</span></div>
                     <div class="m-card-row"><span class="m-label">الماليات (المدفوع / الإجمالي):</span><span class="m-value">${c.paid} / ${c.salary} ج.م</span></div>
                     <div class="m-card-row"><span class="m-label">المتبقي في السوق:</span><span class="m-value" style="color:var(--red);">${c.salary - c.paid} ج.م</span></div>
                     <div style="display:flex; justify-content:space-between; margin-top:8px; padding-top:6px; border-top:1px solid var(--card-border);">
@@ -773,6 +818,23 @@
                     </div>
                 </div>
             `).join('');
+
+            // Render Reels Deliveries List (NEW)
+            document.getElementById('reels-deliveries-mobile-list').innerHTML = db.clients.map(c => {
+                let delivered = c.delivered || 0;
+                let remaining = c.reels - delivered;
+                return `
+                    <div class="m-card">
+                        <div class="m-card-row"><span class="m-value" style="font-size:14px; color:var(--mint);">${c.name}</span><span class="badge badge-mint">${c.day}</span></div>
+                        <div class="m-card-row"><span class="m-label">الريلز (المسلم / المطلوب):</span><span class="m-value" style="color:var(--gold);">${delivered} / ${c.reels}</span></div>
+                        <div class="m-card-row"><span class="m-label">المتبقي للإنتاج والتسليم:</span><span class="m-value" style="color:${remaining > 0 ? '#ff5252' : 'var(--mint)'};">${remaining} فيديو</span></div>
+                        <div style="margin-top:6px; padding-top:6px; border-top:1px dashed var(--card-border);">
+                            <span class="m-label" style="display:block; margin-bottom:2px;">عناوين الفيديوهات المسلمة:</span>
+                            <div style="color:var(--lavender); font-size:11px; white-space:pre-wrap;">${c.titles ? c.titles : '<span style="color:rgba(255,255,255,0.3);">لا توجد عناوين مسجلة حتى الآن</span>'}</div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
 
             // Tasks, Needs, Team, Expenses Renders
             let tasksList = document.getElementById('tasks-mobile-list');
@@ -845,7 +907,7 @@
         }
 
         function exportReportImage() {
-            let masterBtn = document.querySelectorAll('.tab-btn')[7];
+            let masterBtn = document.querySelectorAll('.tab-btn')[8];
             switchTab('master-tab', masterBtn);
 
             setTimeout(() => {
