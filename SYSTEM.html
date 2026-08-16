@@ -116,15 +116,15 @@
             <button class="btn-sync" onclick="exportReportImage()">📸 تصدير صورة التقرير</button>
             <button class="btn-reload" onclick="loadDBFromSheet()">🔄 مزامنة من السحابة</button>
         </div>
-        <div id="sync-status">جاهز ومتصل بالسحابة ☁️</div>
+        <div id="sync-status">جاري جلب أحدث بيانات من السحابة... ⏳</div>
     </header>
 
     <div class="kpi-grid">
-        <div class="kpi-card"><div h3>المحصل من العملاء</div><p id="total-revenue">0 ج.م</p></div>
-        <div class="kpi-card red"><div h3>المتبقي في السوق</div><p id="total-pending">0 ج.م</p></div>
-        <div class="kpi-card red"><div h3>المصروفات والرواتب</div><p id="total-expenses">0 ج.م</p></div>
-        <div class="kpi-card blue"><div h3>رواتب الموظفين</div><p id="total-salaries">0 ج.م</p></div>
-        <div class="kpi-card blue full-width"><div h3>صافي دخل المكتب التقديري</div><p id="net-income">0 ج.م</p></div>
+        <div class="kpi-card"><h3>المحصل من العملاء</h3><p id="total-revenue">0 ج.م</p></div>
+        <div class="kpi-card red"><h3>المتبقي في السوق</h3><p id="total-pending">0 ج.م</p></div>
+        <div class="kpi-card red"><h3>المصروفات والرواتب</h3><p id="total-expenses">0 ج.م</p></div>
+        <div class="kpi-card blue"><h3>رواتب الموظفين</h3><p id="total-salaries">0 ج.م</p></div>
+        <div class="kpi-card blue full-width"><h3>صافي دخل المكتب التقديري</h3><p id="net-income">0 ج.م</p></div>
     </div>
 
     <div class="tabs-nav">
@@ -342,45 +342,71 @@
         if (!db.monthSchedule) db.monthSchedule = [];
 
         function setSyncStatus(text) {
-            document.getElementById('sync-status').innerText = text;
+            const statusElem = document.getElementById('sync-status');
+            if (statusElem) statusElem.innerText = text;
         }
 
-        function saveDB() { 
+        // ==========================================
+        // حفظ البيانات للسحابة (Google Sheets)
+        // ==========================================
+        async function saveDB() { 
             localStorage.setItem('OFFGRID_DB', JSON.stringify(db)); 
             renderAll();
             setSyncStatus("جاري الحفظ في Google Sheets... ⏳");
 
-            fetch(GOOGLE_SHEET_API, {
-                method: "POST",
-                mode: "no-cors",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(db)
-            }).then(() => {
-                setSyncStatus("تم الحفظ في السحابة بنجاح ✅");
-            }).catch(err => {
-                setSyncStatus("محفوظ محلياً (حدث خطأ في الاتصال بالسحابة) ⚠️");
-            });
+            try {
+                await fetch(GOOGLE_SHEET_API, {
+                    method: "POST",
+                    mode: "no-cors",
+                    headers: { "Content-Type": "text/plain;charset=utf-8" },
+                    body: JSON.stringify(db)
+                });
+                setSyncStatus("تم الحفظ والمزامنة بنجاح ✅");
+            } catch (err) {
+                console.error("خطأ في الإرسال:", err);
+                setSyncStatus("محفوظ محلياً (تعذر الحفظ في السحابة) ⚠️");
+            }
         }
 
-        async function loadDBFromSheet() {
+        // ==========================================
+        // جلب البيانات من السحابة مع معالجة CORS (JSONP)
+        // ==========================================
+        function loadDBFromSheet() {
             setSyncStatus("جاري جلب أحدث بيانات من Google Sheets... ⏳");
-            try {
-                let res = await fetch(GOOGLE_SHEET_API);
-                let data = await res.json();
-                if (data && typeof data === 'object' && Object.keys(data).length > 0) {
-                    db = data;
-                    localStorage.setItem('OFFGRID_DB', JSON.stringify(db));
+            
+            const script = document.createElement('script');
+            const callbackName = 'handleSheetResponse_' + Date.now();
+            
+            window[callbackName] = function(data) {
+                try {
+                    if (data && typeof data === 'object' && Object.keys(data).length > 0) {
+                        db = data;
+                        localStorage.setItem('OFFGRID_DB', JSON.stringify(db));
+                        renderAll();
+                        setSyncStatus("تم المزامنة بنجاح من السحابة ✅");
+                    } else {
+                        setSyncStatus("تم التحميل من الذاكرة المحلية ✅");
+                        renderAll();
+                    }
+                } catch (err) {
+                    console.error("خطأ المعالجة:", err);
+                    setSyncStatus("العمل بالذاكرة المحلية (غير متصل) ⚠️");
                     renderAll();
-                    setSyncStatus("تم المزامنة بنجاح من السحابة ✅");
-                } else {
-                    setSyncStatus("تم التحميل من الذاكرة المحلية ✅");
-                    renderAll();
+                } finally {
+                    delete window[callbackName];
+                    if (script.parentNode) script.parentNode.removeChild(script);
                 }
-            } catch (err) {
-                console.log("التحميل من الذاكرة المحلية...");
+            };
+
+            script.src = `${GOOGLE_SHEET_API}?callback=${callbackName}`;
+            script.onerror = function() {
                 setSyncStatus("العمل بالذاكرة المحلية (غير متصل) ⚠️");
                 renderAll();
-            }
+                delete window[callbackName];
+                if (script.parentNode) script.parentNode.removeChild(script);
+            };
+            
+            document.body.appendChild(script);
         }
 
         function switchTab(tabId, btn) {
@@ -742,8 +768,10 @@
             }, 300);
         }
 
-        // تشغيل الجلب من السحابة أول ما تفتح الصفحة
-        loadDBFromSheet();
+        // تشغيل الجلب من السحابة عند فتح الصفحة
+        window.onload = function() {
+            loadDBFromSheet();
+        };
     </script>
 </body>
 </html>
