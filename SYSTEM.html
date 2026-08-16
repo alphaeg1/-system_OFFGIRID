@@ -321,7 +321,8 @@
     </div>
 
     <script>
-        const GOOGLE_SHEET_API = "https://script.google.com/macros/s/AKfycbzGCNpGyNd5AMgRYa4KAYQvWx47QmSlv6B8KWPgDUZjh_KlKfx_v-QwvF8cTTMHlr42zg/exec";
+        // رابط الـ Web App الجديد المعدل
+        const GOOGLE_SHEET_API = "https://script.google.com/macros/s/AKfycbyrkx4j29FqpV0_viQzfVDMqv1zl04blAyPT0vcqEgwggaUe8DSpZ8M_2-GPmye1nHd9g/exec";
         const daysOrder = ["السبت", "الأحد", "الإثنين", "الثلاثاء", "الأربعاء", "الخميس", "الجمعة"];
 
         let defaultTeam = [
@@ -347,7 +348,7 @@
         }
 
         // ==========================================
-        // حفظ البيانات للسحابة (Google Sheets) مع إتاحة الاتصال المباشر
+        // حفظ البيانات للسحابة (Google Sheets)
         // ==========================================
         function saveDB() { 
             localStorage.setItem('OFFGRID_DB', JSON.stringify(db)); 
@@ -355,7 +356,6 @@
             setSyncStatus("جاري الحفظ في Google Sheets... ⏳");
 
             try {
-                // إرسال البيانات بأسلوب text/plain يتخطى حظر CORS Preflight
                 fetch(GOOGLE_SHEET_API, {
                     method: "POST",
                     mode: "no-cors",
@@ -374,7 +374,7 @@
         }
 
         // ==========================================
-        // جلب البيانات عبر تقنية JSONP لكسر حظر CORS تماماً
+        // جلب البيانات عبر تقنية JSONP
         // ==========================================
         function loadDBFromSheet() {
             setSyncStatus("جاري جلب البيانات من Google Sheets... ⏳");
@@ -631,7 +631,7 @@
                     tasksList.innerHTML += `
                         <div class="m-card" style="border-right: 4px solid ${t.delivered ? 'var(--mint)' : 'var(--red)'};">
                             <div class="m-card-row"><span class="m-label">1. الموظف:</span><span class="m-value" style="color:var(--gold);">${t.empName}</span></div>
-                            <div class="m-card-row"><span class="m-label">2. المطلوب:</span><span class="m-value">${t.task}</span></div>
+                            <div class="m-card-row"><span class="m-label">2. المطلـوب:</span><span class="m-value">${t.task}</span></div>
                             <div class="m-card-row"><span class="m-label">3. ميعاد التسليم:</span><span class="m-value">${t.dueDate}</span></div>
                             <div class="m-card-row">
                                 <span class="m-label">4. الحالة:</span>
