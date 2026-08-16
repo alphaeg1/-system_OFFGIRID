@@ -31,8 +31,9 @@
         .brand { display: flex; align-items: center; justify-content: center; width: 100%; text-align: center; }
         .brand-title { font-size: 15px; font-weight: 700; color: var(--mint); letter-spacing: 0.5px; }
         
-        .sync-actions { display: flex; width: 100%; }
-        .btn-sync { background: var(--mint); color: var(--bg-dark); border: none; padding: 12px; border-radius: 8px; font-weight: 700; cursor: pointer; text-align: center; font-size: 13px; width: 100%; }
+        .sync-actions { display: flex; gap: 8px; width: 100%; }
+        .btn-sync { background: var(--mint); color: var(--bg-dark); border: none; padding: 10px; border-radius: 8px; font-weight: 700; cursor: pointer; text-align: center; font-size: 12px; flex: 1; }
+        .btn-reload { background: rgba(255, 255, 255, 0.1); color: var(--lavender); border: 1px solid var(--card-border); padding: 10px; border-radius: 8px; cursor: pointer; font-size: 12px; }
 
         .kpi-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 15px; }
         .kpi-card { 
@@ -97,11 +98,12 @@
 
         .week-title { color: var(--mint); font-weight: 700; border-right: 3px solid var(--mint); padding-right: 8px; margin: 15px 0 10px 0; font-size: 13px; }
 
-        /* Report Table Styling */
         .report-table { width: 100%; border-collapse: collapse; margin-bottom: 15px; font-size: 11px; }
         .report-table th, .report-table td { border: 1px solid var(--card-border); padding: 8px 4px; text-align: center; }
         .report-table th { background: rgba(20, 36, 138, 0.4); color: var(--mint); font-weight: 600; }
         .report-table td { background: rgba(0, 0, 0, 0.15); }
+        
+        #sync-status { font-size: 10px; text-align: center; color: var(--gold); margin-top: 4px; }
     </style>
 </head>
 <body>
@@ -111,8 +113,10 @@
             <span class="brand-title">SYSTEM OFFGRID CLOUD AGENCY</span>
         </div>
         <div class="sync-actions">
-            <button class="btn-sync" onclick="exportReportImage()">📸 تصدير صورة التقرير الشامل</button>
+            <button class="btn-sync" onclick="exportReportImage()">📸 تصدير صورة التقرير</button>
+            <button class="btn-reload" onclick="loadDBFromSheet()">🔄 مزامنة من السحابة</button>
         </div>
+        <div id="sync-status">جاهز ومتصل بالسحابة ☁️</div>
     </header>
 
     <div class="kpi-grid">
@@ -271,7 +275,6 @@
                 <p style="font-size:11px; color:rgba(255,255,255,0.6);">التقرير التفصيلي الأسبوعي الشامل</p>
             </div>
 
-            <!-- محدد اختيار الأسبوع الحالي للتقرير -->
             <div class="panel-header">
                 <span>جدول بيانات تفاصيل الأسبوع</span>
                 <select id="report-week-select" style="width: 130px; padding: 4px 8px; font-size: 11px;" onchange="renderAll()">
@@ -282,7 +285,6 @@
                 </select>
             </div>
 
-            <!-- جدول تفاصيل عملاء الأسبوع المختار -->
             <div style="overflow-x:auto;">
                 <table class="report-table">
                     <thead>
@@ -319,6 +321,7 @@
     </div>
 
     <script>
+        const GOOGLE_SHEET_API = "https://script.google.com/macros/s/AKfycbzGCNpGyNd5AMgRYa4KAYQvWx47QmSlv6B8KWPgDUZjh_KlKfx_v-QwvF8cTTMHlr42zg/exec";
         const daysOrder = ["السبت", "الأحد", "الإثنين", "الثلاثاء", "الأربعاء", "الخميس", "الجمعة"];
 
         let defaultTeam = [
@@ -338,7 +341,47 @@
         if (!db.officeNeeds) db.officeNeeds = [];
         if (!db.monthSchedule) db.monthSchedule = [];
 
-        function saveDB() { localStorage.setItem('OFFGRID_DB', JSON.stringify(db)); renderAll(); }
+        function setSyncStatus(text) {
+            document.getElementById('sync-status').innerText = text;
+        }
+
+        function saveDB() { 
+            localStorage.setItem('OFFGRID_DB', JSON.stringify(db)); 
+            renderAll();
+            setSyncStatus("جاري الحفظ في Google Sheets... ⏳");
+
+            fetch(GOOGLE_SHEET_API, {
+                method: "POST",
+                mode: "no-cors",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(db)
+            }).then(() => {
+                setSyncStatus("تم الحفظ في السحابة بنجاح ✅");
+            }).catch(err => {
+                setSyncStatus("محفوظ محلياً (حدث خطأ في الاتصال بالسحابة) ⚠️");
+            });
+        }
+
+        async function loadDBFromSheet() {
+            setSyncStatus("جاري جلب أحدث بيانات من Google Sheets... ⏳");
+            try {
+                let res = await fetch(GOOGLE_SHEET_API);
+                let data = await res.json();
+                if (data && typeof data === 'object' && Object.keys(data).length > 0) {
+                    db = data;
+                    localStorage.setItem('OFFGRID_DB', JSON.stringify(db));
+                    renderAll();
+                    setSyncStatus("تم المزامنة بنجاح من السحابة ✅");
+                } else {
+                    setSyncStatus("تم التحميل من الذاكرة المحلية ✅");
+                    renderAll();
+                }
+            } catch (err) {
+                console.log("التحميل من الذاكرة المحلية...");
+                setSyncStatus("العمل بالذاكرة المحلية (غير متصل) ⚠️");
+                renderAll();
+            }
+        }
 
         function switchTab(tabId, btn) {
             document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
@@ -369,7 +412,7 @@
             });
 
             e.target.reset(); saveDB();
-            alert(`تم حفظ العميل "${name}" وتسكين موعده يوم (${day}) بنجاح!`);
+            alert(`تم حفظ العميل "${name}" وتسكين موعده بنجاح!`);
         }
 
         function addMonthlySchedule(e) {
@@ -699,7 +742,8 @@
             }, 300);
         }
 
-        renderAll();
+        // تشغيل الجلب من السحابة أول ما تفتح الصفحة
+        loadDBFromSheet();
     </script>
 </body>
 </html>
