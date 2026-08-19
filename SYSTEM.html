@@ -39,6 +39,7 @@
         .btn-reload { background: rgba(255, 255, 255, 0.1); color: var(--lavender); border: 1px solid var(--card-border); padding: 10px; border-radius: 8px; cursor: pointer; font-size: 12px; }
 
         .kpi-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 15px; }
+        @media (min-width: 768px) { .kpi-grid { grid-template-columns: repeat(4, 1fr); } }
         .kpi-card { 
             background: var(--card-bg); border: 1px solid var(--card-border); 
             padding: 12px; border-radius: 10px; position: relative; overflow: hidden;
@@ -48,6 +49,7 @@
         .kpi-card.blue::before { background: var(--cobalt); }
         .kpi-card.gold::before { background: var(--gold); }
         .kpi-card.full-width { grid-column: span 2; }
+        @media (min-width: 768px) { .kpi-card.full-width { grid-column: span 4; } }
         .kpi-card h3 { font-size: 10px; color: rgba(249, 245, 255, 0.6); margin-bottom: 4px; }
         .kpi-card p { font-size: 15px; font-weight: 700; color: var(--lavender); }
 
@@ -55,7 +57,8 @@
             display: flex; gap: 8px; margin-bottom: 15px; 
             overflow-x: auto; padding-bottom: 8px; -webkit-overflow-scrolling: touch;
         }
-        .tabs-nav::-webkit-scrollbar { display: none; }
+        .tabs-nav::-webkit-scrollbar { height: 6px; }
+        .tabs-nav::-webkit-scrollbar-thumb { background: var(--card-border); border-radius: 10px; }
         .tab-btn { 
             background: var(--card-bg); color: var(--lavender); border: 1px solid var(--card-border); 
             padding: 8px 14px; border-radius: 20px; cursor: pointer; font-size: 12px; white-space: nowrap; flex-shrink: 0;
@@ -70,10 +73,12 @@
         .form-grid { display: flex; flex-direction: column; gap: 8px; margin-bottom: 15px; }
         .form-group { margin-bottom: 10px; }
         label { display: block; font-size: 11px; color: var(--text-gray); margin-bottom: 4px; }
+        
         input, select, textarea { 
             background: rgba(0, 0, 0, 0.3); border: 1px solid var(--card-border); 
             padding: 10px 12px; border-radius: 8px; color: var(--lavender); font-size: 13px; width: 100%;
         }
+        select option { background: #242526; color: #ffffff; padding: 8px; }
         input:focus, select:focus, textarea:focus { border-color: var(--mint); outline: none; }
         
         .checkbox-container { display: flex; align-items: center; gap: 8px; background: rgba(0,0,0,0.15); padding: 8px 12px; border-radius: 8px; border: 1px solid var(--card-border); }
@@ -611,6 +616,7 @@
         if (!db.monthSchedule) db.monthSchedule = [];
         if (!db.dailyIncome) db.dailyIncome = [];
         if (!db.scheduledPayments) db.scheduledPayments = [];
+        if (!db.employees || db.employees.length === 0) db.employees = defaultTeam;
         if (!db.manualWeekSubs) db.manualWeekSubs = { "1": false, "2": false, "3": false, "4": false };
 
         let servicesData = {
@@ -682,6 +688,7 @@
                         db = data;
                         if (!db.dailyIncome) db.dailyIncome = [];
                         if (!db.scheduledPayments) db.scheduledPayments = [];
+                        if (!db.employees || db.employees.length === 0) db.employees = defaultTeam;
                         if (!db.manualWeekSubs) db.manualWeekSubs = { "1": false, "2": false, "3": false, "4": false };
                         localStorage.setItem('OFFGRID_DB', JSON.stringify(db));
                         renderAll();
@@ -723,6 +730,7 @@
             if (!tbody) return;
             tbody.innerHTML = '';
             let selectElem = document.getElementById('service-select');
+            if (!selectElem) return;
             selectElem.innerHTML = '';
 
             for (let category in servicesData) {
@@ -778,6 +786,7 @@
         function renderPackageCart() {
             let container = document.getElementById('cart-items-container');
             let invoiceTbody = document.getElementById('invoice-tbody');
+            if (!container || !invoiceTbody) return;
             container.innerHTML = '';
             invoiceTbody.innerHTML = '';
 
@@ -806,7 +815,6 @@
                 `;
             });
 
-            // حساب الخصم بالنسبة المئوية
             let discountPercent = +document.getElementById('invoice-discount-input').value || 0;
             if (discountPercent > 100) discountPercent = 100;
             if (discountPercent < 0) discountPercent = 0;
@@ -1082,7 +1090,7 @@
             
             let weeklyExpectedIncome = 0;
             let breakdownContainer = document.getElementById('master-weekly-breakdown-list');
-            breakdownContainer.innerHTML = '';
+            if (breakdownContainer) breakdownContainer.innerHTML = '';
 
             if (includeSubs) {
                 db.clients.forEach(c => {
@@ -1090,37 +1098,43 @@
                         let share = (c.paid / 4);
                         weeklyExpectedIncome += share;
 
-                        breakdownContainer.innerHTML += `
-                            <div class="m-card-row" style="background: rgba(0,0,0,0.2); padding: 6px 10px; border-radius: 6px;">
-                                <span>👤 <strong style="color:var(--mint);">${c.name}</strong> <small style="color:rgba(255,255,255,0.5);">(اشتراك أسبوعي مضاف يدوياً)</small></span>
-                                <span style="color:var(--gold); font-weight:bold;">${Math.round(share).toLocaleString()} ج.م</span>
-                            </div>
-                        `;
+                        if (breakdownContainer) {
+                            breakdownContainer.innerHTML += `
+                                <div class="m-card-row" style="background: rgba(0,0,0,0.2); padding: 6px 10px; border-radius: 6px;">
+                                    <span>👤 <strong style="color:var(--mint);">${c.name}</strong> <small style="color:rgba(255,255,255,0.5);">(اشتراك أسبوعي مضاف يدوياً)</small></span>
+                                    <span style="color:var(--gold); font-weight:bold;">${Math.round(share).toLocaleString()} ج.م</span>
+                                </div>
+                            `;
+                        }
                     }
                 });
             }
 
             db.dailyIncome.filter(di => (di.week || '1') === selectedWeek).forEach(di => {
                 weeklyExpectedIncome += di.cost;
-                breakdownContainer.innerHTML += `
-                    <div class="m-card-row" style="background: rgba(0,0,0,0.2); padding: 6px 10px; border-radius: 6px;">
-                        <span>⚡ <strong style="color:var(--mint);">${di.client}</strong> <small style="color:rgba(255,255,255,0.5);">(خدمة: ${di.service})</small></span>
-                        <span style="color:var(--gold); font-weight:bold;">${di.cost.toLocaleString()} ج.م</span>
-                    </div>
-                `;
+                if (breakdownContainer) {
+                    breakdownContainer.innerHTML += `
+                        <div class="m-card-row" style="background: rgba(0,0,0,0.2); padding: 6px 10px; border-radius: 6px;">
+                            <span>⚡ <strong style="color:var(--mint);">${di.client}</strong> <small style="color:rgba(255,255,255,0.5);">(خدمة: ${di.service})</small></span>
+                            <span style="color:var(--gold); font-weight:bold;">${di.cost.toLocaleString()} ج.م</span>
+                        </div>
+                    `;
+                }
             });
 
             db.scheduledPayments.filter(p => p.week === selectedWeek && p.status === 'received').forEach(p => {
                 weeklyExpectedIncome += p.amount;
-                breakdownContainer.innerHTML += `
-                    <div class="m-card-row" style="background: rgba(0,0,0,0.2); padding: 6px 10px; border-radius: 6px;">
-                        <span>💳 <strong style="color:var(--mint);">${p.clientName}</strong> <small style="color:rgba(255,255,255,0.5);">(دفعة مجدولة مستلمة)</small></span>
-                        <span style="color:var(--gold); font-weight:bold;">${p.amount.toLocaleString()} ج.م</span>
-                    </div>
-                `;
+                if (breakdownContainer) {
+                    breakdownContainer.innerHTML += `
+                        <div class="m-card-row" style="background: rgba(0,0,0,0.2); padding: 6px 10px; border-radius: 6px;">
+                            <span>💳 <strong style="color:var(--mint);">${p.clientName}</strong> <small style="color:rgba(255,255,255,0.5);">(دفعة مجدولة مستلمة)</small></span>
+                            <span style="color:var(--gold); font-weight:bold;">${p.amount.toLocaleString()} ج.م</span>
+                        </div>
+                    `;
+                }
             });
 
-            if (breakdownContainer.innerHTML === '') {
+            if (breakdownContainer && breakdownContainer.innerHTML === '') {
                 breakdownContainer.innerHTML = `<div style="color:rgba(255,255,255,0.4); font-size:11px;">لا يوجد دخل مسجل أو مضاف لهذا الأسبوع حتى الآن</div>`;
             }
 
@@ -1131,37 +1145,49 @@
             document.getElementById('net-income').innerText = netIncome.toLocaleString() + " ج.م";
 
             let empOptions = db.employees.map(e => `<option value="${e.name}">${e.name} (${e.role})</option>`).join('');
-            document.getElementById('di-emp').innerHTML = empOptions;
-            document.getElementById('td-emp').innerHTML = empOptions;
-            document.getElementById('emp-select').innerHTML = db.employees.map((e, i) => `<option value="${i}">${e.name} (${e.role})</option>`).join('');
+            
+            let diEmpElem = document.getElementById('di-emp');
+            let tdEmpElem = document.getElementById('td-emp');
+            let empSelectElem = document.getElementById('emp-select');
+            
+            if (diEmpElem) diEmpElem.innerHTML = empOptions;
+            if (tdEmpElem) tdEmpElem.innerHTML = empOptions;
+            if (empSelectElem) empSelectElem.innerHTML = db.employees.map((e, i) => `<option value="${i}">${e.name} (${e.role})</option>`).join('');
 
             let reelsClientSelect = document.getElementById('rd-client-select');
-            let currentSelected = reelsClientSelect.value;
-            reelsClientSelect.innerHTML = `<option value="" disabled ${!currentSelected ? 'selected' : ''}>اختر العميل لتعديل تسليماته</option>` +
-                db.clients.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
-            if (currentSelected) reelsClientSelect.value = currentSelected;
+            if (reelsClientSelect) {
+                let currentSelected = reelsClientSelect.value;
+                reelsClientSelect.innerHTML = `<option value="" disabled ${!currentSelected ? 'selected' : ''}>اختر العميل لتعديل تسليماته</option>` +
+                    db.clients.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+                if (currentSelected) reelsClientSelect.value = currentSelected;
+            }
 
             let spClientSelect = document.getElementById('sp-client-select');
-            spClientSelect.innerHTML = `<option value="" disabled selected>اختر العميل لجدولة الدفعة</option>` +
-                db.clients.map(c => `<option value="${c.id}">${c.name} (المتبقي عليه: ${c.salary - c.paid} ج.م)</option>`).join('');
+            if (spClientSelect) {
+                spClientSelect.innerHTML = `<option value="" disabled selected>اختر العميل لجدولة الدفعة</option>` +
+                    db.clients.map(c => `<option value="${c.id}">${c.name} (المتبقي عليه: ${c.salary - c.paid} ج.م)</option>`).join('');
+            }
 
             let dailyList = document.getElementById('daily-income-mobile-list');
             let masterDailyContainer = document.getElementById('master-daily-container');
-            dailyList.innerHTML = ''; masterDailyContainer.innerHTML = '';
+            if (dailyList) dailyList.innerHTML = ''; 
+            if (masterDailyContainer) masterDailyContainer.innerHTML = '';
 
             db.dailyIncome.forEach(di => {
-                dailyList.innerHTML += `
-                    <div class="m-card">
-                        <div class="m-card-row"><span class="m-value" style="color:var(--mint); font-size:13px;">${di.client}</span><span class="badge badge-gold">الأسبوع ${di.week || '1'} - ${di.day}</span></div>
-                        <div class="m-card-row"><span class="m-label">الخدمة:</span><span class="m-value">${di.service}</span></div>
-                        <div class="m-card-row"><span class="m-label">القائم بالخدمة:</span><span class="m-value" style="color:var(--gold);">${di.empName}</span></div>
-                        <div class="m-card-row"><span class="m-label">تاريخ التسليم:</span><span class="m-value">${di.dueDate}</span></div>
-                        <div class="m-card-row"><span class="m-label">تكلفة الخدمة:</span><span class="m-value" style="color:var(--mint);">${di.cost.toLocaleString()} ج.م</span></div>
-                        <div style="text-align:left; margin-top:6px;"><button class="btn-del" onclick="deleteDailyIncome(${di.id})">حذف الخدمة</button></div>
-                    </div>
-                `;
+                if (dailyList) {
+                    dailyList.innerHTML += `
+                        <div class="m-card">
+                            <div class="m-card-row"><span class="m-value" style="color:var(--mint); font-size:13px;">${di.client}</span><span class="badge badge-gold">الأسبوع ${di.week || '1'} - ${di.day}</span></div>
+                            <div class="m-card-row"><span class="m-label">الخدمة:</span><span class="m-value">${di.service}</span></div>
+                            <div class="m-card-row"><span class="m-label">القائم بالخدمة:</span><span class="m-value" style="color:var(--gold);">${di.empName}</span></div>
+                            <div class="m-card-row"><span class="m-label">تاريخ التسليم:</span><span class="m-value">${di.dueDate}</span></div>
+                            <div class="m-card-row"><span class="m-label">تكلفة الخدمة:</span><span class="m-value" style="color:var(--mint);">${di.cost.toLocaleString()} ج.م</span></div>
+                            <div style="text-align:left; margin-top:6px;"><button class="btn-del" onclick="deleteDailyIncome(${di.id})">حذف الخدمة</button></div>
+                        </div>
+                    `;
+                }
 
-                if((di.week || '1') === selectedWeek) {
+                if((di.week || '1') === selectedWeek && masterDailyContainer) {
                     masterDailyContainer.innerHTML += `
                         <div class="m-card">
                             <div class="m-card-row"><span class="m-value">${di.client} (${di.day})</span><span style="color:var(--mint); font-weight:bold;">${di.cost.toLocaleString()} ج.م</span></div>
@@ -1173,175 +1199,206 @@
             });
 
             let spList = document.getElementById('scheduled-payments-list');
-            spList.innerHTML = '';
-            if (db.scheduledPayments.length === 0) {
-                spList.innerHTML = `<div style="color:rgba(255,255,255,0.4); font-size:11px;">لا توجد دفعات مجدولة حالياً</div>`;
-            } else {
-                db.scheduledPayments.forEach(p => {
-                    spList.innerHTML += `
-                        <div class="m-card" style="border-right: 4px solid ${p.status === 'received' ? 'var(--mint)' : 'var(--gold)'}">
-                            <div class="m-card-row"><span class="m-value" style="color:var(--mint); font-size:13px;">${p.clientName}</span><span class="badge ${p.status === 'received' ? 'badge-mint' : 'badge-gold'}">${p.status === 'received' ? '✅ تم الاستلام' : '⏳ معلقة'}</span></div>
-                            <div class="m-card-row"><span class="m-label">المبلغ المجدول:</span><span class="m-value" style="color:var(--gold-light); font-size:13px;">${p.amount.toLocaleString()} ج.م</span></div>
-                            <div class="m-card-row"><span class="m-label">تاريخ الاستحقاق:</span><span class="m-value">${p.dueDate} (الأسبوع ${p.week})</span></div>
-                            <div style="display:flex; justify-content:space-between; margin-top:8px; padding-top:6px; border-top:1px solid var(--card-border);">
-                                ${p.status === 'pending' ? `<button class="btn-pay" onclick="markPaymentAsReceived(${p.id})">✔ تم الاستلام</button>` : '<span></span>'}
-                                <button class="btn-del" onclick="deleteScheduledPayment(${p.id})">حذف</button>
+            if (spList) {
+                spList.innerHTML = '';
+                if (db.scheduledPayments.length === 0) {
+                    spList.innerHTML = `<div style="color:rgba(255,255,255,0.4); font-size:11px;">لا توجد دفعات مجدولة حالياً</div>`;
+                } else {
+                    db.scheduledPayments.forEach(p => {
+                        spList.innerHTML += `
+                            <div class="m-card" style="border-right: 4px solid ${p.status === 'received' ? 'var(--mint)' : 'var(--gold)'}">
+                                <div class="m-card-row"><span class="m-value" style="color:var(--mint); font-size:13px;">${p.clientName}</span><span class="badge ${p.status === 'received' ? 'badge-mint' : 'badge-gold'}">${p.status === 'received' ? '✅ تم الاستلام' : '⏳ معلقة'}</span></div>
+                                <div class="m-card-row"><span class="m-label">المبلغ المجدول:</span><span class="m-value" style="color:var(--gold-light); font-size:13px;">${p.amount.toLocaleString()} ج.م</span></div>
+                                <div class="m-card-row"><span class="m-label">تاريخ الاستحقاق:</span><span class="m-value">${p.dueDate} (الأسبوع ${p.week})</span></div>
+                                <div style="display:flex; justify-content:space-between; margin-top:8px; padding-top:6px; border-top:1px solid var(--card-border);">
+                                    ${p.status === 'pending' ? `<button class="btn-pay" onclick="markPaymentAsReceived(${p.id})">✔ تم الاستلام</button>` : '<span></span>'}
+                                    <button class="btn-del" onclick="deleteScheduledPayment(${p.id})">حذف</button>
+                                </div>
                             </div>
-                        </div>
-                    `;
-                });
+                        `;
+                    });
+                }
             }
 
             let weeksContainer = document.getElementById('weeks-container');
-            weeksContainer.innerHTML = '';
-            const weekNames = { '1': 'الأسبوع الأول', '2': 'الأسبوع الثاني', '3': 'الأسبوع الثالث', '4': 'الأسبوع الرابع' };
-            
-            ['1', '2', '3', '4'].forEach(wNum => {
-                let items = db.monthSchedule.filter(m => m.week === wNum);
-                items.sort((a, b) => daysOrder.indexOf(a.day) - daysOrder.indexOf(b.day));
-
-                weeksContainer.innerHTML += `<div class="week-title">${weekNames[wNum]}</div>`;
+            if (weeksContainer) {
+                weeksContainer.innerHTML = '';
+                const weekNames = { '1': 'الأسبوع الأول', '2': 'الأسبوع الثاني', '3': 'الأسبوع الثالث', '4': 'الأسبوع الرابع' };
                 
-                if(items.length === 0) {
-                    weeksContainer.innerHTML += `<div style="color:rgba(255,255,255,0.4); font-size:11px; margin-bottom:10px;">لا توجد مواعيد مسجلة</div>`;
-                } else {
-                    let listHtml = items.map(item => `
-                        <div class="m-card ${item.type === 'exceptional' ? 'exceptional' : ''}">
-                            <div class="m-card-row">
-                                <span class="m-value" style="color:${item.type === 'exceptional' ? '#ff5252' : 'var(--mint)'}">${item.client}</span>
-                                ${item.type === 'exceptional' ? '<span class="badge badge-red">استثنائي 🚨</span>' : '<span class="badge badge-mint">ثابت</span>'}
+                ['1', '2', '3', '4'].forEach(wNum => {
+                    let items = db.monthSchedule.filter(m => m.week === wNum);
+                    items.sort((a, b) => daysOrder.indexOf(a.day) - daysOrder.indexOf(b.day));
+
+                    weeksContainer.innerHTML += `<div class="week-title">${weekNames[wNum]}</div>`;
+                    
+                    if(items.length === 0) {
+                        weeksContainer.innerHTML += `<div style="color:rgba(255,255,255,0.4); font-size:11px; margin-bottom:10px;">لا توجد مواعيد مسجلة</div>`;
+                    } else {
+                        let listHtml = items.map(item => `
+                            <div class="m-card ${item.type === 'exceptional' ? 'exceptional' : ''}">
+                                <div class="m-card-row">
+                                    <span class="m-value" style="color:${item.type === 'exceptional' ? '#ff5252' : 'var(--mint)'}">${item.client}</span>
+                                    ${item.type === 'exceptional' ? '<span class="badge badge-red">استثنائي 🚨</span>' : '<span class="badge badge-mint">ثابت</span>'}
+                                </div>
+                                <div class="m-card-row"><span class="m-label">يوم التصوير:</span><span class="m-value" style="color:var(--gold);">${item.day}</span></div>
+                                <div class="m-card-row"><span class="m-label">المهمة:</span><span class="m-value">${item.task}</span></div>
+                                <div style="text-align:left; margin-top:4px;"><button class="btn-del" onclick="deleteItem('monthSchedule', ${item.id})">حذف الموعد</button></div>
                             </div>
-                            <div class="m-card-row"><span class="m-label">يوم التصوير:</span><span class="m-value" style="color:var(--gold);">${item.day}</span></div>
-                            <div class="m-card-row"><span class="m-label">المهمة:</span><span class="m-value">${item.task}</span></div>
-                            <div style="text-align:left; margin-top:4px;"><button class="btn-del" onclick="deleteItem('monthSchedule', ${item.id})">حذف الموعد</button></div>
-                        </div>
-                    `).join('');
+                        `).join('');
 
-                    weeksContainer.innerHTML += `<div class="mobile-card-list" style="margin-bottom:15px;">${listHtml}</div>`;
-                }
-            });
-
-            let masterWeeklyTbody = document.getElementById('master-weekly-details-tbody');
-            masterWeeklyTbody.innerHTML = '';
-
-            let weekItems = db.monthSchedule.filter(m => m.week === selectedWeek);
-            weekItems.sort((a, b) => daysOrder.indexOf(a.day) - daysOrder.indexOf(b.day));
-
-            if (weekItems.length === 0) {
-                masterWeeklyTbody.innerHTML = `<tr><td colspan="7" style="color:rgba(255,255,255,0.4);">لا توجد مواعيد تسكين في هذا الأسبوع</td></tr>`;
-            } else {
-                weekItems.forEach(item => {
-                    let clientObj = db.clients.find(c => c.name.trim() === item.client.trim());
-                    let reelsDelivered = clientObj ? (clientObj.delivered || 0) : 0;
-                    let reelsTotal = clientObj ? clientObj.reels : 0;
-                    let reelsRemaining = reelsTotal - reelsDelivered;
-                    let totalSalary = clientObj ? clientObj.salary : 0;
-                    let totalPaid = clientObj ? clientObj.paid : 0;
-                    let totalPending = totalSalary - totalPaid;
-
-                    masterWeeklyTbody.innerHTML += `
-                        <tr>
-                            <td style="font-weight:bold; color:var(--mint);">${item.client}</td>
-                            <td style="color:var(--gold); font-weight:bold;">${item.day}</td>
-                            <td>${reelsDelivered} / ${reelsTotal}</td>
-                            <td style="color:${reelsRemaining > 0 ? '#ff5252' : 'var(--mint)'}; font-weight:bold;">${reelsRemaining}</td>
-                            <td>${totalSalary.toLocaleString()}</td>
-                            <td style="color:var(--mint); font-weight:bold;">${totalPaid.toLocaleString()}</td>
-                            <td style="color:var(--red); font-weight:bold;">${totalPending.toLocaleString()}</td>
-                        </tr>
-                    `;
+                        weeksContainer.innerHTML += `<div class="mobile-card-list" style="margin-bottom:15px;">${listHtml}</div>`;
+                    }
                 });
             }
 
-            document.getElementById('clients-mobile-list').innerHTML = db.clients.map(c => `
-                <div class="m-card">
-                    <div class="m-card-row"><span class="m-value" style="font-size:14px; color:var(--mint);">${c.name}</span><span class="m-label">${c.phone}</span></div>
-                    <div class="m-card-row"><span class="m-label">يوم التصوير الثابت:</span><span class="m-value" style="color:var(--gold);">${c.day}</span></div>
-                    <div class="m-card-row"><span class="m-label">الماليات (المدفوع / الإجمالي):</span><span class="m-value">${c.paid} / ${c.salary} ج.م</span></div>
-                    <div class="m-card-row"><span class="m-label">المتبقي في السوق:</span><span class="m-value" style="color:var(--red);">${c.salary - c.paid} ج.م</span></div>
-                    <div style="display:flex; justify-content:space-between; margin-top:8px; padding-top:6px; border-top:1px solid var(--card-border);">
-                        <button class="btn-pay" onclick="addPayment(${c.id})">+ دفع مباشر</button>
-                        <button class="btn-del" onclick="deleteItem('clients', ${c.id})">حذف</button>
-                    </div>
-                </div>
-            `).join('');
+            let masterWeeklyTbody = document.getElementById('master-weekly-details-tbody');
+            if (masterWeeklyTbody) {
+                masterWeeklyTbody.innerHTML = '';
 
-            document.getElementById('reels-deliveries-mobile-list').innerHTML = db.clients.map(c => {
-                let delivered = c.delivered || 0;
-                let remaining = c.reels - delivered;
-                return `
+                let weekItems = db.monthSchedule.filter(m => m.week === selectedWeek);
+                weekItems.sort((a, b) => daysOrder.indexOf(a.day) - daysOrder.indexOf(b.day));
+
+                if (weekItems.length === 0) {
+                    masterWeeklyTbody.innerHTML = `<tr><td colspan="7" style="color:rgba(255,255,255,0.4);">لا توجد مواعيد تسكين في هذا الأسبوع</td></tr>`;
+                } else {
+                    weekItems.forEach(item => {
+                        let clientObj = db.clients.find(c => c.name.trim() === item.client.trim());
+                        let reelsDelivered = clientObj ? (clientObj.delivered || 0) : 0;
+                        let reelsTotal = clientObj ? clientObj.reels : 0;
+                        let reelsRemaining = reelsTotal - reelsDelivered;
+                        let totalSalary = clientObj ? clientObj.salary : 0;
+                        let totalPaid = clientObj ? clientObj.paid : 0;
+                        let totalPending = totalSalary - totalPaid;
+
+                        masterWeeklyTbody.innerHTML += `
+                            <tr>
+                                <td style="font-weight:bold; color:var(--mint);">${item.client}</td>
+                                <td style="color:var(--gold); font-weight:bold;">${item.day}</td>
+                                <td>${reelsDelivered} / ${reelsTotal}</td>
+                                <td style="color:${reelsRemaining > 0 ? '#ff5252' : 'var(--mint)'}; font-weight:bold;">${reelsRemaining}</td>
+                                <td>${totalSalary.toLocaleString()}</td>
+                                <td style="color:var(--mint); font-weight:bold;">${totalPaid.toLocaleString()}</td>
+                                <td style="color:var(--red); font-weight:bold;">${totalPending.toLocaleString()}</td>
+                            </tr>
+                        `;
+                    });
+                }
+            }
+
+            let clientsMobileList = document.getElementById('clients-mobile-list');
+            if (clientsMobileList) {
+                clientsMobileList.innerHTML = db.clients.map(c => `
                     <div class="m-card">
-                        <div class="m-card-row"><span class="m-value" style="font-size:14px; color:var(--mint);">${c.name}</span><span class="badge badge-mint">${c.day}</span></div>
-                        <div class="m-card-row"><span class="m-label">الريلز (المسلم / المطلوب):</span><span class="m-value" style="color:var(--gold);">${delivered} / ${c.reels}</span></div>
-                        <div class="m-card-row"><span class="m-label">المتبقي للإنتاج والتسليم:</span><span class="m-value" style="color:${remaining > 0 ? '#ff5252' : 'var(--mint)'};">${remaining} فيديو</span></div>
-                        <div style="margin-top:6px; padding-top:6px; border-top:1px dashed var(--card-border);">
-                            <span class="m-label" style="display:block; margin-bottom:2px;">عناوين الفيديوهات المسلمة:</span>
-                            <div style="color:var(--lavender); font-size:11px; white-space:pre-wrap;">${c.titles ? c.titles : '<span style="color:rgba(255,255,255,0.3);">لا توجد عناوين مسجلة حتى الآن</span>'}</div>
+                        <div class="m-card-row"><span class="m-value" style="font-size:14px; color:var(--mint);">${c.name}</span><span class="m-label">${c.phone}</span></div>
+                        <div class="m-card-row"><span class="m-label">يوم التصوير الثابت:</span><span class="m-value" style="color:var(--gold);">${c.day}</span></div>
+                        <div class="m-card-row"><span class="m-label">الماليات (المدفوع / الإجمالي):</span><span class="m-value">${c.paid} / ${c.salary} ج.م</span></div>
+                        <div class="m-card-row"><span class="m-label">المتبقي في السوق:</span><span class="m-value" style="color:var(--red);">${c.salary - c.paid} ج.م</span></div>
+                        <div style="display:flex; justify-content:space-between; margin-top:8px; padding-top:6px; border-top:1px solid var(--card-border);">
+                            <button class="btn-pay" onclick="addPayment(${c.id})">+ دفع مباشر</button>
+                            <button class="btn-del" onclick="deleteItem('clients', ${c.id})">حذف</button>
                         </div>
                     </div>
-                `;
-            }).join('');
+                `).join('');
+            }
+
+            let reelsDeliveriesList = document.getElementById('reels-deliveries-mobile-list');
+            if (reelsDeliveriesList) {
+                reelsDeliveriesList.innerHTML = db.clients.map(c => {
+                    let delivered = c.delivered || 0;
+                    let remaining = c.reels - delivered;
+                    return `
+                        <div class="m-card">
+                            <div class="m-card-row"><span class="m-value" style="font-size:14px; color:var(--mint);">${c.name}</span><span class="badge badge-mint">${c.day}</span></div>
+                            <div class="m-card-row"><span class="m-label">الريلز (المسلم / المطلوب):</span><span class="m-value" style="color:var(--gold);">${delivered} / ${c.reels}</span></div>
+                            <div class="m-card-row"><span class="m-label">المتبقي للإنتاج والتسليم:</span><span class="m-value" style="color:${remaining > 0 ? '#ff5252' : 'var(--mint)'};">${remaining} فيديو</span></div>
+                            <div style="margin-top:6px; padding-top:6px; border-top:1px dashed var(--card-border);">
+                                <span class="m-label" style="display:block; margin-bottom:2px;">عناوين الفيديوهات المسلمة:</span>
+                                <div style="color:var(--lavender); font-size:11px; white-space:pre-wrap;">${c.titles ? c.titles : '<span style="color:rgba(255,255,255,0.3);">لا توجد عناوين مسجلة حتى الآن</span>'}</div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
 
             let tasksList = document.getElementById('tasks-mobile-list');
             let masterTasksContainer = document.getElementById('master-tasks-container');
-            tasksList.innerHTML = ''; masterTasksContainer.innerHTML = '';
+            if (tasksList) tasksList.innerHTML = ''; 
+            if (masterTasksContainer) masterTasksContainer.innerHTML = '';
 
             db.taskDeliveries.forEach(t => {
-                tasksList.innerHTML += `
-                    <div class="m-card" style="border-right: 4px solid ${t.delivered ? 'var(--mint)' : 'var(--red)'};">
-                        <div class="m-card-row"><span class="m-label">الموظف:</span><span class="m-value" style="color:var(--gold);">${t.empName}</span></div>
-                        <div class="m-card-row"><span class="m-label">المطلـوب:</span><span class="m-value">${t.task}</span></div>
-                        <div class="m-card-row"><span class="m-label">ميعاد التسليم:</span><span class="m-value">${t.dueDate}</span></div>
-                        <div class="m-card-row"><span class="badge ${t.delivered ? 'badge-mint' : 'badge-red'}">${t.delivered ? '✅ تم التسليم' : '❌ لم يتم التسليم'}</span></div>
-                        <div style="display:flex; justify-content:space-between; margin-top:8px; padding-top:6px; border-top:1px solid var(--card-border);">
-                            <button class="btn-pay" onclick="toggleTaskDelivery(${t.id})">تغيير الحالة</button>
-                            <button class="btn-del" onclick="deleteItem('taskDeliveries', ${t.id})">حذف</button>
+                if (tasksList) {
+                    tasksList.innerHTML += `
+                        <div class="m-card" style="border-right: 4px solid ${t.delivered ? 'var(--mint)' : 'var(--red)'};">
+                            <div class="m-card-row"><span class="m-label">الموظف:</span><span class="m-value" style="color:var(--gold);">${t.empName}</span></div>
+                            <div class="m-card-row"><span class="m-label">المطلـوب:</span><span class="m-value">${t.task}</span></div>
+                            <div class="m-card-row"><span class="m-label">ميعاد التسليم:</span><span class="m-value">${t.dueDate}</span></div>
+                            <div class="m-card-row"><span class="badge ${t.delivered ? 'badge-mint' : 'badge-red'}">${t.delivered ? '✅ تم التسليم' : '❌ لم يتم التسليم'}</span></div>
+                            <div style="display:flex; justify-content:space-between; margin-top:8px; padding-top:6px; border-top:1px solid var(--card-border);">
+                                <button class="btn-pay" onclick="toggleTaskDelivery(${t.id})">تغيير الحالة</button>
+                                <button class="btn-del" onclick="deleteItem('taskDeliveries', ${t.id})">حذف</button>
+                            </div>
                         </div>
-                    </div>
-                `;
+                    `;
+                }
 
-                masterTasksContainer.innerHTML += `
-                    <div class="m-card">
-                        <div class="m-card-row"><span class="m-value">${t.empName}</span><span class="badge ${t.delivered ? 'badge-mint' : 'badge-red'}">${t.delivered ? 'تم التسليم' : 'لم يتم التسليم'}</span></div>
-                        <div class="m-card-row"><span class="m-label">المهمة:</span><span class="m-value">${t.task}</span></div>
-                    </div>
-                `;
+                if (masterTasksContainer) {
+                    masterTasksContainer.innerHTML += `
+                        <div class="m-card">
+                            <div class="m-card-row"><span class="m-value">${t.empName}</span><span class="badge ${t.delivered ? 'badge-mint' : 'badge-red'}">${t.delivered ? 'تم التسليم' : 'لم يتم التسليم'}</span></div>
+                            <div class="m-card-row"><span class="m-label">المهمة:</span><span class="m-value">${t.task}</span></div>
+                        </div>
+                    `;
+                }
             });
 
-            document.getElementById('needs-mobile-list').innerHTML = db.officeNeeds.map((item, index) => `
-                <div class="m-card">
-                    <div class="m-card-row"><span class="m-value">${index + 1}. ${item.item}</span><span class="m-value" style="color:var(--gold);">${item.cost ? item.cost + ' ج.م' : '-'}</span></div>
-                    <div style="text-align:left; margin-top:4px;"><button class="btn-del" onclick="deleteItem('officeNeeds', ${item.id})">حذف</button></div>
-                </div>
-            `).join('');
+            let needsMobileList = document.getElementById('needs-mobile-list');
+            if (needsMobileList) {
+                needsMobileList.innerHTML = db.officeNeeds.map((item, index) => `
+                    <div class="m-card">
+                        <div class="m-card-row"><span class="m-value">${index + 1}. ${item.item}</span><span class="m-value" style="color:var(--gold);">${item.cost ? item.cost + ' ج.م' : '-'}</span></div>
+                        <div style="text-align:left; margin-top:4px;"><button class="btn-del" onclick="deleteItem('officeNeeds', ${item.id})">حذف</button></div>
+                    </div>
+                `).join('');
+            }
 
-            document.getElementById('master-needs-container').innerHTML = db.officeNeeds.map((item, index) => `
-                <div class="m-card"><div class="m-card-row"><span>${index + 1}. ${item.item}</span><span style="color:var(--gold);">${item.cost ? item.cost + ' ج.م' : '-'}</span></div></div>
-            `).join('');
+            let masterNeedsContainer = document.getElementById('master-needs-container');
+            if (masterNeedsContainer) {
+                masterNeedsContainer.innerHTML = db.officeNeeds.map((item, index) => `
+                    <div class="m-card"><div class="m-card-row"><span>${index + 1}. ${item.item}</span><span style="color:var(--gold);">${item.cost ? item.cost + ' ج.م' : '-'}</span></div></div>
+                `).join('');
+            }
 
-            document.getElementById('team-mobile-list').innerHTML = db.employees.map((e, i) => `
-                <div class="m-card">
-                    <div class="m-card-row"><span class="m-value">${e.name} ${e.isOwner ? '👑' : ''}</span><span class="badge ${e.isOwner ? 'badge-gold' : 'badge-mint'}">${e.role}</span></div>
-                    <div class="m-card-row"><span class="m-label">المستهدف/الراتب:</span><span class="m-value" onclick="updateBaseSalary(${i})">${e.baseSalary || 0} ج.م ✏️</span></div>
-                    <div class="m-card-row"><span class="m-label">المسحوب:</span><span class="m-value" style="color:var(--mint);">${e.paid} ج.م</span></div>
-                </div>
-            `).join('');
+            let teamMobileList = document.getElementById('team-mobile-list');
+            if (teamMobileList) {
+                teamMobileList.innerHTML = db.employees.map((e, i) => `
+                    <div class="m-card">
+                        <div class="m-card-row"><span class="m-value">${e.name} ${e.isOwner ? '👑' : ''}</span><span class="badge ${e.isOwner ? 'badge-gold' : 'badge-mint'}">${e.role}</span></div>
+                        <div class="m-card-row"><span class="m-label">المستهدف/الراتب:</span><span class="m-value" onclick="updateBaseSalary(${i})">${e.baseSalary || 0} ج.م ✏️</span></div>
+                        <div class="m-card-row"><span class="m-label">المسحوب:</span><span class="m-value" style="color:var(--mint);">${e.paid} ج.م</span></div>
+                    </div>
+                `).join('');
+            }
 
-            document.getElementById('expenses-mobile-list').innerHTML = db.expenses.map(e => `
-                <div class="m-card">
-                    <div class="m-card-row"><span class="m-value">${e.title}</span><span class="m-value" style="color:var(--red);">${e.amount} ج.م</span></div>
-                    <div style="text-align:left; margin-top:4px;"><button class="btn-del" onclick="deleteItem('expenses', ${e.id})">حذف</button></div>
-                </div>
-            `).join('');
+            let expensesMobileList = document.getElementById('expenses-mobile-list');
+            if (expensesMobileList) {
+                expensesMobileList.innerHTML = db.expenses.map(e => `
+                    <div class="m-card">
+                        <div class="m-card-row"><span class="m-value">${e.title}</span><span class="m-value" style="color:var(--red);">${e.amount} ج.م</span></div>
+                        <div style="text-align:left; margin-top:4px;"><button class="btn-del" onclick="deleteItem('expenses', ${e.id})">حذف</button></div>
+                    </div>
+                `).join('');
+            }
 
             let masterList = document.getElementById('master-mobile-list');
-            masterList.innerHTML = '';
-            db.clients.forEach(c => masterList.innerHTML += `
-                <div class="m-card">
-                    <div class="m-card-row"><span class="badge badge-mint">عميل اشتراك</span><span class="m-value">${c.name}</span></div>
-                    <div class="m-card-row"><span class="m-label">المحصل:</span><span class="m-value" style="color:var(--mint);">${c.paid} ج.م</span></div>
-                </div>
-            `);
+            if (masterList) {
+                masterList.innerHTML = '';
+                db.clients.forEach(c => masterList.innerHTML += `
+                    <div class="m-card">
+                        <div class="m-card-row"><span class="badge badge-mint">عميل اشتراك</span><span class="m-value">${c.name}</span></div>
+                        <div class="m-card-row"><span class="m-label">المحصل:</span><span class="m-value" style="color:var(--mint);">${c.paid} ج.م</span></div>
+                    </div>
+                `);
+            }
 
             document.getElementById('m-total-rev').innerText = rev.toLocaleString() + " ج.م";
             document.getElementById('m-week-income').innerText = Math.round(weeklyExpectedIncome).toLocaleString() + " ج.م";
@@ -1370,10 +1427,13 @@
             }, 300);
         }
 
-        window.onload = function() {
+        // إجبار النظام على بناء القوائم والعناصر فوراً
+        document.addEventListener("DOMContentLoaded", function() {
+            renderAll();
             loadDBFromSheet();
-            document.getElementById('inv-number').innerText = "#OG-" + Math.floor(1000 + Math.random() * 9000);
-        };
+            let invNumElem = document.getElementById('inv-number');
+            if (invNumElem) invNumElem.innerText = "#OG-" + Math.floor(1000 + Math.random() * 9000);
+        });
     </script>
 </body>
 </html>
