@@ -616,6 +616,7 @@
         if (!db.monthSchedule) db.monthSchedule = [];
         if (!db.dailyIncome) db.dailyIncome = [];
         if (!db.scheduledPayments) db.scheduledPayments = [];
+        if (!db.expenses) db.expenses = [];
         if (!db.employees || db.employees.length === 0) db.employees = defaultTeam;
         if (!db.manualWeekSubs) db.manualWeekSubs = { "1": false, "2": false, "3": false, "4": false };
 
@@ -688,6 +689,7 @@
                         db = data;
                         if (!db.dailyIncome) db.dailyIncome = [];
                         if (!db.scheduledPayments) db.scheduledPayments = [];
+                        if (!db.expenses) db.expenses = [];
                         if (!db.employees || db.employees.length === 0) db.employees = defaultTeam;
                         if (!db.manualWeekSubs) db.manualWeekSubs = { "1": false, "2": false, "3": false, "4": false };
                         localStorage.setItem('OFFGRID_DB', JSON.stringify(db));
@@ -856,6 +858,19 @@
             });
         }
 
+        function exportReportImage() {
+            let reportElement = document.getElementById('exportable-report-area');
+            html2canvas(reportElement, {
+                backgroundColor: '#18191A',
+                scale: 2
+            }).then(canvas => {
+                let link = document.createElement('a');
+                link.download = `OFFGRID_Master_Report.png`;
+                link.href = canvas.toDataURL("image/png");
+                link.click();
+            });
+        }
+
         function addDailyIncome(e) {
             e.preventDefault();
             let week = document.getElementById('di-week').value;
@@ -877,7 +892,7 @@
                 id: Date.now() + 1,
                 dailyRefId: incomeId,
                 empName: empName,
-                task: `[خدمة يومية - ${week}] ${service} - للعميل: ${client}`,
+                task: `[خدمة يومية - الأسبوع ${week}] ${service} - للعميل: ${client}`,
                 dueDate: dueDate,
                 delivered: false
             });
@@ -1144,6 +1159,12 @@
             document.getElementById('total-expenses').innerText = totalExp.toLocaleString() + " ج.م";
             document.getElementById('net-income').innerText = netIncome.toLocaleString() + " ج.م";
 
+            document.getElementById('m-total-rev').innerText = rev.toLocaleString() + " ج.م";
+            document.getElementById('m-week-income').innerText = Math.round(weeklyExpectedIncome).toLocaleString() + " ج.م";
+            document.getElementById('m-total-pend').innerText = pend.toLocaleString() + " ج.م";
+            document.getElementById('m-total-exp').innerText = totalExp.toLocaleString() + " ج.م";
+            document.getElementById('m-net-income').innerText = netIncome.toLocaleString() + " ج.م";
+
             let empOptions = db.employees.map(e => `<option value="${e.name}">${e.name} (${e.role})</option>`).join('');
             
             let diEmpElem = document.getElementById('di-emp');
@@ -1286,6 +1307,7 @@
             }
 
             let clientsMobileList = document.getElementById('clients-mobile-list');
+            let masterMobileList = document.getElementById('master-mobile-list');
             if (clientsMobileList) {
                 clientsMobileList.innerHTML = db.clients.map(c => `
                     <div class="m-card">
@@ -1297,6 +1319,16 @@
                             <button class="btn-pay" onclick="addPayment(${c.id})">+ دفع مباشر</button>
                             <button class="btn-del" onclick="deleteItem('clients', ${c.id})">حذف</button>
                         </div>
+                    </div>
+                `).join('');
+            }
+
+            if (masterMobileList) {
+                masterMobileList.innerHTML = db.clients.map(c => `
+                    <div class="m-card">
+                        <div class="m-card-row"><span class="m-value" style="color:var(--mint);">${c.name}</span><span class="m-value" style="color:var(--gold);">${c.salary} ج.م</span></div>
+                        <div class="m-card-row"><span class="m-label">المحصّل:</span><span style="color:var(--mint);">${c.paid} ج.م</span></div>
+                        <div class="m-card-row"><span class="m-label">المتبقي:</span><span style="color:var(--red);">${c.salary - c.paid} ج.م</span></div>
                     </div>
                 `).join('');
             }
@@ -1383,57 +1415,23 @@
             if (expensesMobileList) {
                 expensesMobileList.innerHTML = db.expenses.map(e => `
                     <div class="m-card">
-                        <div class="m-card-row"><span class="m-value">${e.title}</span><span class="m-value" style="color:var(--red);">${e.amount} ج.م</span></div>
-                        <div style="text-align:left; margin-top:4px;"><button class="btn-del" onclick="deleteItem('expenses', ${e.id})">حذف</button></div>
+                        <div class="m-card-row"><span class="m-value">${e.title}</span><span class="m-value" style="color:var(--red);">${e.amount.toLocaleString()} ج.م</span></div>
+                        <div style="text-align:left; margin-top:4px;"><button class="btn-del" onclick="deleteItem('expenses', ${e.id})">حذف المصروف</button></div>
                     </div>
                 `).join('');
             }
+        }
 
-            let masterList = document.getElementById('master-mobile-list');
-            if (masterList) {
-                masterList.innerHTML = '';
-                db.clients.forEach(c => masterList.innerHTML += `
-                    <div class="m-card">
-                        <div class="m-card-row"><span class="badge badge-mint">عميل اشتراك</span><span class="m-value">${c.name}</span></div>
-                        <div class="m-card-row"><span class="m-label">المحصل:</span><span class="m-value" style="color:var(--mint);">${c.paid} ج.م</span></div>
-                    </div>
-                `);
-            }
-
-            document.getElementById('m-total-rev').innerText = rev.toLocaleString() + " ج.م";
-            document.getElementById('m-week-income').innerText = Math.round(weeklyExpectedIncome).toLocaleString() + " ج.م";
-            document.getElementById('m-total-pend').innerText = pend.toLocaleString() + " ج.م";
-            document.getElementById('m-total-exp').innerText = totalExp.toLocaleString() + " ج.م";
-            document.getElementById('m-net-income').innerText = netIncome.toLocaleString() + " ج.م";
+        // Initialize on Load
+        window.onload = function() {
+            let today = new Date().toISOString().split('T')[0];
+            let invDateElem = document.getElementById('inv-date');
+            if (invDateElem) invDateElem.innerText = today;
 
             renderPriceControlTable();
-            let invDateElem = document.getElementById('inv-date');
-            if (invDateElem) invDateElem.innerText = new Date().toLocaleDateString('ar-EG');
-        }
-
-        function exportReportImage() {
-            let masterBtn = document.querySelectorAll('.tab-btn')[9];
-            switchTab('master-tab', masterBtn);
-
-            setTimeout(() => {
-                let area = document.getElementById('exportable-report-area');
-                html2canvas(area, { backgroundColor: '#18191A', scale: 2 }).then(canvas => {
-                    let image = canvas.toDataURL("image/png");
-                    let link = document.createElement('a');
-                    link.download = `OFFGRID_Report_${new Date().toISOString().slice(0,10)}.png`;
-                    link.href = image;
-                    link.click();
-                });
-            }, 300);
-        }
-
-        // إجبار النظام على بناء القوائم والعناصر فوراً
-        document.addEventListener("DOMContentLoaded", function() {
-            renderAll();
+            renderPackageCart();
             loadDBFromSheet();
-            let invNumElem = document.getElementById('inv-number');
-            if (invNumElem) invNumElem.innerText = "#OG-" + Math.floor(1000 + Math.random() * 9000);
-        });
+        };
     </script>
 </body>
 </html>
