@@ -102,6 +102,7 @@
         
         .btn-del { background: rgba(229, 57, 53, 0.2); color: #ff5252; border: 1px solid var(--red); padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 11px; }
         .btn-pay { background: rgba(78, 166, 153, 0.2); color: var(--mint); border: 1px solid var(--mint); padding: 4px 8px; border-radius: 4px; cursor: pointer; font-weight: 600; font-size: 11px; }
+        .btn-reset { background: rgba(212, 175, 55, 0.2); color: var(--gold); border: 1px solid var(--gold); padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 11px; }
 
         .summary-card { background: rgba(0, 0, 0, 0.4); border: 1px solid var(--mint); border-radius: 8px; padding: 12px; margin-top: 10px; }
         .summary-item { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid var(--card-border); }
@@ -487,8 +488,23 @@
 
     <!-- TAB: الموظفين والملاّك -->
     <div id="team-tab" class="tab-content">
+        <!-- قسم تعيين موظف جديد -->
         <div class="panel">
-            <div class="panel-header">تسجيل سحبيات / مسحوبات مالية</div>
+            <div class="panel-header">👤 تعيين موظف / فرد جديد بالفريق</div>
+            <form class="form-grid" onsubmit="addEmployee(event)">
+                <input type="text" id="new-emp-name" placeholder="اسم الموظف" required>
+                <input type="text" id="new-emp-role" placeholder="المسمى الوظيفي (مثال: مونتير، مصور...)" required>
+                <input type="number" id="new-emp-salary" placeholder="الراتب الأساسي / المستهدف" value="0">
+                <select id="new-emp-type" required>
+                    <option value="false">موظف عادي</option>
+                    <option value="true">Owner / شريك مؤسس 👑</option>
+                </select>
+                <button type="submit" class="btn-add" style="background: var(--mint); color: #000;">إضافة الموظف للفريق ➕</button>
+            </form>
+        </div>
+
+        <div class="panel">
+            <div class="panel-header">💸 تسجيل سحبيات / مسحوبات مالية</div>
             <form class="form-grid" onsubmit="paySalary(event)">
                 <select id="emp-select"></select>
                 <input type="number" id="emp-paid-amount" placeholder="المبلغ المستلم" required>
@@ -598,11 +614,11 @@
         const daysOrder = ["السبت", "الأحد", "الإثنين", "الثلاثاء", "الأربعاء", "الخميس", "الجمعة"];
 
         let defaultTeam = [
-            { name: "الفا", role: "Owner / الشريك المؤسس", isOwner: true, baseSalary: 0, paid: 0 },
-            { name: "حمدي", role: "Owner / الشريك المؤسس", isOwner: true, baseSalary: 0, paid: 0 },
-            { name: "حمو", role: "مونتير", isOwner: false, baseSalary: 0, paid: 0 },
-            { name: "زين", role: "تطوير الأعمال والتنفيذ", isOwner: false, baseSalary: 0, paid: 0 },
-            { name: "مريم", role: "كول سنتر و سيلز", isOwner: false, baseSalary: 0, paid: 0 }
+            { id: 1, name: "الفا", role: "Owner / الشريك المؤسس", isOwner: true, baseSalary: 0, paid: 0 },
+            { id: 2, name: "حمدي", role: "Owner / الشريك المؤسس", isOwner: true, baseSalary: 0, paid: 0 },
+            { id: 3, name: "حمو", role: "مونتير", isOwner: false, baseSalary: 0, paid: 0 },
+            { id: 4, name: "زين", role: "تطوير الأعمال والتنفيذ", isOwner: false, baseSalary: 0, paid: 0 },
+            { id: 5, name: "مريم", role: "كول سنتر و سيلز", isOwner: false, baseSalary: 0, paid: 0 }
         ];
 
         let db = JSON.parse(localStorage.getItem('OFFGRID_DB')) || {
@@ -1063,11 +1079,53 @@
             }
         }
 
+        // --- وظائف إدارة وتعيين ورفد الموظفين والسحبيات ---
+        function addEmployee(e) {
+            e.preventDefault();
+            let name = document.getElementById('new-emp-name').value;
+            let role = document.getElementById('new-emp-role').value;
+            let baseSalary = +document.getElementById('new-emp-salary').value || 0;
+            let isOwner = document.getElementById('new-emp-type').value === "true";
+
+            db.employees.push({
+                id: Date.now(),
+                name,
+                role,
+                isOwner,
+                baseSalary,
+                paid: 0
+            });
+
+            e.target.reset();
+            saveDB();
+            alert(`تم تعيين الموظف "${name}" بنجاح وإضافته للفريق 🚀`);
+        }
+
+        function deleteEmployee(empIdx) {
+            let emp = db.employees[empIdx];
+            if (confirm(`هل أنت تأكد من رفد/حذف الموظف "${emp.name}" من الفريق نهائياً؟`)) {
+                db.employees.splice(empIdx, 1);
+                saveDB();
+            }
+        }
+
+        function resetEmployeeWithdrawals(empIdx) {
+            let emp = db.employees[empIdx];
+            if (confirm(`هل تريد تصفير سحبيات الموظف (${emp.name}) وحسبتها من جديد؟`)) {
+                emp.paid = 0;
+                saveDB();
+            }
+        }
+
         function paySalary(e) {
             e.preventDefault();
             let idx = document.getElementById('emp-select').value;
-            db.employees[idx].paid += +document.getElementById('emp-paid-amount').value;
-            e.target.reset(); saveDB();
+            if (db.employees[idx]) {
+                db.employees[idx].paid += +document.getElementById('emp-paid-amount').value;
+                e.target.reset(); 
+                saveDB();
+                alert("تم تسجيل السحب للموظف بنجاح ✅");
+            }
         }
 
         function updateBaseSalary(empIdx) {
@@ -1404,9 +1462,22 @@
             if (teamMobileList) {
                 teamMobileList.innerHTML = db.employees.map((e, i) => `
                     <div class="m-card">
-                        <div class="m-card-row"><span class="m-value">${e.name} ${e.isOwner ? '👑' : ''}</span><span class="badge ${e.isOwner ? 'badge-gold' : 'badge-mint'}">${e.role}</span></div>
-                        <div class="m-card-row"><span class="m-label">المستهدف/الراتب:</span><span class="m-value" onclick="updateBaseSalary(${i})">${e.baseSalary || 0} ج.م ✏️</span></div>
-                        <div class="m-card-row"><span class="m-label">المسحوب:</span><span class="m-value" style="color:var(--mint);">${e.paid} ج.م</span></div>
+                        <div class="m-card-row">
+                            <span class="m-value">${e.name} ${e.isOwner ? '👑' : ''}</span>
+                            <span class="badge ${e.isOwner ? 'badge-gold' : 'badge-mint'}">${e.role}</span>
+                        </div>
+                        <div class="m-card-row">
+                            <span class="m-label">المستهدف/الراتب:</span>
+                            <span class="m-value" onclick="updateBaseSalary(${i})" style="cursor:pointer;">${e.baseSalary || 0} ج.م ✏️</span>
+                        </div>
+                        <div class="m-card-row">
+                            <span class="m-label">المسحوب حالياً:</span>
+                            <span class="m-value" style="color:var(--mint);">${e.paid} ج.م</span>
+                        </div>
+                        <div style="display:flex; justify-content:space-between; margin-top:8px; padding-top:6px; border-top:1px solid var(--card-border);">
+                            <button class="btn-reset" onclick="resetEmployeeWithdrawals(${i})">تصفير السحب 🔄</button>
+                            <button class="btn-del" onclick="deleteEmployee(${i})">رفد / حذف 🗑️</button>
+                        </div>
                     </div>
                 `).join('');
             }
