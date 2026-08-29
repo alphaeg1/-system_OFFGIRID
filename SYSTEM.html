@@ -185,7 +185,7 @@
         <div class="kpi-card red"><h3>المتبقي في السوق (مبيعات آجل)</h3><p id="total-pending">0 ج.م</p></div>
         <div class="kpi-card gold"><h3>دخل هذا الأسبوع</h3><p id="weekly-expected-income">0 ج.م</p></div>
         <div class="kpi-card red"><h3>المصروفات والرواتب</h3><p id="total-expenses">0 ج.م</p></div>
-        <div class="kpi-card purple"><h3>إجمالي المديونيات لِلغير (دائنون)</h3><p id="total-liabilities">0 ج.m</p></div>
+        <div class="kpi-card purple"><h3>إجمالي المديونيات لِلغير (دائنون)</h3><p id="total-liabilities">0 ج.م</p></div>
         <div class="kpi-card blue full-width"><h3>صافي الأرباح المحاسبية (الأرباح الكلية)</h3><p id="net-income">0 ج.م</p></div>
     </div>
 
@@ -792,545 +792,1086 @@
                         renderAll();
                         setSyncStatus("تمت المزامنة بنجاح من السحابة ✅");
                     } else {
-                        setSyncStatus("تم التحميل من الذاكرة المحلية ✅");
-                        renderAll();
+                        setSyncStatus("تعذر جلب البيانات. الاعتماد على النسخة المحلية ⚠️");
                     }
-                } catch (err) {
-                    console.error("خطأ المعالجة:", err);
-                    setSyncStatus("يعمل محلياً (خطأ في صيغة البيانات) ⚠️");
-                    renderAll();
-                } finally {
-                    delete window[callbackName];
-                    if (script.parentNode) script.parentNode.removeChild(script);
+                } catch(e) {
+                    setSyncStatus("خطأ بالبيانات السحابية ⚠️");
                 }
+                delete window[callbackName];
+                document.body.removeChild(script);
             };
 
-            script.src = `${GOOGLE_SHEET_API}?callback=${callbackName}`;
+            script.src = GOOGLE_SHEET_API + "?callback=" + callbackName;
             script.onerror = function() {
-                setSyncStatus("العمل محلياً (تعذر جلب بيانات السحابة) ⚠️");
-                renderAll();
+                setSyncStatus("فشل الاتصال بالسحابة! ⚠️");
                 delete window[callbackName];
-                if (script.parentNode) script.parentNode.removeChild(script);
+                document.body.removeChild(script);
             };
-            
             document.body.appendChild(script);
         }
 
         function switchTab(tabId, btn) {
-            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(tb => tb.classList.remove('active'));
             document.getElementById(tabId).classList.add('active');
-            if(btn) btn.classList.add('active');
+            btn.classList.add('active');
         }
 
-        // --- وظائف المديونية المحاسبية ---
-        function addDebt(e) {
-            e.preventDefault();
-            let creditor = document.getElementById('debt-creditor').value;
-            let amount = +document.getElementById('debt-amount').value || 0;
-            let reason = document.getElementById('debt-reason').value;
-            let account = document.getElementById('debt-linked-account').value;
-
-            db.debts.push({
-                id: Date.now(),
-                creditor,
-                amount,
-                reason,
-                account,
-                paidAmount: 0,
-                status: 'pending'
-            });
-
-            e.target.reset();
-            saveDB();
-            alert("تم تسجيل المديونية بنجاح وربطها بالدائنين! 📜");
-        }
-
-        function payDebt(debtId) {
-            let amount = prompt("أدخل المبلغ المراد تسديده للدائن:");
-            if (amount && !isNaN(amount) && +amount > 0) {
-                let debt = db.debts.find(d => d.id === debtId);
-                if (debt) {
-                    debt.paidAmount += +amount;
-                    if (debt.paidAmount >= debt.amount) {
-                        debt.status = 'cleared';
-                    }
-                    saveDB();
-                    alert("تم سداد المبلغ وتسجيل الحركة المحاسبية بنجاح! ✅");
-                }
-            }
-        }
-
-        function deleteDebt(debtId) {
-            db.debts = db.debts.filter(d => d.id !== debtId);
-            saveDB();
-        }
-
-        // --- وظائف المبيعات والخدمات ---
-        function addDailyIncome(e) {
-            e.preventDefault();
-            let week = document.getElementById('di-week').value;
-            let day = document.getElementById('di-day').value;
-            let client = document.getElementById('di-client').value;
-            let service = document.getElementById('di-service').value;
-            let empName = document.getElementById('di-emp').value;
-            let dueDate = document.getElementById('di-date').value;
-            let cost = +document.getElementById('di-cost').value || 0;
-
-            let incomeId = Date.now();
-
-            db.dailyIncome.push({
-                id: incomeId, week, day, client, service, empName, dueDate, cost
-            });
-
-            db.taskDeliveries.push({
-                id: Date.now() + 1,
-                dailyRefId: incomeId,
-                empName: empName,
-                task: `[خدمة يومية - الأسبوع ${week}] ${service} - للعميل: ${client}`,
-                dueDate: dueDate,
-                delivered: false
-            });
-
-            e.target.reset(); saveDB();
-            alert("تم تسجيل الخدمة وتسكينها لمهام الموظف والتحصيل بنجاح 🚀");
-        }
-
-        function deleteDailyIncome(id) {
-            db.dailyIncome = db.dailyIncome.filter(item => item.id !== id);
-            db.taskDeliveries = db.taskDeliveries.filter(item => item.dailyRefId !== id);
-            saveDB();
-        }
-
-        function addClient(e) {
-            e.preventDefault();
-            let name = document.getElementById('c-name').value;
-            let phone = document.getElementById('c-phone').value;
-            let reels = +document.getElementById('c-reels').value;
-            let salary = +document.getElementById('c-salary').value;
-            let paid = +document.getElementById('c-paid').value;
-            let day = document.getElementById('c-day').value;
-
-            let clientId = Date.now();
-            db.clients.push({ id: clientId, name, phone, reels, salary, paid, day, delivered: 0, titles: '' });
-
-            ['1', '2', '3', '4'].forEach(w => {
-                db.monthSchedule.push({
-                    id: Date.now() + Math.random(),
-                    week: w, day: day, client: name, type: 'normal', task: 'تصوير ثابت'
-                });
-            });
-
-            e.target.reset(); saveDB();
-            alert(`تم حفظ العميل "${name}" بنجاح وتسكين مواعيده حسب أيام الأسبوع!`);
-        }
-
-        function addMonthlySchedule(e) {
-            e.preventDefault();
-            let isRepeat = document.getElementById('ms-repeat').checked;
-            let day = document.getElementById('ms-day').value;
-            let client = document.getElementById('ms-client').value;
-            let type = document.getElementById('ms-type').value;
-            let task = document.getElementById('ms-task').value || 'تصوير';
-
-            if (isRepeat) {
-                ['1', '2', '3', '4'].forEach(w => {
-                    db.monthSchedule.push({ id: Date.now() + Math.random(), week: w, day, client, type, task });
-                });
-            } else {
-                let week = document.getElementById('ms-week').value;
-                db.monthSchedule.push({ id: Date.now(), week, day, client, type, task });
-            }
-            e.target.reset(); saveDB();
-        }
-
-        // --- وظائف إضافة الموظف وأنظمة التاسكات والشهري ---
         function toggleEmpPayFields(type) {
-            if (type === 'task') {
-                document.getElementById('monthly-salary-field').style.display = 'none';
-                document.getElementById('task-salary-field').style.display = 'block';
-            } else {
+            if (type === 'monthly') {
                 document.getElementById('monthly-salary-field').style.display = 'block';
                 document.getElementById('task-salary-field').style.display = 'none';
+            } else {
+                document.getElementById('monthly-salary-field').style.display = 'none';
+                document.getElementById('task-salary-field').style.display = 'block';
             }
         }
 
         function addEmployee(e) {
             e.preventDefault();
-            let name = document.getElementById('new-emp-name').value;
-            let role = document.getElementById('new-emp-role').value;
-            let payType = document.getElementById('new-emp-pay-type').value;
-            let baseSalary = +document.getElementById('new-emp-salary').value || 0;
-            let taskRate = +document.getElementById('new-emp-task-rate').value || 0;
-            let isOwner = document.getElementById('new-emp-type').value === "true";
+            const name = document.getElementById('new-emp-name').value;
+            const role = document.getElementById('new-emp-role').value;
+            const payType = document.getElementById('new-emp-pay-type').value;
+            const baseSalary = parseFloat(document.getElementById('new-emp-salary').value) || 0;
+            const taskRate = parseFloat(document.getElementById('new-emp-task-rate').value) || 0;
+            const isOwner = document.getElementById('new-emp-type').value === 'true';
 
-            db.employees.push({ 
-                id: Date.now(), 
-                name, 
-                role, 
-                isOwner, 
-                payType, 
-                baseSalary, 
-                taskRate, 
-                totalTasks: 0, 
-                paidTasks: 0, 
-                paid: 0 
+            db.employees.push({
+                id: Date.now(),
+                name, role, isOwner, payType, baseSalary, taskRate,
+                totalTasks: 0, paidTasks: 0, paid: 0
             });
-            e.target.reset(); saveDB();
-            alert(`تم تعيين الموظف "${name}" بنجاح وإضافته للفريق 🚀`);
+
+            saveDB();
+            e.target.reset();
         }
 
         function updateEmpTasks(e) {
             e.preventDefault();
-            let empId = +document.getElementById('task-emp-select').value;
-            let addedTasks = +document.getElementById('task-completed-add').value || 0;
+            const empId = parseInt(document.getElementById('task-emp-select').value);
+            const addedTasks = parseInt(document.getElementById('task-completed-add').value) || 0;
 
-            let emp = db.employees.find(e => e.id === empId);
+            const emp = db.employees.find(x => x.id === empId);
             if (emp) {
                 emp.totalTasks = (emp.totalTasks || 0) + addedTasks;
                 saveDB();
-                alert(`تم إدراج ${addedTasks} تاسك جديدة للموظف "${emp.name}" بنجاح! 🎯`);
                 e.target.reset();
             }
         }
 
         function paySalary(e) {
             e.preventDefault();
-            let idx = document.getElementById('emp-select').value;
-            let amount = +document.getElementById('emp-paid-amount').value || 0;
-            let emp = db.employees[idx];
-            if (emp && amount > 0) {
-                emp.paid += amount;
+            const empId = parseInt(document.getElementById('emp-select').value);
+            const paid = parseFloat(document.getElementById('emp-paid-amount').value) || 0;
 
-                // تسوية أعداد التاسكات المحاسبية إذا كان شغال بالتاسك
+            const emp = db.employees.find(x => x.id === empId);
+            if (emp) {
+                emp.paid += paid;
+
                 if (emp.payType === 'task' && emp.taskRate > 0) {
-                    let newlyPaidTasks = Math.floor(amount / emp.taskRate);
-                    emp.paidTasks = (emp.paidTasks || 0) + newlyPaidTasks;
+                    const tasksPaidFor = Math.floor(paid / emp.taskRate);
+                    emp.paidTasks = (emp.paidTasks || 0) + tasksPaidFor;
                 }
 
-                e.target.reset(); saveDB();
-                alert("تم تسجيل صرف الدفعة والسحبيات بنجاح ✅");
+                saveDB();
+                e.target.reset();
             }
+        }
+
+        function deleteEmployee(id) {
+            if (confirm('هل أنت تأكد من حذف الموظف؟')) {
+                db.employees = db.employees.filter(x => x.id !== id);
+                saveDB();
+            }
+        }
+
+        function addDailyIncome(e) {
+            e.preventDefault();
+            const week = document.getElementById('di-week').value;
+            const day = document.getElementById('di-day').value;
+            const client = document.getElementById('di-client').value;
+            const service = document.getElementById('di-service').value;
+            const empName = document.getElementById('di-emp').value;
+            const date = document.getElementById('di-date').value;
+            const cost = parseFloat(document.getElementById('di-cost').value) || 0;
+
+            db.dailyIncome.push({ id: Date.now(), week, day, client, service, empName, date, cost });
+
+            db.taskDeliveries.push({
+                id: Date.now(),
+                empName: empName,
+                task: `خدمة يومية لـ ${client}: ${service}`,
+                date: date,
+                done: false
+            });
+
+            saveDB();
+            e.target.reset();
+        }
+
+        function deleteDailyIncome(id) {
+            db.dailyIncome = db.dailyIncome.filter(x => x.id !== id);
+            saveDB();
+        }
+
+        function addDebt(e) {
+            e.preventDefault();
+            const creditor = document.getElementById('debt-creditor').value;
+            const amount = parseFloat(document.getElementById('debt-amount').value) || 0;
+            const reason = document.getElementById('debt-reason').value;
+            const linkedAccount = document.getElementById('debt-linked-account').value;
+
+            db.debts.push({ id: Date.now(), creditor, amount, reason, linkedAccount, paid: 0 });
+            saveDB();
+            e.target.reset();
+        }
+
+        function payDebt(id) {
+            const debt = db.debts.find(d => d.id === id);
+            if (debt) {
+                const amount = parseFloat(prompt(`تسديد جزء أو كل المديونية لـ (${debt.creditor})\nالمتبقي: ${debt.amount - debt.paid} ج.م`)) || 0;
+                if (amount > 0) {
+                    debt.paid += amount;
+                    db.expenses.push({
+                        id: Date.now(),
+                        title: `تسديد دائن مديونية: ${debt.creditor} (${debt.reason})`,
+                        amount: amount
+                    });
+                    saveDB();
+                }
+            }
+        }
+
+        function deleteDebt(id) {
+            if (confirm('هل أنت متاكد من حذف المديونية؟')) {
+                db.debts = db.debts.filter(d => d.id !== id);
+                saveDB();
+            }
+        }
+
+        function addMonthlySchedule(e) {
+            e.preventDefault();
+            const week = document.getElementById('ms-week').value;
+            const day = document.getElementById('ms-day').value;
+            const client = document.getElementById('ms-client').value;
+            const type = document.getElementById('ms-type').value;
+            const task = document.getElementById('ms-task').value;
+            const repeat = document.getElementById('ms-repeat').checked;
+
+            if (repeat) {
+                for (let w = 1; w <= 4; w++) {
+                    db.monthSchedule.push({ id: Date.now() + w, week: w.toString(), day, client, type, task });
+                }
+            } else {
+                db.monthSchedule.push({ id: Date.now(), week, day, client, type, task });
+            }
+
+            saveDB();
+            e.target.reset();
+        }
+
+        function deleteMonthlySchedule(id) {
+            db.monthSchedule = db.monthSchedule.filter(x => x.id !== id);
+            saveDB();
+        }
+
+        function addClient(e) {
+            e.preventDefault();
+            const name = document.getElementById('c-name').value;
+            const phone = document.getElementById('c-phone').value;
+            const reels = parseInt(document.getElementById('c-reels').value) || 0;
+            const salary = parseFloat(document.getElementById('c-salary').value) || 0;
+            const paid = parseFloat(document.getElementById('c-paid').value) || 0;
+            const day = document.getElementById('c-day').value;
+
+            db.clients.push({ id: Date.now(), name, phone, reels, salary, paid, day, deliveredReels: 0, deliveredTitles: "" });
+
+            for (let w = 1; w <= 4; w++) {
+                db.monthSchedule.push({
+                    id: Date.now() + w,
+                    week: w.toString(),
+                    day: day,
+                    client: name,
+                    type: "normal",
+                    task: "تصوير ريلز أسبوعي"
+                });
+            }
+
+            saveDB();
+            e.target.reset();
+        }
+
+        function payClient(id) {
+            const client = db.clients.find(c => c.id === id);
+            if (client) {
+                const amount = parseFloat(prompt(`تحصيل دفعة إضافية من العميل: ${client.name}\nالمتبقي عليه: ${client.salary - client.paid} ج.م`)) || 0;
+                if (amount > 0) {
+                    client.paid += amount;
+                    saveDB();
+                }
+            }
+        }
+
+        function deleteClient(id) {
+            if (confirm('هل أنت متاكد من حذف العميل؟')) {
+                db.clients = db.clients.filter(c => c.id !== id);
+                saveDB();
+            }
+        }
+
+        function addScheduledPayment(e) {
+            e.preventDefault();
+            const clientId = parseInt(document.getElementById('sp-client-select').value);
+            const amount = parseFloat(document.getElementById('sp-amount').value) || 0;
+            const date = document.getElementById('sp-date').value;
+            const week = document.getElementById('sp-week').value;
+
+            const client = db.clients.find(c => c.id === clientId);
+            if (client) {
+                db.scheduledPayments.push({
+                    id: Date.now(),
+                    clientId: client.id,
+                    clientName: client.name,
+                    amount: amount,
+                    date: date,
+                    week: week,
+                    collected: false
+                });
+                saveDB();
+                e.target.reset();
+            }
+        }
+
+        function collectScheduledPayment(id) {
+            const sp = db.scheduledPayments.find(p => p.id === id);
+            if (sp && !sp.collected) {
+                sp.collected = true;
+                const client = db.clients.find(c => c.id === sp.clientId);
+                if (client) {
+                    client.paid += sp.amount;
+                }
+                saveDB();
+            }
+        }
+
+        function deleteScheduledPayment(id) {
+            db.scheduledPayments = db.scheduledPayments.filter(p => p.id !== id);
+            saveDB();
+        }
+
+        function updateClientReelsDelivery(e) {
+            e.preventDefault();
+            const clientId = parseInt(document.getElementById('rd-client-select').value);
+            const delivered = parseInt(document.getElementById('rd-delivered').value) || 0;
+            const titles = document.getElementById('rd-titles').value;
+
+            const client = db.clients.find(c => c.id === clientId);
+            if (client) {
+                client.deliveredReels = delivered;
+                client.deliveredTitles = titles;
+                saveDB();
+                alert('تم تحديث حالة تسليم الفيديوهات بنجاح ✅');
+            }
+        }
+
+        function onReelsClientSelectChange(elem) {
+            const clientId = parseInt(elem.value);
+            const client = db.clients.find(c => c.id === clientId);
+            if (client) {
+                document.getElementById('rd-delivered').value = client.deliveredReels || 0;
+                document.getElementById('rd-titles').value = client.deliveredTitles || "";
+            }
+        }
+
+        function addTaskDelivery(e) {
+            e.preventDefault();
+            const empName = document.getElementById('td-emp').value;
+            const task = document.getElementById('td-task').value;
+            const date = document.getElementById('td-date').value;
+
+            db.taskDeliveries.push({ id: Date.now(), empName, task, date, done: false });
+            saveDB();
+            e.target.reset();
+        }
+
+        function toggleTaskDone(id) {
+            const task = db.taskDeliveries.find(t => t.id === id);
+            if (task) {
+                task.done = !task.done;
+                saveDB();
+            }
+        }
+
+        function deleteTaskDelivery(id) {
+            db.taskDeliveries = db.taskDeliveries.filter(t => t.id !== id);
+            saveDB();
+        }
+
+        function addOfficeNeed(e) {
+            e.preventDefault();
+            const item = document.getElementById('on-item').value;
+            const cost = parseFloat(document.getElementById('on-cost').value) || 0;
+
+            db.officeNeeds.push({ id: Date.now(), item, cost, bought: false });
+            saveDB();
+            e.target.reset();
+        }
+
+        function toggleNeedBought(id) {
+            const need = db.officeNeeds.find(n => n.id === id);
+            if (need) {
+                need.bought = !need.bought;
+                saveDB();
+            }
+        }
+
+        function deleteOfficeNeed(id) {
+            db.officeNeeds = db.officeNeeds.filter(n => n.id !== id);
+            saveDB();
         }
 
         function addExpense(e) {
             e.preventDefault();
-            db.expenses.push({ id: Date.now(), title: document.getElementById('e-title').value, amount: +document.getElementById('e-amount').value });
-            e.target.reset(); saveDB();
+            const title = document.getElementById('e-title').value;
+            const amount = parseFloat(document.getElementById('e-amount').value) || 0;
+
+            db.expenses.push({ id: Date.now(), title, amount });
+            saveDB();
+            e.target.reset();
         }
 
-        function deleteItem(type, id) { db[type] = db[type].filter(item => item.id !== id); saveDB(); }
+        function deleteExpense(id) {
+            db.expenses = db.expenses.filter(e => e.id !== id);
+            saveDB();
+        }
 
-        // --- وظائف الفواتير ---
-        function renderPriceControlTable() {
-            let tbody = document.getElementById('price-control-tbody');
-            if (!tbody) return;
+        function toggleManualSubscriptions(checked) {
+            const currentWeek = document.getElementById('report-week-select').value;
+            db.manualWeekSubs[currentWeek] = checked;
+            saveDB();
+        }
+
+        function initPriceControlTable() {
+            const tbody = document.getElementById('price-control-tbody');
+            const select = document.getElementById('service-select');
+            if (!tbody || !select) return;
+
             tbody.innerHTML = '';
-            let selectElem = document.getElementById('service-select');
-            if (!selectElem) return;
-            selectElem.innerHTML = '';
+            select.innerHTML = '';
 
-            for (let category in servicesData) {
-                servicesData[category].forEach((item, index) => {
-                    tbody.innerHTML += `
-                        <tr>
-                            <td style="color:var(--mint); font-weight:bold;">${category}</td>
-                            <td>${item.name}</td>
-                            <td><input type="number" value="${item.price}" onchange="updateServicePrice('${category}', ${index}, this.value)"></td>
-                        </tr>
+            for (let cat in servicesData) {
+                servicesData[cat].forEach((item, idx) => {
+                    let tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${cat}</td>
+                        <td>${item.name}</td>
+                        <td><input type="number" value="${item.price}" data-cat="${cat}" data-idx="${idx}" class="price-input-item"></td>
                     `;
-                    selectElem.innerHTML += `<option value="${category}|${item.name}|${item.price}">[${category}] ${item.name} (${item.price} ج.م)</option>`;
+                    tbody.appendChild(tr);
+
+                    let opt = document.createElement('option');
+                    opt.value = `${cat}||${item.name}||${item.price}`;
+                    opt.innerText = `[${cat}] ${item.name} - ${item.price} ج.م`;
+                    select.appendChild(opt);
                 });
             }
         }
 
-        function updateServicePrice(category, index, newPrice) { servicesData[category][index].price = +newPrice || 0; }
-        function saveCustomPrices() { localStorage.setItem('OFFGRID_PRICES', JSON.stringify(servicesData)); renderPriceControlTable(); alert("تم حفظ الأسعار الجديدة بنجاح! 💾"); }
+        function saveCustomPrices() {
+            const inputs = document.querySelectorAll('.price-input-item');
+            inputs.forEach(inp => {
+                const cat = inp.getAttribute('data-cat');
+                const idx = parseInt(inp.getAttribute('data-idx'));
+                const newPrice = parseFloat(inp.value) || 0;
+                servicesData[cat][idx].price = newPrice;
+            });
+            localStorage.setItem('OFFGRID_PRICES', JSON.stringify(servicesData));
+            initPriceControlTable();
+            alert('تم حفظ أسعار الخدمات المعدلة بنجاح ✅');
+        }
 
         function addItemToPackage() {
-            let selectVal = document.getElementById('service-select').value;
-            let qty = +document.getElementById('service-qty').value || 1;
-            if (!selectVal) return;
-            let [category, name, price] = selectVal.split('|');
-            currentPackage.push({ category, name, price: +price, qty: qty, total: +price * qty });
+            const selVal = document.getElementById('service-select').value;
+            const qty = parseInt(document.getElementById('service-qty').value) || 1;
+            if (!selVal) return;
+
+            const parts = selVal.split('||');
+            const cat = parts[0];
+            const name = parts[1];
+            const unitPrice = parseFloat(parts[2]);
+
+            currentPackage.push({ id: Date.now(), cat, name, unitPrice, qty });
+            renderPackageCart();
+        }
+
+        function removeItemFromPackage(id) {
+            currentPackage = currentPackage.filter(i => i.id !== id);
             renderPackageCart();
         }
 
         function renderPackageCart() {
-            let container = document.getElementById('cart-items-container');
-            let invoiceTbody = document.getElementById('invoice-tbody');
-            if (!container || !invoiceTbody) return;
-            container.innerHTML = ''; invoiceTbody.innerHTML = '';
-            let subtotal = 0;
+            const cartContainer = document.getElementById('cart-items-container');
+            const invTbody = document.getElementById('invoice-tbody');
+            if (!cartContainer || !invTbody) return;
 
-            currentPackage.forEach((item, idx) => {
-                subtotal += item.total;
-                container.innerHTML += `
-                    <div class="cart-item">
-                        <div><strong>${item.name} (${item.category})</strong><br><span>العدد: ${item.qty} × ${item.price} = ${item.total} ج.م</span></div>
-                        <button class="btn-del" onclick="currentPackage.splice(${idx},1); renderPackageCart();">حذف</button>
+            cartContainer.innerHTML = '';
+            invTbody.innerHTML = '';
+
+            let subtotal = 0;
+            const discountPercent = parseFloat(document.getElementById('invoice-discount-input').value) || 0;
+
+            currentPackage.forEach(item => {
+                let total = item.unitPrice * item.qty;
+                subtotal += total;
+
+                let cItem = document.createElement('div');
+                cItem.className = 'cart-item';
+                cItem.innerHTML = `
+                    <div>
+                        <div style="font-weight:bold;">${item.name}</div>
+                        <div style="font-size:11px; color:var(--text-gray);">${item.qty} × ${item.unitPrice} ج.م</div>
+                    </div>
+                    <div style="display:flex; align-items:center; gap:10px;">
+                        <span style="color:var(--mint); font-weight:bold;">${total} ج.م</span>
+                        <button class="btn-del" onclick="removeItemFromPackage(${item.id})">❌</button>
                     </div>
                 `;
-                invoiceTbody.innerHTML += `
-                    <tr>
-                        <td><strong>${item.name}</strong><br><small style="color:var(--text-gray);">${item.category}</small></td>
-                        <td style="text-align:center;">${item.qty}</td>
-                        <td style="text-align:center;">${item.price.toLocaleString()} ج.م</td>
-                        <td style="text-align:left; font-weight:bold; color:var(--gold-light);">${item.total.toLocaleString()} ج.م</td>
-                    </tr>
+                cartContainer.appendChild(cItem);
+
+                let itr = document.createElement('tr');
+                itr.innerHTML = `
+                    <td>${item.name}</td>
+                    <td style="text-align:center;">${item.qty}</td>
+                    <td style="text-align:center;">${item.unitPrice}</td>
+                    <td style="text-align:left; color:var(--gold-light); font-weight:bold;">${total} ج.م</td>
                 `;
+                invTbody.appendChild(itr);
             });
 
-            let discountPercent = +document.getElementById('invoice-discount-input').value || 0;
             let discountAmount = (subtotal * discountPercent) / 100;
             let grandTotal = subtotal - discountAmount;
 
-            document.getElementById('inv-subtotal-price').innerText = subtotal.toLocaleString() + " ج.م";
-            let discountRow = document.getElementById('inv-discount-row');
+            document.getElementById('inv-subtotal-price').innerText = `${subtotal} ج.م`;
+            
+            const discRow = document.getElementById('inv-discount-row');
             if (discountPercent > 0) {
-                discountRow.style.display = 'flex';
+                discRow.style.display = 'flex';
                 document.getElementById('inv-discount-percent').innerText = discountPercent;
-                document.getElementById('inv-discount-amount').innerText = "-" + discountAmount.toLocaleString() + " ج.م";
-            } else { discountRow.style.display = 'none'; }
-            document.getElementById('inv-total-price').innerText = grandTotal.toLocaleString() + " ج.م";
+                document.getElementById('inv-discount-amount').innerText = `-${discountAmount} ج.م`;
+            } else {
+                discRow.style.display = 'none';
+            }
+
+            document.getElementById('inv-total-price').innerText = `${grandTotal} ج.م`;
         }
 
         function updateInvoiceHeader() {
-            let clientName = document.getElementById('client-name-input').value || "عميل جديد";
-            document.getElementById('inv-client-name').innerText = clientName;
+            const clientInput = document.getElementById('client-name-input').value;
+            document.getElementById('inv-client-name').innerText = clientInput || "عميل جديد";
         }
 
         function downloadInvoice() {
-            html2canvas(document.getElementById('invoice-card-element'), { backgroundColor: '#0f1012', scale: 2 }).then(canvas => {
+            const element = document.getElementById('invoice-card-element');
+            html2canvas(element, { scale: 2, backgroundColor: '#0f1012' }).then(canvas => {
                 let link = document.createElement('a');
-                link.download = `Invoice_OFFGRID.png`; link.href = canvas.toDataURL("image/png"); link.click();
+                link.download = `Invoice_${Date.now()}.png`;
+                link.href = canvas.toDataURL();
+                link.click();
             });
         }
 
         function exportReportImage() {
-            html2canvas(document.getElementById('exportable-report-area'), { backgroundColor: '#18191A', scale: 2 }).then(canvas => {
+            const element = document.getElementById('exportable-report-area');
+            html2canvas(element, { scale: 2, backgroundColor: '#18191A' }).then(canvas => {
                 let link = document.createElement('a');
-                link.download = `OFFGRID_Master_Accounting_Report.png`; link.href = canvas.toDataURL("image/png"); link.click();
+                link.download = `Full_Report_Week_${document.getElementById('report-week-select').value}_${Date.now()}.png`;
+                link.href = canvas.toDataURL();
+                link.click();
             });
         }
 
-        // --- الدالة الرئيسية للحسابات والتشغيل (renderAll) ---
         function renderAll() {
-            let clientRev = db.clients.reduce((a, b) => a + b.paid, 0);
-            let dailyRev = db.dailyIncome.reduce((a, b) => a + b.cost, 0);
-            let rev = clientRev + dailyRev;
-
-            let pend = db.clients.reduce((a, b) => a + (b.salary - b.paid), 0);
-            let empPaidTotal = db.employees.reduce((a, b) => a + b.paid, 0);
-            let expOffice = db.expenses.reduce((a, b) => a + b.amount, 0);
+            const selectedWeek = document.getElementById('report-week-select').value;
             
-            // حساب المديونيات المتبقية للغير
-            let totalDebts = db.debts.reduce((a, b) => a + (b.amount - b.paidAmount), 0);
-            let totalExp = expOffice + empPaidTotal;
-            let netIncome = rev - totalExp;
+            let totalRev = 0;
+            let totalPend = 0;
+            let totalExp = 0;
+            let totalDebts = 0;
 
-            let selectedWeek = document.getElementById('report-week-select') ? document.getElementById('report-week-select').value : '1';
-            let includeSubs = db.manualWeekSubs[selectedWeek] || false;
-
-            let selectedWeekClients = db.monthSchedule.filter(m => m.week === selectedWeek).map(m => m.client.trim());
-            let weeklyExpectedIncome = 0;
-            let breakdownContainer = document.getElementById('master-weekly-breakdown-list');
-            if (breakdownContainer) breakdownContainer.innerHTML = '';
-
-            if (includeSubs) {
-                db.clients.forEach(c => {
-                    if (selectedWeekClients.includes(c.name.trim())) {
-                        let share = (c.paid / 4);
-                        weeklyExpectedIncome += share;
-                        if (breakdownContainer) {
-                            breakdownContainer.innerHTML += `
-                                <div class="m-card-row" style="background: rgba(0,0,0,0.2); padding: 6px 10px; border-radius: 6px;">
-                                    <span>👤 <strong style="color:var(--mint);">${c.name}</strong> <small style="color:rgba(255,255,255,0.5);">(اشتراك أسبوعي مضاف)</small></span>
-                                    <span style="color:var(--gold); font-weight:bold;">${Math.round(share).toLocaleString()} ج.م</span>
-                                </div>
-                            `;
-                        }
-                    }
-                });
-            }
-
-            db.dailyIncome.filter(di => (di.week || '1') === selectedWeek).forEach(di => {
-                weeklyExpectedIncome += di.cost;
-                if (breakdownContainer) {
-                    breakdownContainer.innerHTML += `
-                        <div class="m-card-row" style="background: rgba(0,0,0,0.2); padding: 6px 10px; border-radius: 6px;">
-                            <span>⚡ <strong style="color:var(--mint);">${di.client}</strong> <small style="color:rgba(255,255,255,0.5);">(خدمة: ${di.service})</small></span>
-                            <span style="color:var(--gold); font-weight:bold;">${di.cost.toLocaleString()} ج.م</span>
-                        </div>
-                    `;
-                }
+            db.clients.forEach(c => {
+                totalRev += c.paid;
+                totalPend += (c.salary - c.paid);
             });
 
-            // تحديث كروت الإحصائيات (KPIs)
-            document.getElementById('total-revenue').innerText = rev.toLocaleString() + " ج.م";
-            document.getElementById('total-pending').innerText = pend.toLocaleString() + " ج.م";
-            document.getElementById('weekly-expected-income').innerText = Math.round(weeklyExpectedIncome).toLocaleString() + " ج.م";
-            document.getElementById('total-expenses').innerText = totalExp.toLocaleString() + " ج.م";
-            document.getElementById('total-liabilities').innerText = totalDebts.toLocaleString() + " ج.م";
-            document.getElementById('net-income').innerText = netIncome.toLocaleString() + " ج.م";
+            db.dailyIncome.forEach(d => {
+                totalRev += d.cost;
+            });
 
-            document.getElementById('m-total-rev').innerText = rev.toLocaleString() + " ج.م";
-            document.getElementById('m-week-income').innerText = Math.round(weeklyExpectedIncome).toLocaleString() + " ج.م";
-            document.getElementById('m-total-pend').innerText = pend.toLocaleString() + " ج.م";
-            document.getElementById('m-total-debts').innerText = totalDebts.toLocaleString() + " ج.م";
-            document.getElementById('m-total-exp').innerText = totalExp.toLocaleString() + " ج.م";
-            document.getElementById('m-net-income').innerText = netIncome.toLocaleString() + " ج.م";
+            db.expenses.forEach(e => {
+                totalExp += e.amount;
+            });
 
-            // 1. عرض جدول المحاسبة والتسويات المحاسبية (Trial Balance)
-            let trialTbody = document.getElementById('trial-balance-tbody');
-            if (trialTbody) {
-                trialTbody.innerHTML = `
-                    <tr>
-                        <td style="text-align:right; font-weight:bold;">حساب الخزينة والتحصيلات (Cash/Bank)</td>
-                        <td style="color:var(--mint); font-weight:bold;">${rev.toLocaleString()}</td>
-                        <td>0</td>
-                        <td style="color:var(--mint); font-weight:bold;">${rev.toLocaleString()} (مدين)</td>
-                    </tr>
-                    <tr>
-                        <td style="text-align:right; font-weight:bold;">حساب العملاء ومدينو السوق (Accounts Receivable)</td>
-                        <td style="color:var(--gold); font-weight:bold;">${pend.toLocaleString()}</td>
-                        <td>0</td>
-                        <td style="color:var(--gold); font-weight:bold;">${pend.toLocaleString()} (مدين)</td>
-                    </tr>
-                    <tr>
-                        <td style="text-align:right; font-weight:bold;">حساب المصروفات والرواتب التشغيلية (Expenses)</td>
-                        <td style="color:var(--red); font-weight:bold;">${totalExp.toLocaleString()}</td>
-                        <td>0</td>
-                        <td style="color:var(--red); font-weight:bold;">${totalExp.toLocaleString()} (مدين)</td>
-                    </tr>
-                    <tr>
-                        <td style="text-align:right; font-weight:bold;">حساب الدائنون والمديونيات (Accounts Payable)</td>
-                        <td>0</td>
-                        <td style="color:var(--purple); font-weight:bold;">${totalDebts.toLocaleString()}</td>
-                        <td style="color:var(--purple); font-weight:bold;">${totalDebts.toLocaleString()} (دائن)</td>
-                    </tr>
-                    <tr style="background: rgba(30, 58, 138, 0.3); font-weight:bold;">
-                        <td style="text-align:right; color:var(--gold-light);">المجموع والترصيد المحاسبي المتوازن</td>
-                        <td style="color:var(--mint);">${(rev + pend + totalExp).toLocaleString()}</td>
-                        <td style="color:var(--gold);">${(totalDebts + rev).toLocaleString()}</td>
-                        <td style="color:var(--gold-light);">توازن محاسبي ✅</td>
-                    </tr>
+            db.debts.forEach(d => {
+                totalDebts += (d.amount - d.paid);
+            });
+
+            let totalEmpCosts = 0;
+            db.employees.forEach(emp => {
+                let earned = 0;
+                if (emp.payType === 'task') {
+                    earned = (emp.totalTasks || 0) * (emp.taskRate || 0);
+                } else {
+                    earned = emp.baseSalary || 0;
+                }
+                totalEmpCosts += emp.paid;
+            });
+
+            totalExp += totalEmpCosts;
+
+            let weekIncome = 0;
+            db.dailyIncome.filter(d => d.week === selectedWeek).forEach(d => {
+                weekIncome += d.cost;
+            });
+
+            db.scheduledPayments.filter(p => p.week === selectedWeek && p.collected).forEach(p => {
+                weekIncome += p.amount;
+            });
+
+            let monthlyClientsSubsQuarter = 0;
+            db.clients.forEach(c => {
+                monthlyClientsSubsQuarter += (c.salary / 4);
+            });
+
+            const isManualChecked = db.manualWeekSubs[selectedWeek] || false;
+            document.getElementById('include-subs-checkbox').checked = isManualChecked;
+
+            if (isManualChecked) {
+                weekIncome += monthlyClientsSubsQuarter;
+            }
+
+            let netIncome = totalRev - totalExp;
+
+            document.getElementById('total-revenue').innerText = `${totalRev} ج.م`;
+            document.getElementById('total-pending').innerText = `${totalPend} ج.م`;
+            document.getElementById('weekly-expected-income').innerText = `${weekIncome} ج.م`;
+            document.getElementById('total-expenses').innerText = `${totalExp} ج.م`;
+            document.getElementById('total-liabilities').innerText = `${totalDebts} ج.م`;
+            document.getElementById('net-income').innerText = `${netIncome} ج.م`;
+
+            document.getElementById('m-total-rev').innerText = `${totalRev} ج.م`;
+            document.getElementById('m-week-income').innerText = `${weekIncome} ج.م`;
+            document.getElementById('m-total-pend').innerText = `${totalPend} ج.م`;
+            document.getElementById('m-total-debts').innerText = `${totalDebts} ج.م`;
+            document.getElementById('m-total-exp').innerText = `${totalExp} ج.م`;
+            document.getElementById('m-net-income').innerText = `${netIncome} ج.م`;
+
+            renderTrialBalance(totalRev, totalPend, totalExp, totalDebts, netIncome);
+            renderAccountingRatios(totalRev, totalExp, totalPend, totalDebts, netIncome);
+            renderDailyIncome();
+            renderDebts();
+            renderWeeksSchedule();
+            renderClients();
+            renderScheduledPayments();
+            renderReelsDeliveries();
+            renderTasksDeliveries();
+            renderOfficeNeeds();
+            renderTeam();
+            renderExpenses();
+            renderMasterReport(selectedWeek, weekIncome, monthlyClientsSubsQuarter);
+        }
+
+        function renderTrialBalance(rev, pend, exp, debts, net) {
+            const tbody = document.getElementById('trial-balance-tbody');
+            if (!tbody) return;
+
+            let rows = [
+                { name: "حساب الخزينة / النقدية المحصلة (Cash Received)", debit: rev, credit: 0 },
+                { name: "حساب ذمم العملاء / الآجل (Accounts Receivable)", debit: pend, credit: 0 },
+                { name: "حساب المصروفات التشغيلية والرواتب (Expenses)", debit: exp, credit: 0 },
+                { name: "حساب مديونيات ودائني الشركة (Accounts Payable)", debit: 0, credit: debts },
+                { name: "إيرادات المبيعات والخدمات (Total Revenue)", debit: 0, credit: rev },
+                { name: "أرباح مرحلة / ميزان صافي الدخل (Net Retained Earnings)", debit: 0, credit: net > 0 ? net : 0 }
+            ];
+
+            let totalDebit = 0;
+            let totalCredit = 0;
+            tbody.innerHTML = '';
+
+            rows.forEach(r => {
+                totalDebit += r.debit;
+                totalCredit += r.credit;
+                let balance = r.debit - r.credit;
+                let tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td style="text-align:right; font-weight:600;">${r.name}</td>
+                    <td>${r.debit} ج.م</td>
+                    <td>${r.credit} ج.م</td>
+                    <td style="color:${balance >= 0 ? 'var(--mint)' : '#ff5252'}; font-weight:bold;">${balance} ج.م</td>
                 `;
-            }
+                tbody.appendChild(tr);
+            });
 
-            // 2. عرض المديونيات والدائنين
-            let debtsList = document.getElementById('debts-mobile-list');
-            if (debtsList) {
-                debtsList.innerHTML = db.debts.length === 0 ? 
-                    `<div style="color:rgba(255,255,255,0.4); font-size:11px;">لا توجد مديونيات مسجلة لِلغير حالياً</div>` :
-                    db.debts.map(d => {
-                        let rem = d.amount - d.paidAmount;
-                        return `
-                            <div class="m-card" style="border-right: 4px solid ${rem === 0 ? 'var(--mint)' : 'var(--purple)'}">
-                                <div class="m-card-row"><span class="m-value" style="color:var(--gold); font-size:13px;">${d.creditor}</span><span class="badge ${rem === 0 ? 'badge-mint' : 'badge-purple'}">${rem === 0 ? '✅ مسدد بالكامل' : '⏳ مديونية قائمة'}</span></div>
-                                <div class="m-card-row"><span class="m-label">السبب والبيان:</span><span class="m-value">${d.reason}</span></div>
-                                <div class="m-card-row"><span class="m-label">الحساب المرتبط:</span><span class="m-value" style="color:var(--mint);">${d.account}</span></div>
-                                <div class="m-card-row"><span class="m-label">إجمالي الدين / المسدد:</span><span class="m-value">${d.amount.toLocaleString()} / ${d.paidAmount.toLocaleString()} ج.م</span></div>
-                                <div class="m-card-row"><span class="m-label">المتبقي لِلدائن:</span><span class="m-value" style="color:var(--red); font-size:13px;">${rem.toLocaleString()} ج.م</span></div>
-                                <div style="display:flex; justify-content:space-between; margin-top:8px; padding-top:6px; border-top:1px solid var(--card-border);">
-                                    ${rem > 0 ? `<button class="btn-pay" onclick="payDebt(${d.id})">💳 سداد مبلغ</button>` : '<span></span>'}
-                                    <button class="btn-del" onclick="deleteDebt(${d.id})">حذف</button>
-                                </div>
-                            </div>
-                        `;
-                    }).join('');
-            }
+            let trTotal = document.createElement('tr');
+            trTotal.style.background = 'var(--dark-paper)';
+            trTotal.style.fontWeight = 'bold';
+            trTotal.innerHTML = `
+                <td style="color:var(--gold-light);">الإجمالي المالي (Total Balance)</td>
+                <td style="color:var(--mint);">${totalDebit} ج.م</td>
+                <td style="color:var(--mint);">${totalCredit} ج.م</td>
+                <td style="color:var(--gold-light);">${totalDebit === totalCredit ? 'متوازن ⚖️' : 'غير متوازن ⚠️'}</td>
+            `;
+            tbody.appendChild(trTotal);
+        }
 
-            // 3. عرض جدول الفريق والرواتب وحسابات التاسك
-            let teamList = document.getElementById('team-mobile-list');
-            if (teamList) {
-                teamList.innerHTML = db.employees.map(emp => {
-                    let isTask = emp.payType === 'task';
-                    let totalTasks = emp.totalTasks || 0;
-                    let paidTasks = emp.paidTasks || 0;
-                    let unpaidTasks = totalTasks - paidTasks;
-                    let totalEarned = isTask ? (totalTasks * (emp.taskRate || 0)) : (emp.baseSalary || 0);
-                    let balanceDue = totalEarned - emp.paid;
+        function renderAccountingRatios(rev, exp, pend, debts, net) {
+            const container = document.getElementById('accounting-ratios-container');
+            if (!container) return;
 
-                    return `
-                        <div class="m-card">
-                            <div class="m-card-row">
-                                <span class="m-value" style="color:var(--mint); font-size:14px;">${emp.name} (${emp.role})</span>
-                                <span class="badge ${emp.isOwner ? 'badge-gold' : 'badge-mint'}">${emp.isOwner ? '👑 شريك مؤسس' : (isTask ? '🎯 حساب بالتاسك' : '📅 راتب شهري')}</span>
-                            </div>
-                            
-                            ${isTask ? `
-                                <div class="m-card-row"><span class="m-label">سعر التاسك:</span><span class="m-value" style="color:var(--gold);">${(emp.taskRate || 0).toLocaleString()} ج.م</span></div>
-                                <div class="m-card-row"><span class="m-label">إجمالي التاسكات المنفذة:</span><span class="m-value">${totalTasks} تاسك</span></div>
-                                <div class="m-card-row"><span class="m-label">تاسكات تم التحاسب عليها:</span><span class="m-value" style="color:var(--mint);">${paidTasks} تاسك</span></div>
-                                <div class="m-card-row"><span class="m-label">تاسكات غير مدفوعة (متبقية):</span><span class="m-value" style="color:var(--red); font-weight:bold;">${unpaidTasks} تاسك</span></div>
-                            ` : `
-                                <div class="m-card-row"><span class="m-label">الراتب الأساسي الشهري:</span><span class="m-value">${(emp.baseSalary || 0).toLocaleString()} ج.م</span></div>
-                            `}
-                            
-                            <div class="m-card-row"><span class="m-label">إجمالي المستحق الكلي:</span><span class="m-value" style="color:var(--gold);">${totalEarned.toLocaleString()} ج.م</span></div>
-                            <div class="m-card-row"><span class="m-label">إجمالي المدفوع / المسحوب:</span><span class="m-value" style="color:var(--mint);">${emp.paid.toLocaleString()} ج.م</span></div>
-                            <div class="m-card-row" style="border-top:1px dashed var(--card-border); padding-top:4px; margin-top:4px;">
-                                <span class="m-label">المتبقي له في الذمة:</span>
-                                <span class="m-value" style="color:${balanceDue > 0 ? 'var(--red)' : 'var(--mint)'}; font-size:13px;">${balanceDue.toLocaleString()} ج.م</span>
-                            </div>
-                            <div style="text-align:left; margin-top:8px;">
-                                <button class="btn-del" onclick="deleteItem('employees', ${emp.id})">حذف الموظف</button>
-                            </div>
+            let profitMargin = rev > 0 ? ((net / rev) * 100).toFixed(1) : 0;
+            let collectionRate = (rev + pend) > 0 ? ((rev / (rev + pend)) * 100).toFixed(1) : 0;
+
+            container.innerHTML = `
+                <div class="m-card">
+                    <div class="m-card-row"><span class="m-label">هامش صافي الربح (Net Profit Margin):</span><span class="m-value" style="color:var(--mint);">${profitMargin}%</span></div>
+                    <div class="m-card-row"><span class="m-label">نسبة التحصيل من السوق (Collection Rate):</span><span class="m-value" style="color:var(--gold);">${collectionRate}%</span></div>
+                    <div class="m-card-row"><span class="m-label">معدل التغطية المالية للمديونيات:</span><span class="m-value" style="color:${rev >= debts ? 'var(--mint)' : '#ff5252'};">${debts > 0 ? (rev / debts).toFixed(2) + ' مرة' : 'لا يوجد ديون 👍'}</span></div>
+                </div>
+            `;
+        }
+
+        function renderDailyIncome() {
+            const list = document.getElementById('daily-income-mobile-list');
+            const empSelect = document.getElementById('di-emp');
+            if (!list) return;
+
+            list.innerHTML = '';
+            empSelect.innerHTML = '<option value="" disabled selected>اختر الموظف المنفذ للمهمة</option>';
+
+            db.employees.forEach(e => {
+                let opt = document.createElement('option');
+                opt.value = e.name;
+                opt.innerText = `${e.name} (${e.role})`;
+                empSelect.appendChild(opt);
+            });
+
+            db.dailyIncome.forEach(d => {
+                let card = document.createElement('div');
+                card.className = 'm-card';
+                card.innerHTML = `
+                    <div class="m-card-row">
+                        <span class="m-value" style="color:var(--mint); font-size:13px;">${d.client} - ${d.service}</span>
+                        <span class="badge badge-gold">الأسبوع ${d.week} - ${d.day}</span>
+                    </div>
+                    <div class="m-card-row">
+                        <span class="m-label">المسؤول عن التنفيذ: ${d.empName}</span>
+                        <span class="m-value" style="color:var(--gold-light);">${d.cost} ج.م</span>
+                    </div>
+                    <div class="m-card-row">
+                        <span class="m-label">تاريخ التسليم: ${d.date}</span>
+                        <button class="btn-del" onclick="deleteDailyIncome(${d.id})">حذف ❌</button>
+                    </div>
+                `;
+                list.appendChild(card);
+            });
+        }
+
+        function renderDebts() {
+            const list = document.getElementById('debts-mobile-list');
+            if (!list) return;
+
+            list.innerHTML = '';
+            db.debts.forEach(d => {
+                let remaining = d.amount - d.paid;
+                let card = document.createElement('div');
+                card.className = 'm-card';
+                card.style.borderRight = '4px solid var(--purple)';
+                card.innerHTML = `
+                    <div class="m-card-row">
+                        <span class="m-value" style="color:var(--lavender); font-size:13px;">${d.creditor}</span>
+                        <span class="badge badge-purple">${d.linkedAccount}</span>
+                    </div>
+                    <div class="m-card-row">
+                        <span class="m-label">سبب المديونية: ${d.reason}</span>
+                        <span class="m-value" style="color:#ff5252;">إجمالي: ${d.amount} ج.م</span>
+                    </div>
+                    <div class="m-card-row">
+                        <span class="m-label">المسدد: ${d.paid} ج.م | <b style="color:#ff5252;">المتبقي: ${remaining} ج.م</b></span>
+                        <div style="display:flex; gap:6px;">
+                            ${remaining > 0 ? `<button class="btn-pay" onclick="payDebt(${d.id})">تسديد دفعة 💵</button>` : `<span class="badge badge-mint">مسدد بالكامل ✅</span>`}
+                            <button class="btn-del" onclick="deleteDebt(${d.id})">حذف ❌</button>
                         </div>
-                    `;
-                }).join('');
-            }
+                    </div>
+                `;
+                list.appendChild(card);
+            });
+        }
 
-            // 4. عرض جدول الأسابيع مقسماً على أيام الأسبوع
-            let weeksContainer = document.getElementById('weeks-container');
-            if (weeksContainer) {
-                weeksContainer.innerHTML = '';
-                const weekNames = { '1': 'الأسبوع الأول', '2': 'الأسبوع الثاني', '3': 'الأسبوع الثالث', '4': 'الأسبوع الرابع' };
-                
-                ['1', '2', '3', '4'].forEach(wNum => {
-                    weeksContainer.innerHTML += `<div class="week-title" style="color:var(--mint); font-weight:bold; margin-top:15px;">${weekNames[wNum]}</div>`;
-                    let weekItems = db.monthSchedule.filter(m => m.week === wNum);
+        function renderWeeksSchedule() {
+            const container = document.getElementById('weeks-container');
+            if (!container) return;
 
-                    if (weekItems.length === 0) {
-                        weeksContainer.innerHTML += `<div style="color:rgba(255,255,255,0.4); font-size:11px; margin-bottom:10px;">لا توجد مواعيد مسجلة</div>`;
-                    } else {
-                        daysOrder.forEach(dayName => {
-                            let dayItems = weekItems.filter(m => m.day === dayName);
-                            if (dayItems.length > 0) {
-                                weeksContainer.innerHTML += `<div class="day-title">📌 يوم ${dayName}</div>`;
-                                let listHtml = dayItems.map(item => `
-                                    <div class="m-card ${item.type === 'exceptional' ? 'exceptional' : ''}">
-                                        <div class="m-card-row">
-                                            <span class="m-value" style="color:${item.type === 'exceptional' ? '#ff5252' : 'var(--mint)'}">${item.client}</span>
-                                            ${item.type === 'exceptional' ? '<span class="badge badge-red">عميل استثنائي 🚨</span>' : '<span class="badge badge-mint">ثابت</span>'}
-                                        </div>
-                                        <div class="m-card-row"><span class="m-label">المهمة:</span><span class="m-value">${item.task}</span></div>
-                                        <div style="text-align:left; margin-top:4px;"><button class="btn-del" onclick="deleteItem('monthSchedule', ${item.id})">حذف الموعد</button></div>
-                                    </div>
-                                `).join('');
-                                weeksContainer.innerHTML += `<div class="mobile-card-list">${listHtml}</div>`;
-                            }
+            container.innerHTML = '';
+
+            for (let w = 1; w <= 4; w++) {
+                let weekBox = document.createElement('div');
+                weekBox.style.marginTop = '20px';
+                weekBox.innerHTML = `<div class="panel-header" style="color:var(--gold);">🗓️ جدول الأسبوع (${w})</div>`;
+
+                let weekCards = document.createElement('div');
+                weekCards.className = 'mobile-card-list';
+
+                daysOrder.forEach(day => {
+                    let items = db.monthSchedule.filter(s => s.week == w && s.day === day);
+                    if (items.length > 0) {
+                        let dayHeader = document.createElement('div');
+                        dayHeader.className = 'day-title';
+                        dayHeader.innerText = `يوم ${day}:`;
+                        weekCards.appendChild(dayHeader);
+
+                        items.forEach(item => {
+                            let card = document.createElement('div');
+                            card.className = `m-card ${item.type === 'exceptional' ? 'exceptional' : ''}`;
+                            card.innerHTML = `
+                                <div class="m-card-row">
+                                    <span class="m-value" style="font-size:13px; color:${item.type === 'exceptional' ? '#ff5252' : 'var(--mint)'};">
+                                        ${item.client} ${item.type === 'exceptional' ? '🚨 (عميل استثنائي)' : ''}
+                                    </span>
+                                    <button class="btn-del" onclick="deleteMonthlySchedule(${item.id})">حذف ❌</button>
+                                </div>
+                                <div class="m-card-row">
+                                    <span class="m-label">المهمة المطلوبة: ${item.task || 'تصوير ومتابعة'}</span>
+                                </div>
+                            `;
+                            weekCards.appendChild(card);
                         });
                     }
                 });
-            }
 
-            // 5. تحديث كافة قوائم الاختيار (Selects) للموظفين
-            let empOptions = db.employees.map(e => `<option value="${e.name}">${e.name} (${e.role})</option>`).join('');
-            if (document.getElementById('di-emp')) document.getElementById('di-emp').innerHTML = empOptions;
-            if (document.getElementById('td-emp')) document.getElementById('td-emp').innerHTML = empOptions;
-            if (document.getElementById('emp-select')) document.getElementById('emp-select').innerHTML = db.employees.map((e, i) => `<option value="${i}">${e.name} (${e.role} - ${e.payType === 'task' ? 'بالتاسك' : 'شهري'})</option>`).join('');
-            
-            let taskEmpSelect = document.getElementById('task-emp-select');
-            if (taskEmpSelect) {
-                taskEmpSelect.innerHTML = db.employees.filter(e => e.payType === 'task').map(e => `<option value="${e.id}">${e.name} (${e.role}) - سعر التاسك: ${e.taskRate} ج.م</option>`).join('');
+                weekBox.appendChild(weekCards);
+                container.appendChild(weekBox);
             }
+        }
 
-            renderPriceControlTable();
+        function renderClients() {
+            const list = document.getElementById('clients-mobile-list');
+            const spSelect = document.getElementById('sp-client-select');
+            const rdSelect = document.getElementById('rd-client-select');
+            if (!list) return;
+
+            list.innerHTML = '';
+            spSelect.innerHTML = '<option value="" disabled selected>اختر العميل لجدولة الدفعة</option>';
+            rdSelect.innerHTML = '<option value="" disabled selected>اختر العميل لتحديث الفيديوهات</option>';
+
+            db.clients.forEach(c => {
+                let opt1 = document.createElement('option');
+                opt1.value = c.id;
+                opt1.innerText = `${c.name} (متبقي: ${c.salary - c.paid} ج.م)`;
+                spSelect.appendChild(opt1);
+
+                let opt2 = document.createElement('option');
+                opt2.value = c.id;
+                opt2.innerText = c.name;
+                rdSelect.appendChild(opt2);
+
+                let remaining = c.salary - c.paid;
+                let card = document.createElement('div');
+                card.className = 'm-card';
+                card.innerHTML = `
+                    <div class="m-card-row">
+                        <span class="m-value" style="color:var(--mint); font-size:14px;">${c.name}</span>
+                        <span class="badge badge-gold">يوم التصوير: ${c.day}</span>
+                    </div>
+                    <div class="m-card-row">
+                        <span class="m-label">الهاتف: ${c.phone}</span>
+                        <span class="m-label">الريلز: ${c.deliveredReels || 0} / ${c.reels}</span>
+                    </div>
+                    <div class="m-card-row">
+                        <span class="m-label">الاتفاق: ${c.salary} ج.م | المستلم: ${c.paid} ج.م</span>
+                        <span class="m-value" style="color:#ff5252;">المتبقي: ${remaining} ج.م</span>
+                    </div>
+                    <div class="m-card-row" style="margin-top:8px;">
+                        <button class="btn-pay" onclick="payClient(${c.id})">تحصيل دفعة 💵</button>
+                        <button class="btn-del" onclick="deleteClient(${c.id})">حذف العميل ❌</button>
+                    </div>
+                `;
+                list.appendChild(card);
+            });
+        }
+
+        function renderScheduledPayments() {
+            const list = document.getElementById('scheduled-payments-list');
+            if (!list) return;
+
+            list.innerHTML = '';
+            db.scheduledPayments.forEach(p => {
+                let card = document.createElement('div');
+                card.className = 'm-card';
+                card.style.borderRight = p.collected ? '4px solid var(--mint)' : '4px solid var(--gold)';
+                card.innerHTML = `
+                    <div class="m-card-row">
+                        <span class="m-value" style="color:var(--gold-light); font-size:13px;">${p.clientName}</span>
+                        <span class="badge ${p.collected ? 'badge-mint' : 'badge-gold'}">${p.collected ? 'تم التحصيل ✅' : 'قيد الانتظار ⏳'}</span>
+                    </div>
+                    <div class="m-card-row">
+                        <span class="m-label">المبلغ: ${p.amount} ج.م | مستحق في: الأسبوع ${p.week}</span>
+                        <span class="m-label">التاريخ: ${p.date}</span>
+                    </div>
+                    <div class="m-card-row" style="margin-top:6px;">
+                        ${!p.collected ? `<button class="btn-pay" onclick="collectScheduledPayment(${p.id})">تأكيد تحصيل المبلغ 💰</button>` : ''}
+                        <button class="btn-del" onclick="deleteScheduledPayment(${p.id})">حذف ❌</button>
+                    </div>
+                `;
+                list.appendChild(card);
+            });
+        }
+
+        function renderReelsDeliveries() {
+            const list = document.getElementById('reels-deliveries-mobile-list');
+            if (!list) return;
+
+            list.innerHTML = '';
+            db.clients.forEach(c => {
+                let card = document.createElement('div');
+                card.className = 'm-card';
+                card.innerHTML = `
+                    <div class="m-card-row">
+                        <span class="m-value" style="color:var(--mint); font-size:13px;">${c.name}</span>
+                        <span class="badge badge-mint">مسلم: ${c.deliveredReels || 0} من ${c.reels}</span>
+                    </div>
+                    <div style="margin: 6px 0; font-size:11px; color:var(--text-gray); white-space:pre-line; background:rgba(0,0,0,0.3); padding:8px; border-radius:6px;">
+                        ${c.deliveredTitles || 'لا يوجد عناوين فيديوهات مسجلة بعد'}
+                    </div>
+                `;
+                list.appendChild(card);
+            });
+        }
+
+        function renderTasksDeliveries() {
+            const list = document.getElementById('tasks-mobile-list');
+            const empSelect = document.getElementById('td-emp');
+            if (!list) return;
+
+            list.innerHTML = '';
+            empSelect.innerHTML = '<option value="" disabled selected>اختر الموظف المكلف</option>';
+
+            db.employees.forEach(e => {
+                let opt = document.createElement('option');
+                opt.value = e.name;
+                opt.innerText = e.name;
+                empSelect.appendChild(opt);
+            });
+
+            db.taskDeliveries.forEach(t => {
+                let card = document.createElement('div');
+                card.className = 'm-card';
+                card.style.borderRight = t.done ? '4px solid var(--mint)' : '4px solid var(--red)';
+                card.innerHTML = `
+                    <div class="m-card-row">
+                        <span class="m-value" style="color:var(--lavender); font-size:13px;">${t.empName}: ${t.task}</span>
+                        <span class="badge ${t.done ? 'badge-mint' : 'badge-red'}">${t.done ? 'تم التسليم ✅' : 'متبقي ⏳'}</span>
+                    </div>
+                    <div class="m-card-row">
+                        <span class="m-label">تاريخ التسليم: ${t.date}</span>
+                        <div style="display:flex; gap:6px;">
+                            <button class="btn-pay" onclick="toggleTaskDone(${t.id})">${t.done ? 'تعديل لمتبقي' : 'تأكيد التسليم'}</button>
+                            <button class="btn-del" onclick="deleteTaskDelivery(${t.id})">حذف ❌</button>
+                        </div>
+                    </div>
+                `;
+                list.appendChild(card);
+            });
+        }
+
+        function renderOfficeNeeds() {
+            const list = document.getElementById('needs-mobile-list');
+            if (!list) return;
+
+            list.innerHTML = '';
+            db.officeNeeds.forEach(n => {
+                let card = document.createElement('div');
+                card.className = 'm-card';
+                card.style.borderRight = n.bought ? '4px solid var(--mint)' : '4px solid var(--gold)';
+                card.innerHTML = `
+                    <div class="m-card-row">
+                        <span class="m-value" style="color:var(--lavender); font-size:13px;">${n.item}</span>
+                        <span class="badge ${n.bought ? 'badge-mint' : 'badge-gold'}">${n.bought ? 'تم الشراء ✅' : 'مطلوب 🛒'}</span>
+                    </div>
+                    <div class="m-card-row">
+                        <span class="m-label">السعر التقديري: ${n.cost || 0} ج.م</span>
+                        <div style="display:flex; gap:6px;">
+                            <button class="btn-pay" onclick="toggleNeedBought(${n.id})">${n.bought ? 'إلغاء الشراء' : 'تأكيد الشراء'}</button>
+                            <button class="btn-del" onclick="deleteOfficeNeed(${n.id})">حذف ❌</button>
+                        </div>
+                    </div>
+                `;
+                list.appendChild(card);
+            });
+        }
+
+        function renderTeam() {
+            const list = document.getElementById('team-mobile-list');
+            const taskEmpSelect = document.getElementById('task-emp-select');
+            const empSelect = document.getElementById('emp-select');
+            if (!list) return;
+
+            list.innerHTML = '';
+            taskEmpSelect.innerHTML = '<option value="" disabled selected>اختر الموظف لإضافة تاسكات</option>';
+            empSelect.innerHTML = '<option value="" disabled selected>اختر الموظف/الشريك لتسجيل دفعة</option>';
+
+            db.employees.forEach(e => {
+                let isTaskPay = e.payType === 'task';
+                let totalEarned = isTaskPay ? ((e.totalTasks || 0) * (e.taskRate || 0)) : (e.baseSalary || 0);
+                let remaining = totalEarned - e.paid;
+
+                if (isTaskPay) {
+                    let opt1 = document.createElement('option');
+                    opt1.value = e.id;
+                    opt1.innerText = `${e.name} (التاسكات الحالية: ${e.totalTasks || 0})`;
+                    taskEmpSelect.appendChild(opt1);
+                }
+
+                let opt2 = document.createElement('option');
+                opt2.value = e.id;
+                opt2.innerText = `${e.name} (المتبقي له: ${remaining} ج.م)`;
+                empSelect.appendChild(opt2);
+
+                let card = document.createElement('div');
+                card.className = 'm-card';
+                card.innerHTML = `
+                    <div class="m-card-row">
+                        <span class="m-value" style="color:var(--mint); font-size:14px;">${e.name} ${e.isOwner ? '👑' : ''}</span>
+                        <span class="badge ${isTaskPay ? 'badge-gold' : 'badge-purple'}">${isTaskPay ? 'نظام تاسك' : 'راتب شهري'}</span>
+                    </div>
+                    <div class="m-card-row">
+                        <span class="m-label">الدور: ${e.role}</span>
+                        <span class="m-label">${isTaskPay ? `سعر التاسك: ${e.taskRate} ج.م` : `الراتب الثابت: ${e.baseSalary} ج.م`}</span>
+                    </div>
+                    ${isTaskPay ? `
+                        <div class="m-card-row">
+                            <span class="m-label">التاسكات الكلية: ${e.totalTasks || 0}</span>
+                            <span class="m-label">المسدد عنها: ${e.paidTasks || 0}</span>
+                        </div>
+                    ` : ''}
+                    <div class="m-card-row">
+                        <span class="m-label">إجمالي المستحق: ${totalEarned} ج.م | المسحوبات: ${e.paid} ج.م</span>
+                        <span class="m-value" style="color:${remaining >= 0 ? 'var(--mint)' : '#ff5252'};">المتبقي: ${remaining} ج.م</span>
+                    </div>
+                    <div class="m-card-row" style="margin-top:6px;">
+                        <button class="btn-del" onclick="deleteEmployee(${e.id})">حذف الموظف ❌</button>
+                    </div>
+                `;
+                list.appendChild(card);
+            });
+        }
+
+        function renderExpenses() {
+            const list = document.getElementById('expenses-mobile-list');
+            if (!list) return;
+
+            list.innerHTML = '';
+            db.expenses.forEach(e => {
+                let card = document.createElement('div');
+                card.className = 'm-card';
+                card.innerHTML = `
+                    <div class="m-card-row">
+                        <span class="m-value" style="color:var(--lavender);">${e.title}</span>
+                        <span class="m-value" style="color:#ff5252;">${e.amount} ج.م</span>
+                    </div>
+                    <div class="m-card-row">
+                        <button class="btn-del" onclick="deleteExpense(${e.id})">حذف المصروف ❌</button>
+                    </div>
+                `;
+                list.appendChild(card);
+            });
+        }
+
+        function renderMasterReport(selectedWeek, weekIncome, monthlyClientsSubsQuarter) {
+            const weeklyBreakdown = document.getElementById('master-weekly-breakdown-list');
+            const weeklyTbody = document.getElementById('master-weekly-details-tbody');
+            const dailyContainer = document.getElementById('master-daily-container');
+            const tasksContainer = document.getElementById('master-tasks-container');
+            const masterList = document.getElementById('master-mobile-list');
+
+            if (!weeklyBreakdown || !weeklyTbody) return;
+
+            weeklyBreakdown.innerHTML = '';
+            weeklyTbody.innerHTML = '';
+            dailyContainer.innerHTML = '';
+            tasksContainer.innerHTML = '';
+            masterList.innerHTML = '';
+
+            let dailyInWeek = db.dailyIncome.filter(d => d.week === selectedWeek);
+            let schedInWeek = db.scheduledPayments.filter(p => p.week === selectedWeek && p.collected);
+            const isManualChecked = db.manualWeekSubs[selectedWeek] || false;
+
+            let card = document.createElement('div');
+            card.className = 'm-card';
+            card.innerHTML = `
+                <div class="m-card-row"><span class="m-label">الدخل من الخدمات اليومية هذا الأسبوع:</span><span class="m-value" style="color:var(--mint);">${dailyInWeek.reduce((a,b)=>a+b.cost,0)} ج.م</span></div>
+                <div class="m-card-row"><span class="m-label">الدفعات المجدولة المحصلة هذا الأسبوع:</span><span class="m-value" style="color:var(--mint);">${schedInWeek.reduce((a,b)=>a+b.amount,0)} ج.م</span></div>
+                <div class="m-card-row"><span class="m-label">قسمة اشتراكات العملاء الثابتين (ربع الاتفاق):</span><span class="m-value" style="color:${isManualChecked ? 'var(--mint)' : 'var(--text-gray)'};">${isManualChecked ? '+' : ''}${monthlyClientsSubsQuarter} ج.م ${isManualChecked ? '(مدرج)' : '(غير مدرج)'}</span></div>
+            `;
+            weeklyBreakdown.appendChild(card);
+
+            daysOrder.forEach(day => {
+                let daySchedule = db.monthSchedule.filter(s => s.week == selectedWeek && s.day === day);
+                daySchedule.forEach(s => {
+                    let clientObj = db.clients.find(c => c.name === s.client);
+                    let reelsInfo = clientObj ? `${clientObj.deliveredReels || 0} / ${clientObj.reels}` : 'غير محدد';
+                    let remainingReels = clientObj ? (clientObj.reels - (clientObj.deliveredReels || 0)) : '-';
+                    let salaryInfo = clientObj ? `${clientObj.salary} ج.م` : '-';
+                    let paidInfo = clientObj ? `${clientObj.paid} ج.م` : '-';
+                    let remainingMoney = clientObj ? `${clientObj.salary - clientObj.paid} ج.م` : '-';
+
+                    let tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td style="font-weight:bold; color:var(--mint);">${s.client}</td>
+                        <td>${day}</td>
+                        <td>${reelsInfo}</td>
+                        <td style="color:var(--gold-light);">${remainingReels}</td>
+                        <td>${salaryInfo}</td>
+                        <td>${paidInfo}</td>
+                        <td style="color:#ff5252;">${remainingMoney}</td>
+                    `;
+                    weeklyTbody.appendChild(tr);
+                });
+            });
+
+            dailyInWeek.forEach(d => {
+                let card = document.createElement('div');
+                card.className = 'm-card';
+                card.innerHTML = `
+                    <div class="m-card-row"><span class="m-value" style="color:var(--mint);">${d.client} - ${d.service}</span><span class="m-value" style="color:var(--gold-light);">${d.cost} ج.م</span></div>
+                    <div class="m-card-row"><span class="m-label">المسؤول: ${d.empName}</span><span class="m-label">يوم: ${d.day}</span></div>
+                `;
+                dailyContainer.appendChild(card);
+            });
+
+            db.taskDeliveries.forEach(t => {
+                let card = document.createElement('div');
+                card.className = 'm-card';
+                card.style.borderRight = t.done ? '4px solid var(--mint)' : '4px solid var(--red)';
+                card.innerHTML = `
+                    <div class="m-card-row"><span class="m-value">${t.empName}: ${t.task}</span><span class="badge ${t.done ? 'badge-mint' : 'badge-red'}">${t.done ? 'تم التسليم' : 'متبقي'}</span></div>
+                `;
+                tasksContainer.appendChild(card);
+            });
+
+            db.clients.forEach(c => {
+                let card = document.createElement('div');
+                card.className = 'm-card';
+                card.innerHTML = `
+                    <div class="m-card-row"><span class="m-value" style="color:var(--mint);">${c.name}</span><span class="m-value" style="color:#ff5252;">المتبقي: ${c.salary - c.paid} ج.م</span></div>
+                    <div class="m-card-row"><span class="m-label">الاتفاق: ${c.salary} ج.م</span><span class="m-label">المستلم: ${c.paid} ج.م</span></div>
+                `;
+                masterList.appendChild(card);
+            });
         }
 
         window.onload = function() {
+            initPriceControlTable();
+            renderPackageCart();
+            document.getElementById('inv-date').innerText = new Date().toLocaleDateString('ar-EG');
             loadDBFromSheet();
         };
     </script>
