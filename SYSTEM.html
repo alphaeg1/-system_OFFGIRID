@@ -160,7 +160,6 @@
         .inv-footer { margin-top: 30px; text-align: center; font-size: 10px; color: var(--text-gray); border-top: 1px solid var(--card-border); padding-top: 12px; }
         .btn-download { background: linear-gradient(135deg, #D4AF37, #FFD700); color: #000; border: none; padding: 12px; border-radius: 8px; font-weight: 700; font-size: 13px; cursor: pointer; width: 100%; margin-top: 12px; box-shadow: 0 4px 12px rgba(212, 175, 55, 0.2); }
 
-        /* Accounting Table CSS */
         .accounting-ledger { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 11px; }
         .accounting-ledger th { background: var(--dark-paper); color: var(--gold-light); border: 1px solid var(--card-border); padding: 8px; text-align: center; }
         .accounting-ledger td { border: 1px solid var(--card-border); padding: 8px; text-align: center; background: rgba(0,0,0,0.2); }
@@ -176,10 +175,9 @@
             <button class="btn-sync" onclick="exportReportImage()">📸 تصدير صورة التقرير الشامل</button>
             <button class="btn-reload" onclick="loadDBFromSheet()">🔄 مزامنة البيانات مع السحابة</button>
         </div>
-        <div id="sync-status">جاري الاتصال بالنظام المحاسبي بالسحابة... ⏳</div>
+        <div id="sync-status">جاهز للاستخدام المحالي ⚡</div>
     </header>
 
-    <!-- KPI Section: الإحصائيات والمحصل والمديونيات -->
     <div class="kpi-grid">
         <div class="kpi-card"><h3>إجمالي المحصل الكلي (إيراد)</h3><p id="total-revenue">0 ج.م</p></div>
         <div class="kpi-card red"><h3>المتبقي في السوق (مبيعات آجل)</h3><p id="total-pending">0 ج.م</p></div>
@@ -189,7 +187,6 @@
         <div class="kpi-card blue full-width"><h3>صافي الأرباح المحاسبية (الأرباح الكلية)</h3><p id="net-income">0 ج.م</p></div>
     </div>
 
-    <!-- Tabs Navigation -->
     <div class="tabs-nav">
         <button class="tab-btn active" onclick="switchTab('daily-income-tab', this)">💰 الدخل والخدمات اليومية</button>
         <button class="tab-btn" onclick="switchTab('accountant-tab', this)">🧮 المحاسب القانوني والتسويات</button>
@@ -205,7 +202,6 @@
         <button class="tab-btn" onclick="switchTab('master-tab', this)">📊 التقرير المحاسبي الشامل</button>
     </div>
 
-    <!-- TAB: الدخل والخدمات اليومية -->
     <div id="daily-income-tab" class="tab-content active">
         <div class="panel">
             <div class="panel-header">تسجيل خدمة / دخل يومي جديد (مربوط بالمهام والتحصيل)</div>
@@ -239,7 +235,6 @@
         </div>
     </div>
 
-    <!-- TAB: المحاسب القانوني والتسويات المالية -->
     <div id="accountant-tab" class="tab-content">
         <div class="panel">
             <div class="panel-header">⚖️ ميزان المراجعة والمركز المالي (المحاسب القانوني)</div>
@@ -265,7 +260,6 @@
         </div>
     </div>
 
-    <!-- TAB: كشف المديونيات والدائنين -->
     <div id="debts-tab" class="tab-content">
         <div class="panel">
             <div class="panel-header">📝 إضافة مديونية جديدة علي المكتب (تسجيل دائن)</div>
@@ -289,7 +283,6 @@
         </div>
     </div>
 
-    <!-- TAB: أسابيع الشهر الأربعة (مقسمة على أيام الأسبوع) -->
     <div id="month-weeks-tab" class="tab-content">
         <div class="panel">
             <div class="panel-header">تسكين المواعيد والتصوير حسب الأيام</div>
@@ -328,7 +321,6 @@
         </div>
     </div>
 
-    <!-- TAB: نظام إدارة الفواتير والخدمات -->
     <div id="invoice-system-tab" class="tab-content">
         <div class="invoice-grid-layout">
             <div>
@@ -444,7 +436,6 @@
         </div>
     </div>
 
-    <!-- TAB: العملاء والدفعات المجدولة -->
     <div id="clients-tab" class="tab-content">
         <div class="panel">
             <div class="panel-header">إضافة عميل جديد</div>
@@ -495,7 +486,6 @@
         </div>
     </div>
 
-    <!-- TAB: تسليمات الفيديو والإنتاج -->
     <div id="reels-deliveries-tab" class="tab-content">
         <div class="panel">
             <div class="panel-header">تحديث عدد وعناوين الفيديوهات المسلمة للعميل</div>
@@ -511,7 +501,6 @@
         </div>
     </div>
 
-    <!-- TAB: المهام المطلوبة ومواعيد تسليمها -->
     <div id="tasks-deliveries-tab" class="tab-content">
         <div class="panel">
             <div class="panel-header">إضافة مهمة موظف جديدة</div>
@@ -527,7 +516,6 @@
         </div>
     </div>
 
-    <!-- TAB: مطالبات ونواقص المكتب -->
     <div id="office-needs-tab" class="tab-content">
         <div class="panel">
             <div class="panel-header">تسجيل مطالبات / نواقص للمكتب</div>
@@ -542,7 +530,6 @@
         </div>
     </div>
 
-    <!-- TAB: الموظفين والملاّك والرواتب (بالشهر والتاسك) -->
     <div id="team-tab" class="tab-content">
         <div class="panel">
             <div class="panel-header">👤 تعيين موظف / فرد جديد بالفريق (بالشهر أو التاسك)</div>
@@ -596,7 +583,6 @@
         </div>
     </div>
 
-    <!-- TAB: المصروفات -->
     <div id="expenses-tab" class="tab-content">
         <div class="panel">
             <div class="panel-header">إضافة مصروف مكتب / فواتير</div>
@@ -611,7 +597,6 @@
         </div>
     </div>
 
-    <!-- TAB: التقرير النهائي المجمع الشامل -->
     <div id="master-tab" class="tab-content">
         <div class="panel" id="exportable-report-area" style="background:#18191A; padding:15px;">
             <div style="text-align:center; margin-bottom:15px; border-bottom:1px solid var(--mint); padding-bottom:8px;">
@@ -699,11 +684,20 @@
             { id: 5, name: "مريم", role: "كول سنتر و سيلز", isOwner: false, payType: "monthly", baseSalary: 0, taskRate: 0, totalTasks: 0, paidTasks: 0, paid: 0 }
         ];
 
-        let db = JSON.parse(localStorage.getItem('OFFGRID_DB')) || {
+        let db = {
             clients: [], monthSchedule: [], taskDeliveries: [], officeNeeds: [],
             employees: defaultTeam, expenses: [], dailyIncome: [], scheduledPayments: [],
             debts: [], manualWeekSubs: { "1": false, "2": false, "3": false, "4": false }
         };
+
+        // استرجاع البيانات المحفوظة بأمان لمنع مسحها عند الخروج
+        try {
+            const savedData = localStorage.getItem('OFFGRID_DB');
+            if (savedData) {
+                const parsed = JSON.parse(savedData);
+                db = Object.assign({}, db, parsed);
+            }
+        } catch(e) { console.error("Error loading local storage", e); }
 
         if (!db.taskDeliveries) db.taskDeliveries = [];
         if (!db.officeNeeds) db.officeNeeds = [];
@@ -752,7 +746,7 @@
         function saveDB() { 
             localStorage.setItem('OFFGRID_DB', JSON.stringify(db)); 
             renderAll();
-            setSyncStatus("جاري الحفظ في Google Sheets... ⏳");
+            setSyncStatus("محفوظ محلياً ⚡ (جاري التنسيق مع السحابة...)");
 
             try {
                 fetch(GOOGLE_SHEET_API, {
@@ -761,14 +755,12 @@
                     headers: { "Content-Type": "text/plain" },
                     body: JSON.stringify(db)
                 }).then(() => {
-                    setSyncStatus("تم إرسال التحديث للسحابة ✅");
+                    setSyncStatus("تم الحفظ محلياً والسحابياً بنجاح ✅");
                 }).catch(err => {
-                    console.error("خطأ إرسال:", err);
-                    setSyncStatus("محفوظ محلياً (تعذر الاتصال بالسحابة) ⚠️");
+                    setSyncStatus("محفوظ محلياً ⚡ (تعذر الاتصال بالسحابة)");
                 });
             } catch (err) {
-                console.error("خطأ:", err);
-                setSyncStatus("محفوظ محلياً ⚠️");
+                setSyncStatus("محفوظ محلياً ⚡");
             }
         }
 
@@ -780,32 +772,24 @@
             
             window[callbackName] = function(data) {
                 try {
-                    if (data && typeof data === 'object' && (data.clients || data.monthSchedule)) {
-                        db = data;
-                        if (!db.dailyIncome) db.dailyIncome = [];
-                        if (!db.scheduledPayments) db.scheduledPayments = [];
-                        if (!db.expenses) db.expenses = [];
-                        if (!db.debts) db.debts = [];
-                        if (!db.employees || db.employees.length === 0) db.employees = defaultTeam;
-                        if (!db.manualWeekSubs) db.manualWeekSubs = { "1": false, "2": false, "3": false, "4": false };
+                    if (data && typeof data === 'object') {
+                        db = Object.assign({}, db, data);
                         localStorage.setItem('OFFGRID_DB', JSON.stringify(db));
                         renderAll();
                         setSyncStatus("تمت المزامنة بنجاح من السحابة ✅");
-                    } else {
-                        setSyncStatus("تعذر جلب البيانات. الاعتماد على النسخة المحلية ⚠️");
                     }
                 } catch(e) {
                     setSyncStatus("خطأ بالبيانات السحابية ⚠️");
                 }
                 delete window[callbackName];
-                document.body.removeChild(script);
+                if (script.parentNode) script.parentNode.removeChild(script);
             };
 
             script.src = GOOGLE_SHEET_API + "?callback=" + callbackName;
             script.onerror = function() {
-                setSyncStatus("فشل الاتصال بالسحابة! ⚠️");
+                setSyncStatus("فشل الاتصال بالسحابة! تم الاعتماد على النسخة المحلية ⚡");
                 delete window[callbackName];
-                document.body.removeChild(script);
+                if (script.parentNode) script.parentNode.removeChild(script);
             };
             document.body.appendChild(script);
         }
@@ -1317,12 +1301,6 @@
 
             let totalEmpCosts = 0;
             db.employees.forEach(emp => {
-                let earned = 0;
-                if (emp.payType === 'task') {
-                    earned = (emp.totalTasks || 0) * (emp.taskRate || 0);
-                } else {
-                    earned = emp.baseSalary || 0;
-                }
                 totalEmpCosts += emp.paid;
             });
 
@@ -1560,7 +1538,7 @@
 
             list.innerHTML = '';
             spSelect.innerHTML = '<option value="" disabled selected>اختر العميل لجدولة الدفعة</option>';
-            rdSelect.innerHTML = '<option value="" disabled selected>اختر العميل لتحديث الفيديوهات</option>';
+            rdSelect.innerHTML = '<option value="" disabled selected>اختر العميل לתحديث الفيديوهات</option>';
 
             db.clients.forEach(c => {
                 let opt1 = document.createElement('option');
@@ -1617,7 +1595,7 @@
                         <span class="m-label">التاريخ: ${p.date}</span>
                     </div>
                     <div class="m-card-row" style="margin-top:6px;">
-                        ${!p.collected ? `<button class="btn-pay" onclick="collectScheduledPayment(${p.id})">تأكيد تحصيل المبلغ 💰</button>` : ''}
+                        ${!p.collected ? `<button class="btn-pay" onclick="collectScheduledPayment(${p.id})">تأكيد التحصيل ✅</button>` : '<span></span>'}
                         <button class="btn-del" onclick="deleteScheduledPayment(${p.id})">حذف ❌</button>
                     </div>
                 `;
@@ -1636,10 +1614,11 @@
                 card.innerHTML = `
                     <div class="m-card-row">
                         <span class="m-value" style="color:var(--mint); font-size:13px;">${c.name}</span>
-                        <span class="badge badge-mint">مسلم: ${c.deliveredReels || 0} من ${c.reels}</span>
+                        <span class="badge badge-mint">تسليم: ${c.deliveredReels || 0} / ${c.reels} فيديو</span>
                     </div>
-                    <div style="margin: 6px 0; font-size:11px; color:var(--text-gray); white-space:pre-line; background:rgba(0,0,0,0.3); padding:8px; border-radius:6px;">
-                        ${c.deliveredTitles || 'لا يوجد عناوين فيديوهات مسجلة بعد'}
+                    <div class="m-card-row" style="flex-direction:column; align-items:flex-start; gap:4px;">
+                        <span class="m-label">عناوين الفيديوهات المسلمة:</span>
+                        <p style="font-size:11px; color:var(--lavender); white-space:pre-line;">${c.deliveredTitles || 'لا يوجد عناوين مسجلة بعد'}</p>
                     </div>
                 `;
                 list.appendChild(card);
@@ -1648,17 +1627,17 @@
 
         function renderTasksDeliveries() {
             const list = document.getElementById('tasks-mobile-list');
-            const empSelect = document.getElementById('td-emp');
+            const tdEmpSelect = document.getElementById('td-emp');
             if (!list) return;
 
             list.innerHTML = '';
-            empSelect.innerHTML = '<option value="" disabled selected>اختر الموظف المكلف</option>';
+            tdEmpSelect.innerHTML = '<option value="" disabled selected>اختر الموظف</option>';
 
             db.employees.forEach(e => {
                 let opt = document.createElement('option');
                 opt.value = e.name;
-                opt.innerText = e.name;
-                empSelect.appendChild(opt);
+                opt.innerText = `${e.name} (${e.role})`;
+                tdEmpSelect.appendChild(opt);
             });
 
             db.taskDeliveries.forEach(t => {
@@ -1667,13 +1646,16 @@
                 card.style.borderRight = t.done ? '4px solid var(--mint)' : '4px solid var(--red)';
                 card.innerHTML = `
                     <div class="m-card-row">
-                        <span class="m-value" style="color:var(--lavender); font-size:13px;">${t.empName}: ${t.task}</span>
-                        <span class="badge ${t.done ? 'badge-mint' : 'badge-red'}">${t.done ? 'تم التسليم ✅' : 'متبقي ⏳'}</span>
+                        <span class="m-value" style="color:var(--lavender); font-size:13px;">${t.empName}</span>
+                        <span class="badge ${t.done ? 'badge-mint' : 'badge-red'}">${t.done ? 'تم الإنجاز ✅' : 'قيد التنفيذ ⏳'}</span>
                     </div>
                     <div class="m-card-row">
-                        <span class="m-label">تاريخ التسليم: ${t.date}</span>
+                        <span class="m-label">المهمة: ${t.task}</span>
+                    </div>
+                    <div class="m-card-row">
+                        <span class="m-label">موعد التسليم: ${t.date}</span>
                         <div style="display:flex; gap:6px;">
-                            <button class="btn-pay" onclick="toggleTaskDone(${t.id})">${t.done ? 'تعديل لمتبقي' : 'تأكيد التسليم'}</button>
+                            <button class="btn-pay" onclick="toggleTaskDone(${t.id})">${t.done ? 'تحديد كغير مكتمل' : 'تحديد كمكتمل ✅'}</button>
                             <button class="btn-del" onclick="deleteTaskDelivery(${t.id})">حذف ❌</button>
                         </div>
                     </div>
@@ -1697,9 +1679,9 @@
                         <span class="badge ${n.bought ? 'badge-mint' : 'badge-gold'}">${n.bought ? 'تم الشراء ✅' : 'مطلوب 🛒'}</span>
                     </div>
                     <div class="m-card-row">
-                        <span class="m-label">السعر التقديري: ${n.cost || 0} ج.م</span>
+                        <span class="m-label">السعر التقديري: ${n.cost ? n.cost + ' ج.م' : 'غير محدد'}</span>
                         <div style="display:flex; gap:6px;">
-                            <button class="btn-pay" onclick="toggleNeedBought(${n.id})">${n.bought ? 'إلغاء الشراء' : 'تأكيد الشراء'}</button>
+                            <button class="btn-pay" onclick="toggleNeedBought(${n.id})">${n.bought ? 'إعادة للقائمة' : 'تأكيد الشراء ✅'}</button>
                             <button class="btn-del" onclick="deleteOfficeNeed(${n.id})">حذف ❌</button>
                         </div>
                     </div>
@@ -1715,49 +1697,46 @@
             if (!list) return;
 
             list.innerHTML = '';
-            taskEmpSelect.innerHTML = '<option value="" disabled selected>اختر الموظف لإضافة تاسكات</option>';
-            empSelect.innerHTML = '<option value="" disabled selected>اختر الموظف/الشريك لتسجيل دفعة</option>';
+            taskEmpSelect.innerHTML = '<option value="" disabled selected>اختر الموظف لتسجيل التاسكات</option>';
+            empSelect.innerHTML = '<option value="" disabled selected>اختر الموظف لتسجيل مسحوبات / رواتب</option>';
 
-            db.employees.forEach(e => {
-                let isTaskPay = e.payType === 'task';
-                let totalEarned = isTaskPay ? ((e.totalTasks || 0) * (e.taskRate || 0)) : (e.baseSalary || 0);
-                let remaining = totalEarned - e.paid;
-
-                if (isTaskPay) {
-                    let opt1 = document.createElement('option');
-                    opt1.value = e.id;
-                    opt1.innerText = `${e.name} (التاسكات الحالية: ${e.totalTasks || 0})`;
-                    taskEmpSelect.appendChild(opt1);
-                }
+            db.employees.forEach(emp => {
+                let opt1 = document.createElement('option');
+                opt1.value = emp.id;
+                opt1.innerText = `${emp.name} (${emp.role})`;
+                taskEmpSelect.appendChild(opt1);
 
                 let opt2 = document.createElement('option');
-                opt2.value = e.id;
-                opt2.innerText = `${e.name} (المتبقي له: ${remaining} ج.م)`;
+                opt2.value = emp.id;
+                opt2.innerText = `${emp.name} (${emp.role})`;
                 empSelect.appendChild(opt2);
+
+                let totalEarned = 0;
+                if (emp.payType === 'task') {
+                    totalEarned = (emp.totalTasks || 0) * (emp.taskRate || 0);
+                } else {
+                    totalEarned = emp.baseSalary || 0;
+                }
+
+                let remaining = totalEarned - emp.paid;
 
                 let card = document.createElement('div');
                 card.className = 'm-card';
                 card.innerHTML = `
                     <div class="m-card-row">
-                        <span class="m-value" style="color:var(--mint); font-size:14px;">${e.name} ${e.isOwner ? '👑' : ''}</span>
-                        <span class="badge ${isTaskPay ? 'badge-gold' : 'badge-purple'}">${isTaskPay ? 'نظام تاسك' : 'راتب شهري'}</span>
+                        <span class="m-value" style="color:var(--mint); font-size:14px;">${emp.name} ${emp.isOwner ? '👑' : ''}</span>
+                        <span class="badge ${emp.payType === 'task' ? 'badge-gold' : 'badge-mint'}">${emp.payType === 'task' ? 'نظام التاسك 🎯' : 'راتب شهري 📅'}</span>
                     </div>
                     <div class="m-card-row">
-                        <span class="m-label">الدور: ${e.role}</span>
-                        <span class="m-label">${isTaskPay ? `سعر التاسك: ${e.taskRate} ج.م` : `الراتب الثابت: ${e.baseSalary} ج.م`}</span>
+                        <span class="m-label">المسمى الوظيفي: ${emp.role}</span>
+                        <span class="m-label">${emp.payType === 'task' ? `التاسكات المنجزة: ${emp.totalTasks || 0} (${emp.taskRate} ج.م/تاسك)` : `الراتب الأساسي: ${emp.baseSalary} ج.م`}</span>
                     </div>
-                    ${isTaskPay ? `
-                        <div class="m-card-row">
-                            <span class="m-label">التاسكات الكلية: ${e.totalTasks || 0}</span>
-                            <span class="m-label">المسدد عنها: ${e.paidTasks || 0}</span>
-                        </div>
-                    ` : ''}
                     <div class="m-card-row">
-                        <span class="m-label">إجمالي المستحق: ${totalEarned} ج.م | المسحوبات: ${e.paid} ج.م</span>
-                        <span class="m-value" style="color:${remaining >= 0 ? 'var(--mint)' : '#ff5252'};">المتبقي: ${remaining} ج.م</span>
+                        <span class="m-label">المستحق الإجمالي: ${totalEarned} ج.م | المسحوبات: ${emp.paid} ج.م</span>
+                        <span class="m-value" style="color:${remaining >= 0 ? 'var(--mint)' : '#ff5252'};">المتبقي له: ${remaining} ج.م</span>
                     </div>
-                    <div class="m-card-row" style="margin-top:6px;">
-                        <button class="btn-del" onclick="deleteEmployee(${e.id})">حذف الموظف ❌</button>
+                    <div class="m-card-row" style="margin-top:8px;">
+                        <button class="btn-del" onclick="deleteEmployee(${emp.id})">حذف الموظف ❌</button>
                     </div>
                 `;
                 list.appendChild(card);
@@ -1774,7 +1753,7 @@
                 card.className = 'm-card';
                 card.innerHTML = `
                     <div class="m-card-row">
-                        <span class="m-value" style="color:var(--lavender);">${e.title}</span>
+                        <span class="m-value" style="color:var(--lavender); font-size:13px;">${e.title}</span>
                         <span class="m-value" style="color:#ff5252;">${e.amount} ج.م</span>
                     </div>
                     <div class="m-card-row">
@@ -1786,94 +1765,90 @@
         }
 
         function renderMasterReport(selectedWeek, weekIncome, monthlyClientsSubsQuarter) {
-            const weeklyBreakdown = document.getElementById('master-weekly-breakdown-list');
-            const weeklyTbody = document.getElementById('master-weekly-details-tbody');
-            const dailyContainer = document.getElementById('master-daily-container');
-            const tasksContainer = document.getElementById('master-tasks-container');
-            const masterList = document.getElementById('master-mobile-list');
+            const weeklyBreakdownList = document.getElementById('master-weekly-breakdown-list');
+            const weeklyDetailsTbody = document.getElementById('master-weekly-details-tbody');
+            const masterDailyContainer = document.getElementById('master-daily-container');
+            const masterTasksContainer = document.getElementById('master-tasks-container');
+            const masterMobileList = document.getElementById('master-mobile-list');
 
-            if (!weeklyBreakdown || !weeklyTbody) return;
+            if (!weeklyBreakdownList) return;
 
-            weeklyBreakdown.innerHTML = '';
-            weeklyTbody.innerHTML = '';
-            dailyContainer.innerHTML = '';
-            tasksContainer.innerHTML = '';
-            masterList.innerHTML = '';
+            weeklyBreakdownList.innerHTML = '';
+            weeklyDetailsTbody.innerHTML = '';
+            masterDailyContainer.innerHTML = '';
+            masterTasksContainer.innerHTML = '';
+            masterMobileList.innerHTML = '';
 
-            let dailyInWeek = db.dailyIncome.filter(d => d.week === selectedWeek);
-            let schedInWeek = db.scheduledPayments.filter(p => p.week === selectedWeek && p.collected);
-            const isManualChecked = db.manualWeekSubs[selectedWeek] || false;
+            let dailyIncomes = db.dailyIncome.filter(d => d.week === selectedWeek);
+            let scheduledP = db.scheduledPayments.filter(p => p.week === selectedWeek && p.collected);
 
-            let card = document.createElement('div');
-            card.className = 'm-card';
-            card.innerHTML = `
-                <div class="m-card-row"><span class="m-label">الدخل من الخدمات اليومية هذا الأسبوع:</span><span class="m-value" style="color:var(--mint);">${dailyInWeek.reduce((a,b)=>a+b.cost,0)} ج.م</span></div>
-                <div class="m-card-row"><span class="m-label">الدفعات المجدولة المحصلة هذا الأسبوع:</span><span class="m-value" style="color:var(--mint);">${schedInWeek.reduce((a,b)=>a+b.amount,0)} ج.م</span></div>
-                <div class="m-card-row"><span class="m-label">قسمة اشتراكات العملاء الثابتين (ربع الاتفاق):</span><span class="m-value" style="color:${isManualChecked ? 'var(--mint)' : 'var(--text-gray)'};">${isManualChecked ? '+' : ''}${monthlyClientsSubsQuarter} ج.م ${isManualChecked ? '(مدرج)' : '(غير مدرج)'}</span></div>
-            `;
-            weeklyBreakdown.appendChild(card);
+            dailyIncomes.forEach(d => {
+                let card = document.createElement('div');
+                card.className = 'm-card';
+                card.innerHTML = `<div class="m-card-row"><span>دخل خدمة يومية: ${d.client} (${d.service})</span><span style="color:var(--mint); font-weight:bold;">+${d.cost} ج.م</span></div>`;
+                weeklyBreakdownList.appendChild(card);
+            });
+
+            scheduledP.forEach(p => {
+                let card = document.createElement('div');
+                card.className = 'm-card';
+                card.innerHTML = `<div class="m-card-row"><span>دفعة مجدولة محصلة: ${p.clientName}</span><span style="color:var(--gold); font-weight:bold;">+${p.amount} ج.م</span></div>`;
+                weeklyBreakdownList.appendChild(card);
+            });
+
+            if (db.manualWeekSubs[selectedWeek]) {
+                let card = document.createElement('div');
+                card.className = 'm-card';
+                card.innerHTML = `<div class="m-card-row"><span>قسمة اشتراكات العملاء الثابتين:</span><span style="color:var(--gold-light); font-weight:bold;">+${monthlyClientsSubsQuarter} ج.م</span></div>`;
+                weeklyBreakdownList.appendChild(card);
+            }
 
             daysOrder.forEach(day => {
-                let daySchedule = db.monthSchedule.filter(s => s.week == selectedWeek && s.day === day);
-                daySchedule.forEach(s => {
-                    let clientObj = db.clients.find(c => c.name === s.client);
-                    let reelsInfo = clientObj ? `${clientObj.deliveredReels || 0} / ${clientObj.reels}` : 'غير محدد';
-                    let remainingReels = clientObj ? (clientObj.reels - (clientObj.deliveredReels || 0)) : '-';
-                    let salaryInfo = clientObj ? `${clientObj.salary} ج.م` : '-';
-                    let paidInfo = clientObj ? `${clientObj.paid} ج.م` : '-';
-                    let remainingMoney = clientObj ? `${clientObj.salary - clientObj.paid} ج.م` : '-';
-
+                let scheduleItems = db.monthSchedule.filter(s => s.week == selectedWeek && s.day === day);
+                scheduleItems.forEach(item => {
+                    let client = db.clients.find(c => c.name === item.client);
                     let tr = document.createElement('tr');
                     tr.innerHTML = `
-                        <td style="font-weight:bold; color:var(--mint);">${s.client}</td>
+                        <td>${item.client}</td>
                         <td>${day}</td>
-                        <td>${reelsInfo}</td>
-                        <td style="color:var(--gold-light);">${remainingReels}</td>
-                        <td>${salaryInfo}</td>
-                        <td>${paidInfo}</td>
-                        <td style="color:#ff5252;">${remainingMoney}</td>
+                        <td>${client ? (client.deliveredReels || 0) + ' / ' + client.reels : '-'}</td>
+                        <td>${client ? client.reels - (client.deliveredReels || 0) : '-'}</td>
+                        <td>${client ? client.salary + ' ج.م' : '-'}</td>
+                        <td>${client ? client.paid + ' ج.م' : '-'}</td>
+                        <td style="color:#ff5252;">${client ? (client.salary - client.paid) + ' ج.م' : '-'}</td>
                     `;
-                    weeklyTbody.appendChild(tr);
+                    weeklyDetailsTbody.appendChild(tr);
                 });
             });
 
-            dailyInWeek.forEach(d => {
+            db.dailyIncome.forEach(d => {
                 let card = document.createElement('div');
                 card.className = 'm-card';
-                card.innerHTML = `
-                    <div class="m-card-row"><span class="m-value" style="color:var(--mint);">${d.client} - ${d.service}</span><span class="m-value" style="color:var(--gold-light);">${d.cost} ج.م</span></div>
-                    <div class="m-card-row"><span class="m-label">المسؤول: ${d.empName}</span><span class="m-label">يوم: ${d.day}</span></div>
-                `;
-                dailyContainer.appendChild(card);
+                card.innerHTML = `<div class="m-card-row"><span>${d.client} - ${d.service} (${d.empName})</span><span style="color:var(--mint);">${d.cost} ج.م</span></div>`;
+                masterDailyContainer.appendChild(card);
             });
 
             db.taskDeliveries.forEach(t => {
                 let card = document.createElement('div');
                 card.className = 'm-card';
-                card.style.borderRight = t.done ? '4px solid var(--mint)' : '4px solid var(--red)';
-                card.innerHTML = `
-                    <div class="m-card-row"><span class="m-value">${t.empName}: ${t.task}</span><span class="badge ${t.done ? 'badge-mint' : 'badge-red'}">${t.done ? 'تم التسليم' : 'متبقي'}</span></div>
-                `;
-                tasksContainer.appendChild(card);
+                card.innerHTML = `<div class="m-card-row"><span>${t.empName}: ${t.task}</span><span class="badge ${t.done ? 'badge-mint' : 'badge-red'}">${t.done ? 'مكتمل' : 'قيد الانتظار'}</span></div>`;
+                masterTasksContainer.appendChild(card);
             });
 
             db.clients.forEach(c => {
                 let card = document.createElement('div');
                 card.className = 'm-card';
-                card.innerHTML = `
-                    <div class="m-card-row"><span class="m-value" style="color:var(--mint);">${c.name}</span><span class="m-value" style="color:#ff5252;">المتبقي: ${c.salary - c.paid} ج.م</span></div>
-                    <div class="m-card-row"><span class="m-label">الاتفاق: ${c.salary} ج.م</span><span class="m-label">المستلم: ${c.paid} ج.م</span></div>
-                `;
-                masterList.appendChild(card);
+                card.innerHTML = `<div class="m-card-row"><span>${c.name}</span><span>إجمالي الاتفاق: ${c.salary} ج.م | المحصل: ${c.paid} ج.م</span></div>`;
+                masterMobileList.appendChild(card);
             });
         }
 
-        window.onload = function() {
+        // تشغيل التهيئة عند فتح النظام
+        document.addEventListener('DOMContentLoaded', () => {
             initPriceControlTable();
-            renderPackageCart();
             document.getElementById('inv-date').innerText = new Date().toLocaleDateString('ar-EG');
-            loadDBFromSheet();
-        };
+            renderAll();
+        });
     </script>
 </body>
 </html>
