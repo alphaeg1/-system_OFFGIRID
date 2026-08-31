@@ -3,250 +3,386 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SYSTEM OFFGRID CLOUD AGENCY - ACCOUNTING & MANAGEMENT</title>
+    <title>OFFGRID AGENCY | Financial & Operations Suite</title>
+    
+    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Readex+Pro:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Readex+Pro:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Icons & Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
     <style>
         :root {
-            --bg-dark: #18191A;
-            --card-bg: #242526;
-            --card-border: rgba(255, 255, 255, 0.08);
-            --mint: #4EA699;
-            --red: #E53935;
-            --lavender: #F9F5FF;
-            --cobalt: #1E3A8A;
-            --gold: #D4AF37;
-            --gold-light: #FFD700;
-            --text-gray: #B0B3B8;
-            --dark-paper: #121315;
-            --purple: #8E24AA;
+            /* Luxury Dark Palette */
+            --bg-base: #0B0F17;
+            --bg-surface: #111827;
+            --bg-card: #1F2937;
+            --bg-card-hover: #374151;
+            
+            /* Borders & Accents */
+            --border-color: rgba(255, 255, 255, 0.07);
+            --border-focus: rgba(78, 205, 196, 0.4);
+            
+            /* Core Brand Colors */
+            --accent-teal: #4ECDC4;
+            --accent-teal-glow: rgba(78, 205, 196, 0.15);
+            --accent-gold: #F59E0B;
+            --accent-gold-light: #FBBF24;
+            --accent-red: #EF4444;
+            --accent-purple: #8B5CF6;
+            --accent-blue: #3B82F6;
+            
+            /* Typography */
+            --text-main: #F9FAFB;
+            --text-muted: #9CA3AF;
+            --text-dim: #6B7280;
+            
+            /* Shadow Effects */
+            --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.2);
+            --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.3);
+            --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.4);
+            --shadow-glow: 0 0 20px rgba(78, 205, 196, 0.15);
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Readex Pro', sans-serif; -webkit-tap-highlight-color: transparent; }
-        body { background: var(--bg-dark); color: var(--lavender); padding: 12px; font-size: 13px; line-height: 1.5; }
         
+        body { 
+            background-color: var(--bg-base); 
+            color: var(--text-main); 
+            padding: 16px; 
+            font-size: 13.5px; 
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        /* Top Header Navigation */
         header { 
-            display: flex; flex-direction: column; gap: 12px; 
-            background: var(--card-bg); border: 1px solid var(--card-border); 
-            padding: 14px; border-radius: 12px; margin-bottom: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px; 
+            background: linear-gradient(145deg, var(--bg-surface), #161F30); 
+            border: 1px solid var(--border-color); 
+            padding: 18px 20px; 
+            border-radius: 16px; 
+            margin-bottom: 20px;
+            box-shadow: var(--shadow-lg);
         }
-        .brand { display: flex; align-items: center; justify-content: center; width: 100%; text-align: center; }
-        .brand-title { font-size: 16px; font-weight: 700; color: var(--mint); letter-spacing: 0.5px; }
         
-        .sync-actions { display: flex; gap: 8px; width: 100%; }
-        .btn-sync { background: var(--mint); color: var(--bg-dark); border: none; padding: 10px; border-radius: 8px; font-weight: 700; cursor: pointer; text-align: center; font-size: 12px; flex: 1; }
-        .btn-reload { background: rgba(255, 255, 255, 0.1); color: var(--lavender); border: 1px solid var(--card-border); padding: 10px; border-radius: 8px; cursor: pointer; font-size: 12px; }
+        @media (min-width: 768px) {
+            header { flex-direction: row; align-items: center; justify-content: space-between; }
+        }
 
-        .kpi-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 15px; }
-        @media (min-width: 768px) { .kpi-grid { grid-template-columns: repeat(4, 1fr); } }
+        .brand { display: flex; align-items: center; gap: 12px; }
+        .brand-icon { 
+            background: linear-gradient(135deg, var(--accent-teal), var(--accent-blue));
+            width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center;
+            color: #000; font-size: 18px; font-weight: 800; box-shadow: var(--shadow-glow);
+        }
+        .brand-text h1 { font-size: 16px; font-weight: 700; color: #fff; letter-spacing: 0.5px; }
+        .brand-text p { font-size: 11px; color: var(--text-muted); }
+
+        .sync-actions { display: flex; gap: 10px; align-items: center; width: 100%; }
+        @media (min-width: 768px) { .sync-actions { width: auto; } }
+
+        .btn-action {
+            display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+            padding: 9px 16px; border-radius: 10px; font-weight: 600; cursor: pointer;
+            font-size: 12px; transition: all 0.2s ease; border: 1px solid transparent; flex: 1;
+        }
+        @media (min-width: 768px) { .btn-action { flex: initial; } }
+        
+        .btn-sync { background: var(--accent-teal); color: #0B0F17; }
+        .btn-sync:hover { background: #3dbdb4; transform: translateY(-1px); box-shadow: var(--shadow-glow); }
+        .btn-reload { background: rgba(255, 255, 255, 0.05); color: var(--text-main); border-color: var(--border-color); }
+        .btn-reload:hover { background: rgba(255, 255, 255, 0.1); }
+
+        #sync-status { font-size: 11px; color: var(--accent-gold); text-align: center; }
+
+        /* KPI Dashboard Cards */
+        .kpi-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 20px; }
+        @media (min-width: 900px) { .kpi-grid { grid-template-columns: repeat(6, 1fr); } }
+        
         .kpi-card { 
-            background: var(--card-bg); border: 1px solid var(--card-border); 
-            padding: 12px; border-radius: 10px; position: relative; overflow: hidden;
+            background: var(--bg-surface); 
+            border: 1px solid var(--border-color); 
+            padding: 16px; 
+            border-radius: 14px; 
+            position: relative; 
+            overflow: hidden;
+            transition: transform 0.2s ease, border-color 0.2s ease;
         }
-        .kpi-card::before { content: ''; position: absolute; top: 0; right: 0; width: 4px; height: 100%; background: var(--mint); }
-        .kpi-card.red::before { background: var(--red); }
-        .kpi-card.blue::before { background: var(--cobalt); }
-        .kpi-card.gold::before { background: var(--gold); }
-        .kpi-card.purple::before { background: var(--purple); }
-        .kpi-card.full-width { grid-column: span 2; }
-        @media (min-width: 768px) { .kpi-card.full-width { grid-column: span 4; } }
-        .kpi-card h3 { font-size: 10px; color: rgba(249, 245, 255, 0.6); margin-bottom: 4px; }
-        .kpi-card p { font-size: 15px; font-weight: 700; color: var(--lavender); }
+        .kpi-card:hover { transform: translateY(-2px); border-color: rgba(255, 255, 255, 0.15); }
+        .kpi-card::before { content: ''; position: absolute; top: 0; right: 0; width: 100%; height: 3px; background: var(--accent-teal); }
+        
+        .kpi-card.red::before { background: var(--accent-red); }
+        .kpi-card.gold::before { background: var(--accent-gold); }
+        .kpi-card.purple::before { background: var(--accent-purple); }
+        .kpi-card.blue::before { background: var(--accent-blue); }
+        
+        @media (min-width: 900px) { .kpi-card.full-width { grid-column: span 2; } }
+        
+        .kpi-card h3 { font-size: 11px; color: var(--text-muted); font-weight: 500; margin-bottom: 6px; }
+        .kpi-card p { font-size: 17px; font-weight: 700; color: var(--text-main); font-family: 'Plus Jakarta Sans', sans-serif; }
 
+        /* Modern Tab Bar */
         .tabs-nav { 
-            display: flex; gap: 8px; margin-bottom: 15px; 
-            overflow-x: auto; padding-bottom: 8px; -webkit-overflow-scrolling: touch;
+            display: flex; gap: 8px; margin-bottom: 20px; 
+            overflow-x: auto; padding-bottom: 6px; -webkit-overflow-scrolling: touch;
+            border-bottom: 1px solid var(--border-color);
         }
-        .tabs-nav::-webkit-scrollbar { height: 6px; }
-        .tabs-nav::-webkit-scrollbar-thumb { background: var(--card-border); border-radius: 10px; }
+        .tabs-nav::-webkit-scrollbar { height: 4px; }
+        .tabs-nav::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 10px; }
+        
         .tab-btn { 
-            background: var(--card-bg); color: var(--lavender); border: 1px solid var(--card-border); 
-            padding: 8px 14px; border-radius: 20px; cursor: pointer; font-size: 12px; white-space: nowrap; flex-shrink: 0;
+            background: transparent; color: var(--text-muted); border: none;
+            padding: 10px 16px; border-radius: 8px; cursor: pointer; font-size: 12.5px; 
+            white-space: nowrap; flex-shrink: 0; font-weight: 500; transition: all 0.2s ease;
+            display: flex; align-items: center; gap: 8px;
         }
-        .tab-btn.active { background: var(--cobalt); border-color: var(--cobalt); font-weight: 600; }
+        .tab-btn:hover { color: var(--text-main); background: rgba(255,255,255,0.03); }
+        .tab-btn.active { 
+            background: var(--accent-teal-glow); color: var(--accent-teal); 
+            border: 1px solid rgba(78, 205, 196, 0.3); font-weight: 600; 
+        }
+
         .tab-content { display: none; }
-        .tab-content.active { display: block; }
+        .tab-content.active { display: block; animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
 
-        .panel { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 12px; padding: 14px; margin-bottom: 15px; }
-        .panel-header { font-size: 14px; font-weight: 600; color: var(--mint); margin-bottom: 12px; border-bottom: 1px solid var(--card-border); padding-bottom: 6px; display: flex; justify-content: space-between; align-items: center; }
+        /* Content Panels & Forms */
+        .panel { 
+            background: var(--bg-surface); 
+            border: 1px solid var(--border-color); 
+            border-radius: 16px; 
+            padding: 18px; 
+            margin-bottom: 20px; 
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .panel-header { 
+            font-size: 14px; font-weight: 600; color: var(--accent-teal); 
+            margin-bottom: 16px; padding-bottom: 10px; 
+            border-bottom: 1px solid var(--border-color); 
+            display: flex; justify-content: space-between; align-items: center; 
+        }
 
-        .form-grid { display: flex; flex-direction: column; gap: 8px; margin-bottom: 15px; }
-        .form-group { margin-bottom: 10px; }
-        label { display: block; font-size: 11px; color: var(--text-gray); margin-bottom: 4px; }
+        .form-grid { display: grid; grid-template-columns: 1fr; gap: 12px; margin-bottom: 15px; }
+        @media (min-width: 600px) { .form-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (min-width: 900px) { .form-grid { grid-template-columns: repeat(3, 1fr); } }
+
+        .form-group { display: flex; flex-direction: column; gap: 6px; }
+        .form-group.full-span { grid-column: 1 / -1; }
+
+        label { font-size: 11px; color: var(--text-muted); font-weight: 500; }
         
         input, select, textarea { 
-            background: rgba(0, 0, 0, 0.3); border: 1px solid var(--card-border); 
-            padding: 10px 12px; border-radius: 8px; color: var(--lavender); font-size: 13px; width: 100%;
+            background: var(--bg-base); border: 1px solid var(--border-color); 
+            padding: 10px 14px; border-radius: 10px; color: var(--text-main); font-size: 13px; width: 100%;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
         }
-        select option { background: #242526; color: #ffffff; padding: 8px; }
-        input:focus, select:focus, textarea:focus { border-color: var(--mint); outline: none; }
-        
-        .checkbox-container { display: flex; align-items: center; gap: 8px; background: rgba(0,0,0,0.15); padding: 8px 12px; border-radius: 8px; border: 1px solid var(--card-border); }
+        select option { background: var(--bg-surface); color: var(--text-main); }
+        input:focus, select:focus, textarea:focus { border-color: var(--accent-teal); outline: none; box-shadow: 0 0 0 3px var(--accent-teal-glow); }
+
+        .checkbox-container { display: flex; align-items: center; gap: 10px; background: var(--bg-base); padding: 10px 14px; border-radius: 10px; border: 1px solid var(--border-color); }
         .checkbox-container input { width: auto; cursor: pointer; }
 
-        button.btn-add { background: var(--cobalt); color: white; border: none; padding: 12px; border-radius: 8px; font-weight: 600; cursor: pointer; margin-top: 4px; width: 100%; }
-        button.btn-add:hover { background: var(--mint); color: #000; }
+        button.btn-add { 
+            background: linear-gradient(135deg, var(--accent-blue), #2563EB); 
+            color: #fff; border: none; padding: 12px; border-radius: 10px; font-weight: 600; 
+            cursor: pointer; width: 100%; transition: all 0.2s ease; font-size: 13px;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
+        }
+        button.btn-add:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(59, 130, 246, 0.3); }
 
+        /* Sleek Mobile Cards & Lists */
         .mobile-card-list { display: flex; flex-direction: column; gap: 10px; }
-        .m-card { background: rgba(0,0,0,0.25); border: 1px solid var(--card-border); border-radius: 8px; padding: 12px; }
-        .m-card.exceptional { border: 1.5px solid var(--red); background: rgba(193, 41, 46, 0.08); }
-        .m-card-row { display: flex; justify-content: space-between; margin-bottom: 6px; font-size: 12px; align-items: center; }
+        .m-card { 
+            background: var(--bg-card); 
+            border: 1px solid var(--border-color); 
+            border-radius: 12px; 
+            padding: 14px; 
+            transition: background 0.2s ease;
+        }
+        .m-card:hover { background: var(--bg-card-hover); }
+        .m-card.exceptional { border: 1px solid var(--accent-red); background: rgba(239, 68, 68, 0.05); }
+        
+        .m-card-row { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 12px; align-items: center; }
         .m-card-row:last-child { margin-bottom: 0; }
-        .m-label { color: rgba(249, 245, 255, 0.6); }
-        .m-value { font-weight: 600; }
+        .m-label { color: var(--text-muted); }
+        .m-value { font-weight: 600; color: var(--text-main); }
 
-        .badge { display: inline-block; padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: 600; }
-        .badge-mint { background: rgba(78, 166, 153, 0.15); color: var(--mint); }
-        .badge-red { background: rgba(229, 57, 53, 0.2); color: #ff5252; border: 1px solid var(--red); }
-        .badge-gold { background: rgba(212, 175, 55, 0.15); color: var(--gold); border: 1px solid var(--gold); }
-        .badge-purple { background: rgba(142, 36, 170, 0.2); color: #e1bee7; border: 1px solid var(--purple); }
-        
-        .btn-del { background: rgba(229, 57, 53, 0.2); color: #ff5252; border: 1px solid var(--red); padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 11px; }
-        .btn-pay { background: rgba(78, 166, 153, 0.2); color: var(--mint); border: 1px solid var(--mint); padding: 4px 8px; border-radius: 4px; cursor: pointer; font-weight: 600; font-size: 11px; }
+        /* Modern Badges */
+        .badge { display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 600; }
+        .badge-mint { background: rgba(78, 205, 196, 0.12); color: var(--accent-teal); border: 1px solid rgba(78, 205, 196, 0.2); }
+        .badge-red { background: rgba(239, 68, 68, 0.12); color: #FCA5A5; border: 1px solid rgba(239, 68, 68, 0.2); }
+        .badge-gold { background: rgba(245, 158, 11, 0.12); color: var(--accent-gold-light); border: 1px solid rgba(245, 158, 11, 0.2); }
+        .badge-purple { background: rgba(139, 92, 246, 0.12); color: #C4B5FD; border: 1px solid rgba(139, 92, 246, 0.2); }
 
-        .summary-card { background: rgba(0, 0, 0, 0.4); border: 1px solid var(--mint); border-radius: 8px; padding: 12px; margin-top: 10px; }
-        .summary-item { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid var(--card-border); }
-        .summary-item:last-child { border-bottom: none; }
+        .btn-del { background: rgba(239, 68, 68, 0.15); color: #FCA5A5; border: 1px solid rgba(239, 68, 68, 0.3); padding: 5px 10px; border-radius: 6px; cursor: pointer; font-size: 11px; font-weight: 500; }
+        .btn-pay { background: rgba(78, 205, 196, 0.15); color: var(--accent-teal); border: 1px solid rgba(78, 205, 196, 0.3); padding: 5px 10px; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 11px; }
 
-        .day-title { color: var(--gold); font-weight: 700; border-right: 3px solid var(--gold); padding-right: 8px; margin: 15px 0 10px 0; font-size: 13px; background: rgba(212, 175, 55, 0.05); padding: 6px 10px; border-radius: 4px; }
+        /* Invoice & Master Views */
+        .invoice-grid-layout { display: grid; grid-template-columns: 1fr; gap: 20px; }
+        @media (min-width: 960px) { .invoice-grid-layout { grid-template-columns: 1fr 1.1fr; } }
 
-        .report-table { width: 100%; border-collapse: collapse; margin-bottom: 15px; font-size: 11px; }
-        .report-table th, .report-table td { border: 1px solid var(--card-border); padding: 8px 4px; text-align: center; }
-        .report-table th { background: rgba(30, 58, 138, 0.4); color: var(--mint); font-weight: 600; }
-        .report-table td { background: rgba(0, 0, 0, 0.15); }
-        
-        #sync-status { font-size: 10px; text-align: center; color: var(--gold); margin-top: 4px; }
-
-        .invoice-grid-layout { display: grid; grid-template-columns: 1fr; gap: 15px; }
-        @media (min-width: 900px) { .invoice-grid-layout { grid-template-columns: 1fr 1.2fr; } }
-
-        .price-table { width: 100%; border-collapse: collapse; margin-bottom: 10px; font-size: 12px; }
-        .price-table th, .price-table td { border: 1px solid var(--card-border); padding: 8px; text-align: right; }
-        .price-table th { background: rgba(30, 58, 138, 0.3); color: var(--gold); }
-        .price-table input { width: 80px; padding: 4px 6px; border-radius: 4px; border: 1px solid var(--card-border); background: #18191A; color: var(--mint); text-align: center; font-weight: bold; }
-
-        .cart-list { margin-top: 10px; display: flex; flex-direction: column; gap: 8px; }
-        .cart-item { background: #18191A; border: 1px solid var(--card-border); border-radius: 8px; padding: 10px; display: flex; justify-content: space-between; align-items: center; }
-        
         .invoice-card {
-            background: #0f1012;
-            border: 1px solid rgba(212, 175, 55, 0.4);
-            border-radius: 12px;
-            padding: 30px;
-            color: #E2E8F0;
+            background: #090D14;
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            border-radius: 16px;
+            padding: 24px;
+            color: var(--text-main);
             position: relative;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6);
-            background-image: radial-gradient(circle at top right, rgba(212, 175, 55, 0.05), transparent 40%);
+            box-shadow: var(--shadow-lg);
         }
         
-        .inv-brand-box { display: flex; justify-content: space-between; align-items: flex-start; padding-bottom: 18px; border-bottom: 2px solid var(--gold); margin-bottom: 20px; }
-        .inv-brand-name { font-size: 20px; font-weight: 800; color: var(--gold-light); letter-spacing: 1.5px; }
-        .inv-brand-sub { font-size: 9px; color: var(--mint); letter-spacing: 2px; text-transform: uppercase; margin-top: 2px; }
+        .inv-brand-box { display: flex; justify-content: space-between; align-items: flex-start; padding-bottom: 16px; border-bottom: 1px solid rgba(245, 158, 11, 0.3); margin-bottom: 16px; }
+        .inv-brand-name { font-size: 18px; font-weight: 800; color: var(--accent-gold-light); letter-spacing: 1px; font-family: 'Plus Jakarta Sans', sans-serif; }
+        .inv-brand-sub { font-size: 9px; color: var(--accent-teal); letter-spacing: 2px; text-transform: uppercase; margin-top: 2px; }
         
-        .inv-meta-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255,255,255,0.05); padding: 12px; border-radius: 8px; margin-bottom: 20px; }
-        .inv-meta-item label { font-size: 10px; color: var(--text-gray); display: block; }
-        .inv-meta-item val { font-size: 12px; font-weight: 600; color: var(--lavender); }
+        .inv-meta-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border-color); padding: 12px; border-radius: 10px; margin-bottom: 16px; }
+        .inv-meta-item label { font-size: 10px; color: var(--text-muted); display: block; }
+        .inv-meta-item val { font-size: 12px; font-weight: 600; color: var(--text-main); }
 
-        .inv-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
-        .inv-table th { background: rgba(212, 175, 55, 0.12); color: var(--gold-light); padding: 10px; font-size: 11px; text-align: right; font-weight: 600; border-bottom: 1px solid rgba(212, 175, 55, 0.3); }
-        .inv-table td { padding: 10px; font-size: 11px; border-bottom: 1px solid rgba(255, 255, 255, 0.05); }
+        .inv-table { width: 100%; border-collapse: collapse; margin-bottom: 16px; }
+        .inv-table th { background: rgba(245, 158, 11, 0.08); color: var(--accent-gold-light); padding: 8px 10px; font-size: 11px; text-align: right; font-weight: 600; border-bottom: 1px solid rgba(245, 158, 11, 0.2); }
+        .inv-table td { padding: 10px; font-size: 11px; border-bottom: 1px solid var(--border-color); }
         
-        .inv-total-box { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; padding-top: 12px; border-top: 2px solid var(--gold); }
-        .inv-row { display: flex; justify-content: space-between; width: 240px; font-size: 12px; color: var(--text-gray); }
-        .inv-row.grand { font-size: 15px; font-weight: 700; color: var(--gold-light); margin-top: 4px; padding-top: 6px; border-top: 1px dashed rgba(255, 255, 255, 0.2); }
+        .inv-total-box { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; padding-top: 12px; border-top: 1px solid rgba(245, 158, 11, 0.3); }
+        .inv-row { display: flex; justify-content: space-between; width: 220px; font-size: 12px; color: var(--text-muted); }
+        .inv-row.grand { font-size: 14px; font-weight: 700; color: var(--accent-gold-light); margin-top: 4px; padding-top: 6px; border-top: 1px dashed rgba(255, 255, 255, 0.2); }
 
-        .inv-footer { margin-top: 30px; text-align: center; font-size: 10px; color: var(--text-gray); border-top: 1px solid var(--card-border); padding-top: 12px; }
-        .btn-download { background: linear-gradient(135deg, #D4AF37, #FFD700); color: #000; border: none; padding: 12px; border-radius: 8px; font-weight: 700; font-size: 13px; cursor: pointer; width: 100%; margin-top: 12px; box-shadow: 0 4px 12px rgba(212, 175, 55, 0.2); }
+        .btn-download { background: linear-gradient(135deg, var(--accent-gold), var(--accent-gold-light)); color: #000; border: none; padding: 12px; border-radius: 10px; font-weight: 700; font-size: 13px; cursor: pointer; width: 100%; margin-top: 15px; }
 
-        .accounting-ledger { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 11px; }
-        .accounting-ledger th { background: var(--dark-paper); color: var(--gold-light); border: 1px solid var(--card-border); padding: 8px; text-align: center; }
-        .accounting-ledger td { border: 1px solid var(--card-border); padding: 8px; text-align: center; background: rgba(0,0,0,0.2); }
+        /* Clean Modern Tables */
+        .accounting-ledger, .report-table, .price-table { width: 100%; border-collapse: separate; border-spacing: 0; margin-top: 10px; font-size: 11.5px; border-radius: 10px; overflow: hidden; border: 1px solid var(--border-color); }
+        .accounting-ledger th, .report-table th, .price-table th { background: var(--bg-card); color: var(--accent-teal); padding: 10px; text-align: center; font-weight: 600; border-bottom: 1px solid var(--border-color); }
+        .accounting-ledger td, .report-table td, .price-table td { padding: 10px; text-align: center; background: var(--bg-base); border-bottom: 1px solid var(--border-color); color: var(--text-main); }
+        .price-table td { text-align: right; }
+        .price-table input { width: 90px; padding: 4px 8px; border-radius: 6px; text-align: center; font-weight: bold; }
+
+        .summary-card { background: var(--bg-base); border: 1px solid var(--accent-teal); border-radius: 12px; padding: 14px; margin-top: 15px; }
+        .summary-item { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--border-color); }
+        .summary-item:last-child { border-bottom: none; }
+        
+        .day-title { color: var(--accent-gold); font-weight: 700; border-right: 3px solid var(--accent-gold); padding-right: 10px; margin: 15px 0 10px 0; font-size: 13px; background: rgba(245, 158, 11, 0.05); padding: 8px 12px; border-radius: 6px; }
     </style>
 </head>
 <body>
 
     <header>
         <div class="brand">
-            <span class="brand-title">SYSTEM OFFGRID CLOUD AGENCY - FINANCIAL & ACCOUNTING CONTROL</span>
+            <div class="brand-icon"><i class="fa-solid fa-cube"></i></div>
+            <div class="brand-text">
+                <h1>OFFGRID AGENCY</h1>
+                <p>Financial Control & Operations Management System</p>
+            </div>
         </div>
         <div class="sync-actions">
-            <button class="btn-sync" onclick="exportReportImage()">📸 تصدير صورة التقرير الشامل</button>
-            <button class="btn-reload" onclick="loadDBFromSheet()">🔄 مزامنة البيانات مع السحابة</button>
+            <button class="btn-action btn-sync" onclick="exportReportImage()"><i class="fa-solid fa-camera"></i> تصدير التقرير</button>
+            <button class="btn-action btn-reload" onclick="loadDBFromSheet()"><i class="fa-solid fa-rotate"></i> مزامنة سحابية</button>
         </div>
-        <div id="sync-status">جاهز للاستخدام المحالي ⚡</div>
     </header>
+    <div id="sync-status" style="margin-bottom: 15px;">جاهز للاستخدام المحلي ⚡</div>
 
+    <!-- Main Dashboard KPI Section -->
     <div class="kpi-grid">
-        <div class="kpi-card"><h3>إجمالي المحصل الكلي (إيراد)</h3><p id="total-revenue">0 ج.م</p></div>
-        <div class="kpi-card red"><h3>المتبقي في السوق (مبيعات آجل)</h3><p id="total-pending">0 ج.م</p></div>
+        <div class="kpi-card"><h3>إجمالي المحصل</h3><p id="total-revenue">0 ج.م</p></div>
+        <div class="kpi-card red"><h3>المتبقي في السوق</h3><p id="total-pending">0 ج.م</p></div>
         <div class="kpi-card gold"><h3>دخل هذا الأسبوع</h3><p id="weekly-expected-income">0 ج.م</p></div>
         <div class="kpi-card red"><h3>المصروفات والرواتب</h3><p id="total-expenses">0 ج.م</p></div>
-        <div class="kpi-card purple"><h3>إجمالي المديونيات لِلغير (دائنون)</h3><p id="total-liabilities">0 ج.م</p></div>
-        <div class="kpi-card blue full-width"><h3>صافي الأرباح المحاسبية (الأرباح الكلية)</h3><p id="net-income">0 ج.م</p></div>
+        <div class="kpi-card purple"><h3>الالتزامات والدائنون</h3><p id="total-liabilities">0 ج.م</p></div>
+        <div class="kpi-card blue full-width"><h3>صافي الأرباح المحاسبية</h3><p id="net-income">0 ج.م</p></div>
     </div>
 
+    <!-- Navigation Tabs -->
     <div class="tabs-nav">
-        <button class="tab-btn active" onclick="switchTab('daily-income-tab', this)">💰 الدخل والخدمات اليومية</button>
-        <button class="tab-btn" onclick="switchTab('accountant-tab', this)">🧮 المحاسب القانوني والتسويات</button>
-        <button class="tab-btn" onclick="switchTab('debts-tab', this)">📜 كشف المديونيات والدائنين</button>
-        <button class="tab-btn" onclick="switchTab('month-weeks-tab', this)">📅 جدول الـ 4 أسابيع (حسب الأيام)</button>
-        <button class="tab-btn" onclick="switchTab('invoice-system-tab', this)">🧾 الفواتير وبناء الباقات</button>
-        <button class="tab-btn" onclick="switchTab('clients-tab', this)">👥 العملاء والدفعات المجدولة</button>
-        <button class="tab-btn" onclick="switchTab('reels-deliveries-tab', this)">🎬 تسليمات الإنتاج والتأكيدات</button>
-        <button class="tab-btn" onclick="switchTab('tasks-deliveries-tab', this)">🎯 المهام والتسليمات</button>
-        <button class="tab-btn" onclick="switchTab('office-needs-tab', this)">🛒 مطالبات ونواقص المكتب</button>
-        <button class="tab-btn" onclick="switchTab('team-tab', this)">👑 الملاّك والرواتب بالتاسك/الشهر</button>
-        <button class="tab-btn" onclick="switchTab('expenses-tab', this)">💸 المصروفات التشغيلية</button>
-        <button class="tab-btn" onclick="switchTab('master-tab', this)">📊 التقرير المحاسبي الشامل</button>
+        <button class="tab-btn active" onclick="switchTab('daily-income-tab', this)"><i class="fa-solid fa-coins"></i> الدخل اليومي</button>
+        <button class="tab-btn" onclick="switchTab('accountant-tab', this)"><i class="fa-solid fa-calculator"></i> التسويات والمحاسب</button>
+        <button class="tab-btn" onclick="switchTab('debts-tab', this)"><i class="fa-solid fa-receipt"></i> المديونيات</button>
+        <button class="tab-btn" onclick="switchTab('month-weeks-tab', this)"><i class="fa-solid fa-calendar-days"></i> الجدول الأسبوعي</button>
+        <button class="tab-btn" onclick="switchTab('invoice-system-tab', this)"><i class="fa-solid fa-file-invoice-dollar"></i> الفواتير والباقات</button>
+        <button class="tab-btn" onclick="switchTab('clients-tab', this)"><i class="fa-solid fa-users"></i> العملاء والدفعات</button>
+        <button class="tab-btn" onclick="switchTab('reels-deliveries-tab', this)"><i class="fa-solid fa-video"></i> تسليمات الإنتاج</button>
+        <button class="tab-btn" onclick="switchTab('tasks-deliveries-tab', this)"><i class="fa-solid fa-list-check"></i> المهام</button>
+        <button class="tab-btn" onclick="switchTab('office-needs-tab', this)"><i class="fa-solid fa-cart-shopping"></i> النواقص</button>
+        <button class="tab-btn" onclick="switchTab('team-tab', this)"><i class="fa-solid fa-user-tie"></i> الفريق والرواتب</button>
+        <button class="tab-btn" onclick="switchTab('expenses-tab', this)"><i class="fa-solid fa-wallet"></i> المصروفات</button>
+        <button class="tab-btn" onclick="switchTab('master-tab', this)"><i class="fa-solid fa-chart-pie"></i> التقرير الشامل</button>
     </div>
 
+    <!-- Daily Income Tab -->
     <div id="daily-income-tab" class="tab-content active">
         <div class="panel">
-            <div class="panel-header">تسجيل خدمة / دخل يومي جديد (مربوط بالمهام والتحصيل)</div>
+            <div class="panel-header"><span><i class="fa-solid fa-plus-circle"></i> تسجيل خدمة / دخل يومي جديد</span></div>
             <form class="form-grid" onsubmit="addDailyIncome(event)">
-                <select id="di-week" required>
-                    <option value="1">الأسبوع الأول</option>
-                    <option value="2">الأسبوع الثاني</option>
-                    <option value="3">الأسبوع الثالث</option>
-                    <option value="4">الأسبوع الرابع</option>
-                </select>
-                <select id="di-day" required>
-                    <option value="" disabled selected>اختر يوم الطلب</option>
-                    <option value="السبت">السبت</option>
-                    <option value="الأحد">الأحد</option>
-                    <option value="الإثنين">الإثنين</option>
-                    <option value="الثلاثاء">الثلاثاء</option>
-                    <option value="الأربعاء">الأربعاء</option>
-                    <option value="الخميس">الخميس</option>
-                    <option value="الجمعة">الجمعة</option>
-                </select>
-                <input type="text" id="di-client" placeholder="اسم العميل" required>
-                <input type="text" id="di-service" placeholder="نوع الخدمة المطلوبة" required>
-                <select id="di-emp" required></select>
-                <input type="date" id="di-date" placeholder="تاريخ ميعاد التسليم" required>
-                <input type="number" id="di-cost" placeholder="المبلغ المحصل فعلياً (ج.م)" required>
-                <button type="submit" class="btn-add">حفظ الخدمة وتسكينها ماليّاً 🚀</button>
+                <div class="form-group">
+                    <label>الأسبوع المحاسبي</label>
+                    <select id="di-week" required>
+                        <option value="1">الأسبوع الأول</option>
+                        <option value="2">الأسبوع الثاني</option>
+                        <option value="3">الأسبوع الثالث</option>
+                        <option value="4">الأسبوع الرابع</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>يوم الطلب</label>
+                    <select id="di-day" required>
+                        <option value="" disabled selected>اختر اليوم</option>
+                        <option value="السبت">السبت</option>
+                        <option value="الأحد">الأحد</option>
+                        <option value="الإثنين">الإثنين</option>
+                        <option value="الثلاثاء">الثلاثاء</option>
+                        <option value="الأربعاء">الأربعاء</option>
+                        <option value="الخميس">الخميس</option>
+                        <option value="الجمعة">الجمعة</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>اسم العميل</label>
+                    <input type="text" id="di-client" placeholder="أدخل اسم العميل" required>
+                </div>
+                <div class="form-group">
+                    <label>الخدمة المطلوبة</label>
+                    <input type="text" id="di-service" placeholder="نوع الخدمة" required>
+                </div>
+                <div class="form-group">
+                    <label>المسؤول عن التنفيذ</label>
+                    <select id="di-emp" required></select>
+                </div>
+                <div class="form-group">
+                    <label>ميعاد التسليم</label>
+                    <input type="date" id="di-date" required>
+                </div>
+                <div class="form-group full-span">
+                    <label>المبلغ المحصل (ج.م)</label>
+                    <input type="number" id="di-cost" placeholder="0.00" required>
+                </div>
+                <div class="form-group full-span">
+                    <button type="submit" class="btn-add">حفظ وتسكين الدخل 🚀</button>
+                </div>
             </form>
 
-            <div class="panel-header" style="margin-top:20px;">سجل الدخل والخدمات اليومية</div>
+            <div class="panel-header" style="margin-top:10px;"><span>سجل الدخل والخدمات اليومية</span></div>
             <div id="daily-income-mobile-list" class="mobile-card-list"></div>
         </div>
     </div>
 
+    <!-- Accountant Tab -->
     <div id="accountant-tab" class="tab-content">
         <div class="panel">
-            <div class="panel-header">⚖️ ميزان المراجعة والمركز المالي (المحاسب القانوني)</div>
-            <p style="font-size: 11px; color: var(--text-gray); margin-bottom: 10px;">يعرض هذا القسم القيود المحاسبية التلقائية وتوازن المدين والدائن بناءً على كافة معاملات المكتب.</p>
+            <div class="panel-header"><span>⚖️ ميزان المراجعة والمركز المالي</span></div>
+            <p style="font-size: 11px; color: var(--text-muted); margin-bottom: 12px;">تسوية القيود التلقائية لمراقبة التوازن المالي للوكالة.</p>
             <div style="overflow-x:auto;">
                 <table class="accounting-ledger">
                     <thead>
                         <tr>
-                            <th>اسم الحساب (Account Name)</th>
-                            <th>مدين (Debit - ج.م)</th>
-                            <th>دائن (Credit - ج.م)</th>
-                            <th>الترصيد النهائي</th>
+                            <th>الحساب</th>
+                            <th>مدين (Debit)</th>
+                            <th>دائن (Credit)</th>
+                            <th>الرصيد النهائي</th>
                         </tr>
                     </thead>
                     <tbody id="trial-balance-tbody"></tbody>
@@ -255,121 +391,157 @@
         </div>
 
         <div class="panel">
-            <div class="panel-header">📈 التحليلات والنسب المحاسبية (Financial Ratios)</div>
+            <div class="panel-header"><span>📈 النسب والأداء المالي</span></div>
             <div id="accounting-ratios-container" class="mobile-card-list"></div>
         </div>
     </div>
 
+    <!-- Debts Tab -->
     <div id="debts-tab" class="tab-content">
         <div class="panel">
-            <div class="panel-header">📝 إضافة مديونية جديدة علي المكتب (تسجيل دائن)</div>
+            <div class="panel-header"><span>📝 تسجيل مديونية / دائن جديد</span></div>
             <form class="form-grid" onsubmit="addDebt(event)">
-                <input type="text" id="debt-creditor" placeholder="اسم المديون إليه (المورد / الشخص)" required>
-                <input type="number" id="debt-amount" placeholder="مبلغ المديونية (ج.م)" required>
-                <input type="text" id="debt-reason" placeholder="سبب المديونية / البيان" required>
-                <select id="debt-linked-account" required>
-                    <option value="مصروفات تشغيل">مرتبط بحساب: مصروفات تشغيلية</option>
-                    <option value="معدات وأصول">مرتبط بحساب: شراء أصول ومعدات</option>
-                    <option value="رواتب وسلف">مرتبط بحساب: سلف ورواتب فريق</option>
-                    <option value="التزامات عامة">مرتبط بحساب: التزامات ومرافق عامة</option>
-                </select>
-                <button type="submit" class="btn-add" style="background: var(--purple); color:#fff;">تسجيل المديونية 📜</button>
+                <div class="form-group">
+                    <label>اسم المورد / الشخص</label>
+                    <input type="text" id="debt-creditor" placeholder="أدخل الاسم" required>
+                </div>
+                <div class="form-group">
+                    <label>مبلغ المديونية (ج.م)</label>
+                    <input type="number" id="debt-amount" placeholder="0.00" required>
+                </div>
+                <div class="form-group">
+                    <label>السبب / البيان</label>
+                    <input type="text" id="debt-reason" placeholder="تفاصيل المديونية" required>
+                </div>
+                <div class="form-group full-span">
+                    <label>الحساب المرتبط</label>
+                    <select id="debt-linked-account" required>
+                        <option value="مصروفات تشغيل">مصروفات تشغيلية</option>
+                        <option value="معدات وأصول">شراء أصول ومعدات</option>
+                        <option value="رواتب وسلف">سلف ورواتب فريق</option>
+                        <option value="التزامات عامة">التزامات ومرافق</option>
+                    </select>
+                </div>
+                <div class="form-group full-span">
+                    <button type="submit" class="btn-add" style="background: linear-gradient(135deg, var(--accent-purple), #7C3AED);">حفظ المديونية 📜</button>
+                </div>
             </form>
         </div>
 
         <div class="panel">
-            <div class="panel-header">💳 سجل المديونيات والدائنين المتبقية</div>
+            <div class="panel-header"><span>💳 سجل الدائنين والمستحقات</span></div>
             <div id="debts-mobile-list" class="mobile-card-list"></div>
         </div>
     </div>
 
+    <!-- Monthly / Weekly Schedule Tab -->
     <div id="month-weeks-tab" class="tab-content">
         <div class="panel">
-            <div class="panel-header">تسكين المواعيد والتصوير حسب الأيام</div>
+            <div class="panel-header"><span>🗓️ جدولة مواعيد المواعيد والتصوير</span></div>
             <form class="form-grid" onsubmit="addMonthlySchedule(event)">
-                <select id="ms-week">
-                    <option value="1">الأسبوع الأول</option>
-                    <option value="2">الأسبوع الثاني</option>
-                    <option value="3">الأسبوع الثالث</option>
-                    <option value="4">الأسبوع الرابع</option>
-                </select>
-                <select id="ms-day" required>
-                    <option value="السبت">السبت</option>
-                    <option value="الأحد">الأحد</option>
-                    <option value="الإثنين">الإثنين</option>
-                    <option value="الثلاثاء">الثلاثاء</option>
-                    <option value="الأربعاء">الأربعاء</option>
-                    <option value="الخميس">الخميس</option>
-                    <option value="الجمعة">الجمعة</option>
-                </select>
-                <input type="text" id="ms-client" placeholder="اسم العميل" required>
-                <select id="ms-type" required>
-                    <option value="normal">حجز ثابت عادي</option>
-                    <option value="exceptional">عميل استثنائي (🚨)</option>
-                </select>
-                <input type="text" id="ms-task" placeholder="المهمة المطلوبة (مثال: تصوير 3 ريلز)">
-                
-                <div class="checkbox-container">
-                    <input type="checkbox" id="ms-repeat">
-                    <label for="ms-repeat">🔄 تكرار العميل تلقائياً في الأربعة أسابيع</label>
+                <div class="form-group">
+                    <label>الأسبوع</label>
+                    <select id="ms-week">
+                        <option value="1">الأسبوع الأول</option>
+                        <option value="2">الأسبوع الثاني</option>
+                        <option value="3">الأسبوع الثالث</option>
+                        <option value="4">الأسبوع الرابع</option>
+                    </select>
                 </div>
-
-                <button type="submit" class="btn-add">إضافة للجدول الأسبوعي</button>
+                <div class="form-group">
+                    <label>اليوم</label>
+                    <select id="ms-day" required>
+                        <option value="السبت">السبت</option>
+                        <option value="الأحد">الأحد</option>
+                        <option value="الإثنين">الإثنين</option>
+                        <option value="الثلاثاء">الثلاثاء</option>
+                        <option value="الأربعاء">الأربعاء</option>
+                        <option value="الخميس">الخميس</option>
+                        <option value="الجمعة">الجمعة</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>اسم العميل</label>
+                    <input type="text" id="ms-client" placeholder="أدخل اسم العميل" required>
+                </div>
+                <div class="form-group">
+                    <label>نوع الحجز</label>
+                    <select id="ms-type" required>
+                        <option value="normal">حجز عادي</option>
+                        <option value="exceptional">عميل استثنائي (🚨)</option>
+                    </select>
+                </div>
+                <div class="form-group full-span">
+                    <label>تفاصيل المهمة</label>
+                    <input type="text" id="ms-task" placeholder="مثال: تصوير 3 ريلز">
+                </div>
+                <div class="form-group full-span">
+                    <div class="checkbox-container">
+                        <input type="checkbox" id="ms-repeat">
+                        <label for="ms-repeat">🔄 تكرار التسكين تلقائياً عبر الأربعة أسابيع</label>
+                    </div>
+                </div>
+                <div class="form-group full-span">
+                    <button type="submit" class="btn-add">إضافة للجدول</button>
+                </div>
             </form>
 
             <div id="weeks-container"></div>
         </div>
     </div>
 
+    <!-- Invoice & Builder Tab -->
     <div id="invoice-system-tab" class="tab-content">
         <div class="invoice-grid-layout">
             <div>
                 <div class="panel">
-                    <div class="panel-header">⚙️ التحكم في قائمة أسعار الخدمات (سعر الوحدة)</div>
+                    <div class="panel-header"><span>⚙️ إدارة أسعار الخدمات</span></div>
                     <div style="overflow-x: auto;">
                         <table class="price-table">
                             <thead>
                                 <tr>
                                     <th>القسم</th>
-                                    <th>اسم الخدمة</th>
+                                    <th>الخدمة</th>
                                     <th>السعر (ج.م)</th>
                                 </tr>
                             </thead>
                             <tbody id="price-control-tbody"></tbody>
                         </table>
                     </div>
-                    <button class="btn-add" style="background: rgba(78, 166, 153, 0.2); color: var(--mint);" onclick="saveCustomPrices()">حفظ الأسعار المعدلة 💾</button>
+                    <button class="btn-add" style="margin-top: 12px; background: rgba(78, 205, 196, 0.15); color: var(--accent-teal); border: 1px solid rgba(78, 205, 196, 0.3);" onclick="saveCustomPrices()">حفظ التعديلات 💾</button>
                 </div>
 
                 <div class="panel">
-                    <div class="panel-header">📦 بناء باقة العميل والتخصيص</div>
-                    <div class="form-group">
-                        <label>اسم العميل / الشركة:</label>
-                        <input type="text" id="client-name-input" placeholder="أدخل اسم العميل" oninput="updateInvoiceHeader()">
+                    <div class="panel-header"><span>📦 إنشاء باقة مخصصة</span></div>
+                    <div class="form-group" style="margin-bottom: 10px;">
+                        <label>العميل / الشركة:</label>
+                        <input type="text" id="client-name-input" placeholder="اسم العميل" oninput="updateInvoiceHeader()">
                     </div>
-                    <div class="form-group">
+                    <div class="form-group" style="margin-bottom: 10px;">
                         <label>اختر الخدمة:</label>
                         <select id="service-select"></select>
                     </div>
-                    <div class="form-group">
-                        <label>العدد / عدد الساعات:</label>
+                    <div class="form-group" style="margin-bottom: 10px;">
+                        <label>العدد / الكمية:</label>
                         <input type="number" id="service-qty" value="1" min="1">
                     </div>
-                    <button class="btn-add" onclick="addItemToPackage()">+ إضافة الخدمة للباقة</button>
+                    <button class="btn-add" onclick="addItemToPackage()">+ إضافة للباقة</button>
 
-                    <div class="form-group" style="margin-top: 15px; border-top: 1px dashed var(--card-border); padding-top: 10px;">
-                        <label style="color: var(--gold-light); font-weight: bold;">🏷️ نسبة الخصم المئوية (%):</label>
-                        <input type="number" id="invoice-discount-input" placeholder="مثال: 10" min="0" max="100" value="0" oninput="renderPackageCart()">
+                    <div style="margin-top: 15px; border-top: 1px dashed var(--border-color); padding-top: 10px;">
+                        <div class="form-group">
+                            <label style="color: var(--accent-gold-light);">🏷️ نسبة الخصم (%):</label>
+                            <input type="number" id="invoice-discount-input" placeholder="0" min="0" max="100" value="0" oninput="renderPackageCart()">
+                        </div>
                     </div>
 
-                    <div class="panel-header" style="margin-top: 15px;">محتويات الباقة الحالية</div>
-                    <div id="cart-items-container" class="cart-list"></div>
+                    <div class="panel-header" style="margin-top: 15px; font-size: 12px;">العناصر الحالية</div>
+                    <div id="cart-items-container" class="mobile-card-list"></div>
                 </div>
             </div>
 
             <div>
                 <div class="panel">
-                    <div class="panel-header">📄 معاينة الفاتورة الاحترافية</div>
+                    <div class="panel-header"><span>📄 معاينة الفاتورة</span></div>
                     <div id="invoice-preview-wrapper">
                         <div class="invoice-card" id="invoice-card-element">
                             <div class="inv-brand-box">
@@ -377,8 +549,8 @@
                                     <div class="inv-brand-name">OFFGRID AGENCY</div>
                                     <div class="inv-brand-sub">Media & Accounting System</div>
                                 </div>
-                                <div style="text-align: left;">
-                                    <span class="badge badge-gold" style="font-size: 11px;">فاتورة مطالبات / عرض سعر</span>
+                                <div>
+                                    <span class="badge badge-gold">عرض سعر / فاتورة</span>
                                 </div>
                             </div>
 
@@ -392,16 +564,16 @@
                                     <val id="inv-date"></val>
                                 </div>
                                 <div class="inv-meta-item" style="grid-column: span 2;">
-                                    <label>المطلوب من المحترم/ة:</label>
-                                    <val id="inv-client-name" style="color: var(--gold-light); font-size: 13px;">عميل جديد</val>
+                                    <label>المطلوب من:</label>
+                                    <val id="inv-client-name" style="color: var(--accent-gold-light); font-size: 13px;">عميل جديد</val>
                                 </div>
                             </div>
 
                             <table class="inv-table">
                                 <thead>
                                     <tr>
-                                        <th>الوصف / الخدمة</th>
-                                        <th style="text-align:center;">العدد/الساعات</th>
+                                        <th>الخدمة</th>
+                                        <th style="text-align:center;">العدد</th>
                                         <th style="text-align:center;">السعر</th>
                                         <th style="text-align:left;">الإجمالي</th>
                                     </tr>
@@ -411,202 +583,306 @@
 
                             <div class="inv-total-box">
                                 <div class="inv-row">
-                                    <span>المبلغ قبل الخصم:</span>
+                                    <span>قبل الخصم:</span>
                                     <span id="inv-subtotal-price">0 ج.م</span>
                                 </div>
-                                <div class="inv-row" id="inv-discount-row" style="color: #ff5252; display: none;">
+                                <div class="inv-row" id="inv-discount-row" style="color: var(--accent-red); display: none;">
                                     <span>الخصم (<span id="inv-discount-percent">0</span>%):</span>
                                     <span id="inv-discount-amount">-0 ج.م</span>
                                 </div>
                                 <div class="inv-row grand">
-                                    <span>الإجمالي المستحق:</span>
+                                    <span>الإجمالي النهائي:</span>
                                     <span id="inv-total-price">0 ج.م</span>
                                 </div>
                             </div>
 
-                            <div class="inv-footer">
-                                شكرًا لثقتكم بـ OFFGRID AGENCY | يسعدنا دائمًا صناعة النجاح معكم 🚀
+                            <div style="margin-top: 25px; text-align: center; font-size: 10px; color: var(--text-muted); border-top: 1px solid var(--border-color); padding-top: 10px;">
+                                شكراً لتعاملكم مع OFFGRID AGENCY 🚀
                             </div>
                         </div>
                     </div>
 
-                    <button class="btn-download" onclick="downloadInvoice()">تحميل الفاتورة (صورة عالية الجودة) 📥</button>
+                    <button class="btn-download" onclick="downloadInvoice()">تحميل الفاتورة كـ صورة 📥</button>
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- Clients Tab -->
     <div id="clients-tab" class="tab-content">
         <div class="panel">
-            <div class="panel-header">إضافة عميل جديد</div>
+            <div class="panel-header"><span>👥 تسجيل عميل جديد</span></div>
             <form class="form-grid" onsubmit="addClient(event)">
-                <input type="text" id="c-name" placeholder="اسم العميل" required>
-                <input type="tel" id="c-phone" placeholder="رقم الهاتف" required>
-                <input type="number" id="c-reels" placeholder="عدد الريلز المطلوبة" required>
-                <input type="number" id="c-salary" placeholder="إجمالي مبلغ الاتفاق (ج.م)" required>
-                <input type="number" id="c-paid" placeholder="الدفعة الأولى المستلمة (ج.م)" required>
-                <select id="c-day" required>
-                    <option value="" disabled selected>اختر يوم التصوير الأسبوعي الثابت</option>
-                    <option value="السبت">السبت</option>
-                    <option value="الأحد">الأحد</option>
-                    <option value="الإثنين">الإثنين</option>
-                    <option value="الثلاثاء">الثلاثاء</option>
-                    <option value="الأربعاء">الأربعاء</option>
-                    <option value="الخميس">الخميس</option>
-                    <option value="الجمعة">الجمعة</option>
-                </select>
-                <button type="submit" class="btn-add">حفظ العميل وتنزيله في جدول الأسابيع 🔄</button>
+                <div class="form-group">
+                    <label>اسم العميل</label>
+                    <input type="text" id="c-name" placeholder="الاسم كامل" required>
+                </div>
+                <div class="form-group">
+                    <label>رقم الهاتف</label>
+                    <input type="tel" id="c-phone" placeholder="01xxxxxxxxx" required>
+                </div>
+                <div class="form-group">
+                    <label>عدد الريلز المطلوبة</label>
+                    <input type="number" id="c-reels" placeholder="0" required>
+                </div>
+                <div class="form-group">
+                    <label>إجمالي الاتفاق (ج.م)</label>
+                    <input type="number" id="c-salary" placeholder="0.00" required>
+                </div>
+                <div class="form-group">
+                    <label>الدفعة المستلمة (ج.م)</label>
+                    <input type="number" id="c-paid" placeholder="0.00" required>
+                </div>
+                <div class="form-group">
+                    <label>يوم التصوير الثابت</label>
+                    <select id="c-day" required>
+                        <option value="" disabled selected>اختر اليوم</option>
+                        <option value="السبت">السبت</option>
+                        <option value="الأحد">الأحد</option>
+                        <option value="الإثنين">الإثنين</option>
+                        <option value="الثلاثاء">الثلاثاء</option>
+                        <option value="الأربعاء">الأربعاء</option>
+                        <option value="الخميس">الخميس</option>
+                        <option value="الجمعة">الجمعة</option>
+                    </select>
+                </div>
+                <div class="form-group full-span">
+                    <button type="submit" class="btn-add">حفظ العميل وإدراجه بالجدول 🔄</button>
+                </div>
             </form>
         </div>
 
         <div class="panel">
-            <div class="panel-header">📅 جدولة دفعة قادمة للعميل</div>
+            <div class="panel-header"><span>📅 جدولة دفعة قادمة</span></div>
             <form class="form-grid" onsubmit="addScheduledPayment(event)">
-                <select id="sp-client-select" required></select>
-                <input type="number" id="sp-amount" placeholder="مبلغ الدفعة المستحقة" required>
-                <input type="date" id="sp-date" required>
-                <select id="sp-week" required>
-                    <option value="1">تسديد في الأسبوع الأول</option>
-                    <option value="2">تسديد في الأسبوع الثاني</option>
-                    <option value="3">تسديد في الأسبوع الثالث</option>
-                    <option value="4">تسديد في الأسبوع الرابع</option>
-                </select>
-                <button type="submit" class="btn-add" style="background: var(--gold); color:#000;">جدولة الدفعة 🗓️</button>
+                <div class="form-group">
+                    <label>اختر العميل</label>
+                    <select id="sp-client-select" required></select>
+                </div>
+                <div class="form-group">
+                    <label>المبلغ المستحق</label>
+                    <input type="number" id="sp-amount" placeholder="0.00" required>
+                </div>
+                <div class="form-group">
+                    <label>ميعاد الاستحقاق</label>
+                    <input type="date" id="sp-date" required>
+                </div>
+                <div class="form-group">
+                    <label>الأسبوع</label>
+                    <select id="sp-week" required>
+                        <option value="1">الأسبوع الأول</option>
+                        <option value="2">الأسبوع الثاني</option>
+                        <option value="3">الأسبوع الثالث</option>
+                        <option value="4">الأسبوع الرابع</option>
+                    </select>
+                </div>
+                <div class="form-group full-span">
+                    <button type="submit" class="btn-add" style="background: linear-gradient(135deg, var(--accent-gold), #D97706); color:#000;">حفظ جدولة الدفعة 🗓️</button>
+                </div>
             </form>
         </div>
 
         <div class="panel">
-            <div class="panel-header">⏳ الدفعات المجدولة بانتظار التحصيل</div>
+            <div class="panel-header"><span>⏳ الدفعات القادمة بانتظار التحصيل</span></div>
             <div id="scheduled-payments-list" class="mobile-card-list"></div>
         </div>
 
         <div class="panel">
-            <div class="panel-header">قائمة العملاء الحالية والماليات</div>
+            <div class="panel-header"><span>قائمة العملاء الحالية</span></div>
             <div id="clients-mobile-list" class="mobile-card-list"></div>
         </div>
     </div>
 
+    <!-- Production & Reels Deliveries Tab -->
     <div id="reels-deliveries-tab" class="tab-content">
         <div class="panel">
-            <div class="panel-header">تحديث عدد وعناوين الفيديوهات المسلمة للعميل</div>
+            <div class="panel-header"><span>🎬 تحديث تسليمات الريلز</span></div>
             <form class="form-grid" onsubmit="updateClientReelsDelivery(event)">
-                <select id="rd-client-select" required onchange="onReelsClientSelectChange(this)"></select>
-                <input type="number" id="rd-delivered" placeholder="عدد الفيديوهات المسلمة حالياً" required>
-                <textarea id="rd-titles" placeholder="عناوين الفيديوهات المسلمة (افصل بينها بسطر جديد)" rows="3"></textarea>
-                <button type="submit" class="btn-add">تحديث حالة وتسليمات الفيديو 🎬</button>
+                <div class="form-group">
+                    <label>العميل</label>
+                    <select id="rd-client-select" required onchange="onReelsClientSelectChange(this)"></select>
+                </div>
+                <div class="form-group">
+                    <label>المسلم حالياً</label>
+                    <input type="number" id="rd-delivered" placeholder="0" required>
+                </div>
+                <div class="form-group full-span">
+                    <label>عناوين الفيديوهات المسلمة (عنوان بكل سطر)</label>
+                    <textarea id="rd-titles" rows="3" placeholder="أدخل عناوين الفيديوهات"></textarea>
+                </div>
+                <div class="form-group full-span">
+                    <button type="submit" class="btn-add">تحديث حالة التسليم 🎬</button>
+                </div>
             </form>
 
-            <div class="panel-header" style="margin-top:20px;">متابعة حالة الإنتاج وتسليمات الريلز</div>
+            <div class="panel-header" style="margin-top:20px;"><span>متابعة حالة الإنتاج</span></div>
             <div id="reels-deliveries-mobile-list" class="mobile-card-list"></div>
         </div>
     </div>
 
+    <!-- Employee Tasks Tab -->
     <div id="tasks-deliveries-tab" class="tab-content">
         <div class="panel">
-            <div class="panel-header">إضافة مهمة موظف جديدة</div>
+            <div class="panel-header"><span>🎯 تكليف بمهمة جديد</span></div>
             <form class="form-grid" onsubmit="addTaskDelivery(event)">
-                <select id="td-emp" required></select>
-                <input type="text" id="td-task" placeholder="المطلوب منه بالضبط" required>
-                <input type="date" id="td-date" required>
-                <button type="submit" class="btn-add">إضافة المهمة للتسليمات</button>
+                <div class="form-group">
+                    <label>الموظف</label>
+                    <select id="td-emp" required></select>
+                </div>
+                <div class="form-group">
+                    <label>تاريخ التسليم</label>
+                    <input type="date" id="td-date" required>
+                </div>
+                <div class="form-group full-span">
+                    <label>تفاصيل المهمة</label>
+                    <input type="text" id="td-task" placeholder="المطلوب تنفيذه" required>
+                </div>
+                <div class="form-group full-span">
+                    <button type="submit" class="btn-add">حفظ المهمة</button>
+                </div>
             </form>
 
-            <div class="panel-header" style="margin-top:20px;">متابعة التسليمات للموظفين والعملاء</div>
+            <div class="panel-header" style="margin-top:20px;"><span>متابعة التسليمات والمهام</span></div>
             <div id="tasks-mobile-list" class="mobile-card-list"></div>
         </div>
     </div>
 
+    <!-- Office Needs Tab -->
     <div id="office-needs-tab" class="tab-content">
         <div class="panel">
-            <div class="panel-header">تسجيل مطالبات / نواقص للمكتب</div>
+            <div class="panel-header"><span>🛒 تسجيل احتياجات المكتب</span></div>
             <form class="form-grid" onsubmit="addOfficeNeed(event)">
-                <input type="text" id="on-item" placeholder="اسم الغرض / الأداة المطلوبة" required>
-                <input type="number" id="on-cost" placeholder="السعر التقديري (اختياري)">
-                <button type="submit" class="btn-add">إضافة للقائمة</button>
+                <div class="form-group">
+                    <label>الغرض / البيان</label>
+                    <input type="text" id="on-item" placeholder="اسم الأداة أو المستلزم" required>
+                </div>
+                <div class="form-group">
+                    <label>التكلفة التقديرية (ج.م)</label>
+                    <input type="number" id="on-cost" placeholder="0.00">
+                </div>
+                <div class="form-group full-span">
+                    <button type="submit" class="btn-add">إضافة للقائمة</button>
+                </div>
             </form>
 
-            <div class="panel-header" style="margin-top:20px;">قائمة النواقص والمطالبات</div>
+            <div class="panel-header" style="margin-top:20px;"><span>قائمة النواقص</span></div>
             <div id="needs-mobile-list" class="mobile-card-list"></div>
         </div>
     </div>
 
+    <!-- Team & Salaries Tab -->
     <div id="team-tab" class="tab-content">
         <div class="panel">
-            <div class="panel-header">👤 تعيين موظف / فرد جديد بالفريق (بالشهر أو التاسك)</div>
+            <div class="panel-header"><span>👤 إضافة عضو فريق جديد</span></div>
             <form class="form-grid" onsubmit="addEmployee(event)">
-                <input type="text" id="new-emp-name" placeholder="اسم الموظف" required>
-                <input type="text" id="new-emp-role" placeholder="المسمى الوظيفي (مثال: مونتير، مصور...)" required>
-                
-                <label>نظام عمل وحساب الموظف:</label>
-                <select id="new-emp-pay-type" required onchange="toggleEmpPayFields(this.value)">
-                    <option value="monthly">راتب شهري ثابت 📅</option>
-                    <option value="task">حساب بالتاسك (المهمة) 🎯</option>
-                </select>
-
-                <div id="monthly-salary-field">
-                    <label>الراتب الأساسي الشهرية (ج.م):</label>
-                    <input type="number" id="new-emp-salary" placeholder="مثال: 5000" value="0">
+                <div class="form-group">
+                    <label>الاسم</label>
+                    <input type="text" id="new-emp-name" placeholder="اسم الموظف" required>
                 </div>
-
-                <div id="task-salary-field" style="display:none;">
-                    <label>سعر التاسك الواحدة (ج.م):</label>
-                    <input type="number" id="new-emp-task-rate" placeholder="مثال: 150" value="0">
+                <div class="form-group">
+                    <label>المسمى الوظيفي</label>
+                    <input type="text" id="new-emp-role" placeholder="مصور، مونتير..." required>
                 </div>
-
-                <select id="new-emp-type" required>
-                    <option value="false">موظف عادي</option>
-                    <option value="true">Owner / شريك مؤسس 👑</option>
-                </select>
-                <button type="submit" class="btn-add" style="background: var(--mint); color: #000;">إضافة الموظف للفريق ➕</button>
+                <div class="form-group">
+                    <label>نظام المحاسبة</label>
+                    <select id="new-emp-pay-type" required onchange="toggleEmpPayFields(this.value)">
+                        <option value="monthly">راتب شهري</option>
+                        <option value="task">بالتاسك (المهمة)</option>
+                    </select>
+                </div>
+                <div class="form-group" id="monthly-salary-field">
+                    <label>الراتب الأساسي (ج.م)</label>
+                    <input type="number" id="new-emp-salary" placeholder="0.00" value="0">
+                </div>
+                <div class="form-group" id="task-salary-field" style="display:none;">
+                    <label>سعر التاسك (ج.م)</label>
+                    <input type="number" id="new-emp-task-rate" placeholder="0.00" value="0">
+                </div>
+                <div class="form-group">
+                    <label>الصفة</label>
+                    <select id="new-emp-type" required>
+                        <option value="false">موظف</option>
+                        <option value="true">Owner / شريك مؤسس 👑</option>
+                    </select>
+                </div>
+                <div class="form-group full-span">
+                    <button type="submit" class="btn-add" style="background: linear-gradient(135deg, var(--accent-teal), #0D9488); color: #000;">إضافة للفريق ➕</button>
+                </div>
             </form>
         </div>
 
         <div class="panel">
-            <div class="panel-header">🎯 تسجيل وتحديث تاسكات الموظفين (نظام التاسك)</div>
+            <div class="panel-header"><span>🎯 تسجيل تاسكات منجزة</span></div>
             <form class="form-grid" onsubmit="updateEmpTasks(event)">
-                <select id="task-emp-select" required></select>
-                <input type="number" id="task-completed-add" placeholder="عدد التاسكات المنجزة والمضافة" required min="1">
-                <button type="submit" class="btn-add" style="background: var(--gold); color: #000;">تسجيل التاسكات الجديدة ➕</button>
+                <div class="form-group">
+                    <label>الموظف</label>
+                    <select id="task-emp-select" required></select>
+                </div>
+                <div class="form-group">
+                    <label>عدد التاسكات</label>
+                    <input type="number" id="task-completed-add" placeholder="1" required min="1">
+                </div>
+                <div class="form-group full-span">
+                    <button type="submit" class="btn-add" style="background: linear-gradient(135deg, var(--accent-gold), #D97706); color:#000;">تسجيل التاسكات ➕</button>
+                </div>
             </form>
         </div>
 
         <div class="panel">
-            <div class="panel-header">💸 تسجيل سحبيات / مسحوبات مالية وتسوية الرواتب والتاسكات</div>
+            <div class="panel-header"><span>💸 تسجيل مسحوبات / رواتب</span></div>
             <form class="form-grid" onsubmit="paySalary(event)">
-                <select id="emp-select"></select>
-                <input type="number" id="emp-paid-amount" placeholder="المبلغ المستلم (ج.م)" required>
-                <button type="submit" class="btn-add">تسجيل الدفعة / السحب 💵</button>
+                <div class="form-group">
+                    <label>الموظف</label>
+                    <select id="emp-select"></select>
+                </div>
+                <div class="form-group">
+                    <label>المبلغ المستلم (ج.م)</label>
+                    <input type="number" id="emp-paid-amount" placeholder="0.00" required>
+                </div>
+                <div class="form-group full-span">
+                    <button type="submit" class="btn-add">تسجيل الدفعة 💵</button>
+                </div>
             </form>
 
-            <div class="panel-header" style="margin-top:20px;">حسابات الملاّك والفريق بالتفصيل (شهر وتاسكات)</div>
+            <div class="panel-header" style="margin-top:20px;"><span>حسابات المستحقات والرواتب</span></div>
             <div id="team-mobile-list" class="mobile-card-list"></div>
         </div>
     </div>
 
+    <!-- Expenses Tab -->
     <div id="expenses-tab" class="tab-content">
         <div class="panel">
-            <div class="panel-header">إضافة مصروف مكتب / فواتير</div>
+            <div class="panel-header"><span>💸 تسجيل مصروفات تشغيلية</span></div>
             <form class="form-grid" onsubmit="addExpense(event)">
-                <input type="text" id="e-title" placeholder="البند / بيان المصروف" required>
-                <input type="number" id="e-amount" placeholder="المبلغ" required>
-                <button type="submit" class="btn-add">تسجيل المصروف</button>
+                <div class="form-group">
+                    <label>بيان المصروف</label>
+                    <input type="text" id="e-title" placeholder="أدخل وصف المصروف" required>
+                </div>
+                <div class="form-group">
+                    <label>المبلغ (ج.م)</label>
+                    <input type="number" id="e-amount" placeholder="0.00" required>
+                </div>
+                <div class="form-group full-span">
+                    <button type="submit" class="btn-add">حفظ المصروف</button>
+                </div>
             </form>
 
-            <div class="panel-header" style="margin-top:20px;">سجل المصروفات التشغيلية</div>
+            <div class="panel-header" style="margin-top:20px;"><span>سجل المصروفات</span></div>
             <div id="expenses-mobile-list" class="mobile-card-list"></div>
         </div>
     </div>
 
+    <!-- Master Comprehensive Report Tab -->
     <div id="master-tab" class="tab-content">
-        <div class="panel" id="exportable-report-area" style="background:#18191A; padding:15px;">
-            <div style="text-align:center; margin-bottom:15px; border-bottom:1px solid var(--mint); padding-bottom:8px;">
-                <h2 style="color:var(--mint); font-size:16px;">SYSTEM OFFGRID CLOUD AGENCY</h2>
-                <p style="font-size:11px; color:rgba(255,255,255,0.6);">التقرير المحاسبي والأسبوعي الشامل</p>
+        <div class="panel" id="exportable-report-area">
+            <div style="text-align:center; margin-bottom:15px; border-bottom:1px solid var(--border-color); padding-bottom:10px;">
+                <h2 style="color:var(--accent-teal); font-size:16px;">OFFGRID AGENCY</h2>
+                <p style="font-size:11px; color:var(--text-muted);">التقرير المالي والتشغيلي الشامل</p>
             </div>
 
             <div class="panel-header" style="flex-wrap: wrap; gap: 8px;">
-                <span>اختر الأسبوع لعرض التقرير والدخل:</span>
-                <select id="report-week-select" style="width: 130px; padding: 4px 8px; font-size: 11px;" onchange="renderAll()">
+                <span>عرض بيانات الأسبوع:</span>
+                <select id="report-week-select" style="width: auto; padding: 4px 10px; font-size: 11px;" onchange="renderAll()">
                     <option value="1">الأسبوع الأول</option>
                     <option value="2">الأسبوع الثاني</option>
                     <option value="3">الأسبوع الثالث</option>
@@ -614,33 +890,27 @@
                 </select>
             </div>
 
-            <div style="background: rgba(212, 175, 0, 0.05); border: 1px solid var(--gold); border-radius: 8px; padding: 12px; margin-bottom: 15px;">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; border-bottom: 1px dashed var(--gold); padding-bottom: 6px;">
-                    <div style="font-size: 13px; font-weight: 700; color: var(--gold);">
-                        🎛️ التحكم اليدوي في دخل هذا الأسبوع:
-                    </div>
-                </div>
-
+            <div style="background: rgba(245, 158, 11, 0.05); border: 1px solid var(--accent-gold); border-radius: 12px; padding: 14px; margin-bottom: 15px;">
                 <div class="checkbox-container" style="margin-bottom: 10px;">
                     <input type="checkbox" id="include-subs-checkbox" onchange="toggleManualSubscriptions(this.checked)">
-                    <label for="include-subs-checkbox" style="color: var(--gold-light); font-size: 12px;">
-                        إدراج قسمة اشتراكات العملاء الثابتين في حسابات هذا الأسبوع يدويّاً 🖐️
+                    <label for="include-subs-checkbox" style="color: var(--accent-gold-light); font-size: 12px;">
+                        إدراج حصة اشتراكات العملاء الثابتين لهذا الأسبوع تلقائياً 🖐️
                     </label>
                 </div>
 
-                <div style="font-size: 12px; font-weight: 700; color: var(--mint); margin-bottom: 6px;">
-                    💰 تفاصيل الدخل المحسوب لهذا الأسبوع:
+                <div style="font-size: 12px; font-weight: 700; color: var(--accent-teal); margin-bottom: 6px;">
+                    💰 تفاصيل دخل الأسبوع المحدد:
                 </div>
                 <div id="master-weekly-breakdown-list" class="mobile-card-list"></div>
             </div>
 
-            <div class="panel-header">تفاصيل جدول التصوير لهذا الأسبوع (مرتب حسب أيام الأسبوع)</div>
+            <div class="panel-header"><span>جدول المواعيد والتصوير لهذا الأسبوع</span></div>
             <div style="overflow-x:auto;">
                 <table class="report-table">
                     <thead>
                         <tr>
                             <th>العميل</th>
-                            <th>يوم التصوير</th>
+                            <th>اليوم</th>
                             <th>الريلز (مسلم/مطلوب)</th>
                             <th>المتبقي ريلز</th>
                             <th>الاتفاق</th>
@@ -652,26 +922,27 @@
                 </table>
             </div>
 
-            <div class="panel-header">سجل الخدمات والدخل اليومي</div>
+            <div class="panel-header"><span>سجل الخدمات والدخل اليومي</span></div>
             <div id="master-daily-container" class="mobile-card-list" style="margin-bottom:15px;"></div>
 
-            <div class="panel-header">تقرير تسليمات المهام (المسلم والمتبقي)</div>
+            <div class="panel-header"><span>متابعة تسليمات المهام</span></div>
             <div id="master-tasks-container" class="mobile-card-list" style="margin-bottom:15px;"></div>
 
-            <div class="panel-header">التقرير المجمع للعملاء والماليات</div>
+            <div class="panel-header"><span>الملخص المالي العام</span></div>
             <div id="master-mobile-list" class="mobile-card-list"></div>
 
             <div class="summary-card">
-                <div class="summary-item"><span>إجمالي المحصل الكلي:</span><span id="m-total-rev" style="color:var(--mint); font-weight:bold;">0 ج.م</span></div>
-                <div class="summary-item"><span>إجمالي دخل الأسبوع المختار:</span><span id="m-week-income" style="color:var(--gold); font-weight:bold;">0 ج.م</span></div>
-                <div class="summary-item"><span>ديون متبقية لدى العملاء (السوق):</span><span id="m-total-pend" style="color:var(--red); font-weight:bold;">0 ج.م</span></div>
-                <div class="summary-item"><span>إجمالي المديونيات للغير (دائنون):</span><span id="m-total-debts" style="color:var(--purple); font-weight:bold;">0 ج.م</span></div>
-                <div class="summary-item"><span>إجمالي المصاريف والرواتب:</span><span id="m-total-exp" style="color:var(--red); font-weight:bold;">0 ج.م</span></div>
-                <div class="summary-item"><span>صافي الأرباح الكلية المتبقية:</span><span id="m-net-income" style="color:var(--mint); font-weight:bold;">0 ج.م</span></div>
+                <div class="summary-item"><span>إجمالي المحصل الكلي:</span><span id="m-total-rev" style="color:var(--accent-teal); font-weight:bold;">0 ج.م</span></div>
+                <div class="summary-item"><span>إجمالي دخل الأسبوع المختار:</span><span id="m-week-income" style="color:var(--accent-gold); font-weight:bold;">0 ج.م</span></div>
+                <div class="summary-item"><span>ديون لدى العملاء (في السوق):</span><span id="m-total-pend" style="color:var(--accent-red); font-weight:bold;">0 ج.م</span></div>
+                <div class="summary-item"><span>إجمالي الالتزامات والدائنين:</span><span id="m-total-debts" style="color:var(--accent-purple); font-weight:bold;">0 ج.م</span></div>
+                <div class="summary-item"><span>إجمالي المصاريف والرواتب:</span><span id="m-total-exp" style="color:var(--accent-red); font-weight:bold;">0 ج.م</span></div>
+                <div class="summary-item"><span>صافي الأرباح المتبقية:</span><span id="m-net-income" style="color:var(--accent-teal); font-weight:bold;">0 ج.م</span></div>
             </div>
         </div>
     </div>
 
+    <!-- Application Script Engine -->
     <script>
         const GOOGLE_SHEET_API = "https://script.google.com/macros/s/AKfycbyrkx4j29FqpV0_viQzfVDMqv1zl04blAyPT0vcqEgwggaUe8DSpZ8M_2-GPmye1nHd9g/exec";
         const daysOrder = ["السبت", "الأحد", "الإثنين", "الثلاثاء", "الأربعاء", "الخميس", "الجمعة"];
@@ -690,7 +961,6 @@
             debts: [], manualWeekSubs: { "1": false, "2": false, "3": false, "4": false }
         };
 
-        // استرجاع البيانات المحفوظة بأمان لمنع مسحها عند الخروج
         try {
             const savedData = localStorage.getItem('OFFGRID_DB');
             if (savedData) {
@@ -803,11 +1073,11 @@
 
         function toggleEmpPayFields(type) {
             if (type === 'monthly') {
-                document.getElementById('monthly-salary-field').style.display = 'block';
+                document.getElementById('monthly-salary-field').style.display = 'flex';
                 document.getElementById('task-salary-field').style.display = 'none';
             } else {
                 document.getElementById('monthly-salary-field').style.display = 'none';
-                document.getElementById('task-salary-field').style.display = 'block';
+                document.getElementById('task-salary-field').style.display = 'flex';
             }
         }
 
@@ -1213,10 +1483,10 @@
                 cItem.innerHTML = `
                     <div>
                         <div style="font-weight:bold;">${item.name}</div>
-                        <div style="font-size:11px; color:var(--text-gray);">${item.qty} × ${item.unitPrice} ج.م</div>
+                        <div style="font-size:11px; color:var(--text-muted);">${item.qty} × ${item.unitPrice} ج.م</div>
                     </div>
                     <div style="display:flex; align-items:center; gap:10px;">
-                        <span style="color:var(--mint); font-weight:bold;">${total} ج.م</span>
+                        <span style="color:var(--accent-teal); font-weight:bold;">${total} ج.م</span>
                         <button class="btn-del" onclick="removeItemFromPackage(${item.id})">❌</button>
                     </div>
                 `;
@@ -1227,7 +1497,7 @@
                     <td>${item.name}</td>
                     <td style="text-align:center;">${item.qty}</td>
                     <td style="text-align:center;">${item.unitPrice}</td>
-                    <td style="text-align:left; color:var(--gold-light); font-weight:bold;">${total} ج.م</td>
+                    <td style="text-align:left; color:var(--accent-gold-light); font-weight:bold;">${total} ج.م</td>
                 `;
                 invTbody.appendChild(itr);
             });
@@ -1256,7 +1526,7 @@
 
         function downloadInvoice() {
             const element = document.getElementById('invoice-card-element');
-            html2canvas(element, { scale: 2, backgroundColor: '#0f1012' }).then(canvas => {
+            html2canvas(element, { scale: 2, backgroundColor: '#090D14' }).then(canvas => {
                 let link = document.createElement('a');
                 link.download = `Invoice_${Date.now()}.png`;
                 link.href = canvas.toDataURL();
@@ -1266,7 +1536,7 @@
 
         function exportReportImage() {
             const element = document.getElementById('exportable-report-area');
-            html2canvas(element, { scale: 2, backgroundColor: '#18191A' }).then(canvas => {
+            html2canvas(element, { scale: 2, backgroundColor: '#0B0F17' }).then(canvas => {
                 let link = document.createElement('a');
                 link.download = `Full_Report_Week_${document.getElementById('report-week-select').value}_${Date.now()}.png`;
                 link.href = canvas.toDataURL();
@@ -1363,12 +1633,12 @@
             if (!tbody) return;
 
             let rows = [
-                { name: "حساب الخزينة / النقدية المحصلة (Cash Received)", debit: rev, credit: 0 },
-                { name: "حساب ذمم العملاء / الآجل (Accounts Receivable)", debit: pend, credit: 0 },
-                { name: "حساب المصروفات التشغيلية والرواتب (Expenses)", debit: exp, credit: 0 },
-                { name: "حساب مديونيات ودائني الشركة (Accounts Payable)", debit: 0, credit: debts },
-                { name: "إيرادات المبيعات والخدمات (Total Revenue)", debit: 0, credit: rev },
-                { name: "أرباح مرحلة / ميزان صافي الدخل (Net Retained Earnings)", debit: 0, credit: net > 0 ? net : 0 }
+                { name: "حساب النقدية المحصلة", debit: rev, credit: 0 },
+                { name: "حساب الذمم والآجل", debit: pend, credit: 0 },
+                { name: "حساب المصروفات والرواتب", debit: exp, credit: 0 },
+                { name: "حساب المديونيات والدائنين", debit: 0, credit: debts },
+                { name: "إيرادات المبيعات الكلية", debit: 0, credit: rev },
+                { name: "أرباح مرحلة / صافي الدخل", debit: 0, credit: net > 0 ? net : 0 }
             ];
 
             let totalDebit = 0;
@@ -1384,19 +1654,19 @@
                     <td style="text-align:right; font-weight:600;">${r.name}</td>
                     <td>${r.debit} ج.م</td>
                     <td>${r.credit} ج.م</td>
-                    <td style="color:${balance >= 0 ? 'var(--mint)' : '#ff5252'}; font-weight:bold;">${balance} ج.م</td>
+                    <td style="color:${balance >= 0 ? 'var(--accent-teal)' : 'var(--accent-red)'}; font-weight:bold;">${balance} ج.م</td>
                 `;
                 tbody.appendChild(tr);
             });
 
             let trTotal = document.createElement('tr');
-            trTotal.style.background = 'var(--dark-paper)';
+            trTotal.style.background = 'var(--bg-card)';
             trTotal.style.fontWeight = 'bold';
             trTotal.innerHTML = `
-                <td style="color:var(--gold-light);">الإجمالي المالي (Total Balance)</td>
-                <td style="color:var(--mint);">${totalDebit} ج.م</td>
-                <td style="color:var(--mint);">${totalCredit} ج.م</td>
-                <td style="color:var(--gold-light);">${totalDebit === totalCredit ? 'متوازن ⚖️' : 'غير متوازن ⚠️'}</td>
+                <td style="color:var(--accent-gold-light);">الإجمالي المالي</td>
+                <td style="color:var(--accent-teal);">${totalDebit} ج.م</td>
+                <td style="color:var(--accent-teal);">${totalCredit} ج.م</td>
+                <td style="color:var(--accent-gold-light);">${totalDebit === totalCredit ? 'متوازن ⚖️' : 'غير متوازن ⚠️'}</td>
             `;
             tbody.appendChild(trTotal);
         }
@@ -1410,9 +1680,9 @@
 
             container.innerHTML = `
                 <div class="m-card">
-                    <div class="m-card-row"><span class="m-label">هامش صافي الربح (Net Profit Margin):</span><span class="m-value" style="color:var(--mint);">${profitMargin}%</span></div>
-                    <div class="m-card-row"><span class="m-label">نسبة التحصيل من السوق (Collection Rate):</span><span class="m-value" style="color:var(--gold);">${collectionRate}%</span></div>
-                    <div class="m-card-row"><span class="m-label">معدل التغطية المالية للمديونيات:</span><span class="m-value" style="color:${rev >= debts ? 'var(--mint)' : '#ff5252'};">${debts > 0 ? (rev / debts).toFixed(2) + ' مرة' : 'لا يوجد ديون 👍'}</span></div>
+                    <div class="m-card-row"><span class="m-label">هامش صافي الربح:</span><span class="m-value" style="color:var(--accent-teal);">${profitMargin}%</span></div>
+                    <div class="m-card-row"><span class="m-label">نسبة التحصيل من السوق:</span><span class="m-value" style="color:var(--accent-gold);">${collectionRate}%</span></div>
+                    <div class="m-card-row"><span class="m-label">معدل تغطية المديونيات:</span><span class="m-value" style="color:${rev >= debts ? 'var(--accent-teal)' : 'var(--accent-red)'};">${debts > 0 ? (rev / debts).toFixed(2) + ' مرة' : 'لا يوجد ديون 👍'}</span></div>
                 </div>
             `;
         }
@@ -1423,7 +1693,7 @@
             if (!list) return;
 
             list.innerHTML = '';
-            empSelect.innerHTML = '<option value="" disabled selected>اختر الموظف المنفذ للمهمة</option>';
+            empSelect.innerHTML = '<option value="" disabled selected>اختر الموظف المنفذ</option>';
 
             db.employees.forEach(e => {
                 let opt = document.createElement('option');
@@ -1437,15 +1707,15 @@
                 card.className = 'm-card';
                 card.innerHTML = `
                     <div class="m-card-row">
-                        <span class="m-value" style="color:var(--mint); font-size:13px;">${d.client} - ${d.service}</span>
+                        <span class="m-value" style="color:var(--accent-teal); font-size:13px;">${d.client} - ${d.service}</span>
                         <span class="badge badge-gold">الأسبوع ${d.week} - ${d.day}</span>
                     </div>
                     <div class="m-card-row">
-                        <span class="m-label">المسؤول عن التنفيذ: ${d.empName}</span>
-                        <span class="m-value" style="color:var(--gold-light);">${d.cost} ج.م</span>
+                        <span class="m-label">المسؤول: ${d.empName}</span>
+                        <span class="m-value" style="color:var(--accent-gold-light);">${d.cost} ج.م</span>
                     </div>
                     <div class="m-card-row">
-                        <span class="m-label">تاريخ التسليم: ${d.date}</span>
+                        <span class="m-label">التسليم: ${d.date}</span>
                         <button class="btn-del" onclick="deleteDailyIncome(${d.id})">حذف ❌</button>
                     </div>
                 `;
@@ -1462,18 +1732,18 @@
                 let remaining = d.amount - d.paid;
                 let card = document.createElement('div');
                 card.className = 'm-card';
-                card.style.borderRight = '4px solid var(--purple)';
+                card.style.borderRight = '4px solid var(--accent-purple)';
                 card.innerHTML = `
                     <div class="m-card-row">
-                        <span class="m-value" style="color:var(--lavender); font-size:13px;">${d.creditor}</span>
+                        <span class="m-value" style="font-size:13px;">${d.creditor}</span>
                         <span class="badge badge-purple">${d.linkedAccount}</span>
                     </div>
                     <div class="m-card-row">
-                        <span class="m-label">سبب المديونية: ${d.reason}</span>
-                        <span class="m-value" style="color:#ff5252;">إجمالي: ${d.amount} ج.م</span>
+                        <span class="m-label">السبب: ${d.reason}</span>
+                        <span class="m-value" style="color:var(--accent-red);">إجمالي: ${d.amount} ج.م</span>
                     </div>
                     <div class="m-card-row">
-                        <span class="m-label">المسدد: ${d.paid} ج.م | <b style="color:#ff5252;">المتبقي: ${remaining} ج.م</b></span>
+                        <span class="m-label">المسدد: ${d.paid} ج.م | <b style="color:var(--accent-red);">المتبقي: ${remaining} ج.م</b></span>
                         <div style="display:flex; gap:6px;">
                             ${remaining > 0 ? `<button class="btn-pay" onclick="payDebt(${d.id})">تسديد دفعة 💵</button>` : `<span class="badge badge-mint">مسدد بالكامل ✅</span>`}
                             <button class="btn-del" onclick="deleteDebt(${d.id})">حذف ❌</button>
@@ -1492,8 +1762,8 @@
 
             for (let w = 1; w <= 4; w++) {
                 let weekBox = document.createElement('div');
-                weekBox.style.marginTop = '20px';
-                weekBox.innerHTML = `<div class="panel-header" style="color:var(--gold);">🗓️ جدول الأسبوع (${w})</div>`;
+                weekBox.style.marginTop = '15px';
+                weekBox.innerHTML = `<div class="panel-header" style="color:var(--accent-gold);">🗓️ جدول الأسبوع (${w})</div>`;
 
                 let weekCards = document.createElement('div');
                 weekCards.className = 'mobile-card-list';
@@ -1511,13 +1781,13 @@
                             card.className = `m-card ${item.type === 'exceptional' ? 'exceptional' : ''}`;
                             card.innerHTML = `
                                 <div class="m-card-row">
-                                    <span class="m-value" style="font-size:13px; color:${item.type === 'exceptional' ? '#ff5252' : 'var(--mint)'};">
+                                    <span class="m-value" style="font-size:13px; color:${item.type === 'exceptional' ? 'var(--accent-red)' : 'var(--accent-teal)'};">
                                         ${item.client} ${item.type === 'exceptional' ? '🚨 (عميل استثنائي)' : ''}
                                     </span>
                                     <button class="btn-del" onclick="deleteMonthlySchedule(${item.id})">حذف ❌</button>
                                 </div>
                                 <div class="m-card-row">
-                                    <span class="m-label">المهمة المطلوبة: ${item.task || 'تصوير ومتابعة'}</span>
+                                    <span class="m-label">المهمة: ${item.task || 'تصوير ومتابعة'}</span>
                                 </div>
                             `;
                             weekCards.appendChild(card);
@@ -1538,7 +1808,7 @@
 
             list.innerHTML = '';
             spSelect.innerHTML = '<option value="" disabled selected>اختر العميل لجدولة الدفعة</option>';
-            rdSelect.innerHTML = '<option value="" disabled selected>اختر العميل לתحديث الفيديوهات</option>';
+            rdSelect.innerHTML = '<option value="" disabled selected>اختر العميل لتحديث الفيديوهات</option>';
 
             db.clients.forEach(c => {
                 let opt1 = document.createElement('option');
@@ -1556,7 +1826,7 @@
                 card.className = 'm-card';
                 card.innerHTML = `
                     <div class="m-card-row">
-                        <span class="m-value" style="color:var(--mint); font-size:14px;">${c.name}</span>
+                        <span class="m-value" style="color:var(--accent-teal); font-size:14px;">${c.name}</span>
                         <span class="badge badge-gold">يوم التصوير: ${c.day}</span>
                     </div>
                     <div class="m-card-row">
@@ -1565,7 +1835,7 @@
                     </div>
                     <div class="m-card-row">
                         <span class="m-label">الاتفاق: ${c.salary} ج.م | المستلم: ${c.paid} ج.م</span>
-                        <span class="m-value" style="color:#ff5252;">المتبقي: ${remaining} ج.م</span>
+                        <span class="m-value" style="color:var(--accent-red);">المتبقي: ${remaining} ج.م</span>
                     </div>
                     <div class="m-card-row" style="margin-top:8px;">
                         <button class="btn-pay" onclick="payClient(${c.id})">تحصيل دفعة 💵</button>
@@ -1584,14 +1854,14 @@
             db.scheduledPayments.forEach(p => {
                 let card = document.createElement('div');
                 card.className = 'm-card';
-                card.style.borderRight = p.collected ? '4px solid var(--mint)' : '4px solid var(--gold)';
+                card.style.borderRight = p.collected ? '4px solid var(--accent-teal)' : '4px solid var(--accent-gold)';
                 card.innerHTML = `
                     <div class="m-card-row">
-                        <span class="m-value" style="color:var(--gold-light); font-size:13px;">${p.clientName}</span>
+                        <span class="m-value" style="color:var(--accent-gold-light); font-size:13px;">${p.clientName}</span>
                         <span class="badge ${p.collected ? 'badge-mint' : 'badge-gold'}">${p.collected ? 'تم التحصيل ✅' : 'قيد الانتظار ⏳'}</span>
                     </div>
                     <div class="m-card-row">
-                        <span class="m-label">المبلغ: ${p.amount} ج.م | مستحق في: الأسبوع ${p.week}</span>
+                        <span class="m-label">المبلغ: ${p.amount} ج.م | مستحق: الأسبوع ${p.week}</span>
                         <span class="m-label">التاريخ: ${p.date}</span>
                     </div>
                     <div class="m-card-row" style="margin-top:6px;">
@@ -1613,12 +1883,12 @@
                 card.className = 'm-card';
                 card.innerHTML = `
                     <div class="m-card-row">
-                        <span class="m-value" style="color:var(--mint); font-size:13px;">${c.name}</span>
+                        <span class="m-value" style="color:var(--accent-teal); font-size:13px;">${c.name}</span>
                         <span class="badge badge-mint">تسليم: ${c.deliveredReels || 0} / ${c.reels} فيديو</span>
                     </div>
                     <div class="m-card-row" style="flex-direction:column; align-items:flex-start; gap:4px;">
-                        <span class="m-label">عناوين الفيديوهات المسلمة:</span>
-                        <p style="font-size:11px; color:var(--lavender); white-space:pre-line;">${c.deliveredTitles || 'لا يوجد عناوين مسجلة بعد'}</p>
+                        <span class="m-label">العناوين:</span>
+                        <p style="font-size:11px; color:var(--text-muted); white-space:pre-line;">${c.deliveredTitles || 'لا توجد عناوين مسجلة'}</p>
                     </div>
                 `;
                 list.appendChild(card);
@@ -1627,37 +1897,35 @@
 
         function renderTasksDeliveries() {
             const list = document.getElementById('tasks-mobile-list');
-            const tdEmpSelect = document.getElementById('td-emp');
+            const tdSelect = document.getElementById('td-emp');
             if (!list) return;
 
             list.innerHTML = '';
-            tdEmpSelect.innerHTML = '<option value="" disabled selected>اختر الموظف</option>';
+            tdSelect.innerHTML = '<option value="" disabled selected>اختر الموظف</option>';
 
             db.employees.forEach(e => {
                 let opt = document.createElement('option');
                 opt.value = e.name;
-                opt.innerText = `${e.name} (${e.role})`;
-                tdEmpSelect.appendChild(opt);
+                opt.innerText = e.name;
+                tdSelect.appendChild(opt);
             });
 
             db.taskDeliveries.forEach(t => {
                 let card = document.createElement('div');
                 card.className = 'm-card';
-                card.style.borderRight = t.done ? '4px solid var(--mint)' : '4px solid var(--red)';
+                card.style.borderRight = t.done ? '4px solid var(--accent-teal)' : '4px solid var(--accent-gold)';
                 card.innerHTML = `
                     <div class="m-card-row">
-                        <span class="m-value" style="color:var(--lavender); font-size:13px;">${t.empName}</span>
-                        <span class="badge ${t.done ? 'badge-mint' : 'badge-red'}">${t.done ? 'تم الإنجاز ✅' : 'قيد التنفيذ ⏳'}</span>
+                        <span class="m-value" style="font-size:13px;">${t.empName}</span>
+                        <span class="badge ${t.done ? 'badge-mint' : 'badge-gold'}">${t.done ? 'مكتملة ✅' : 'جاري التنفيذ ⏳'}</span>
                     </div>
                     <div class="m-card-row">
-                        <span class="m-label">المهمة: ${t.task}</span>
+                        <span class="m-label">${t.task}</span>
+                        <span class="m-label">${t.date}</span>
                     </div>
-                    <div class="m-card-row">
-                        <span class="m-label">موعد التسليم: ${t.date}</span>
-                        <div style="display:flex; gap:6px;">
-                            <button class="btn-pay" onclick="toggleTaskDone(${t.id})">${t.done ? 'تحديد كغير مكتمل' : 'تحديد كمكتمل ✅'}</button>
-                            <button class="btn-del" onclick="deleteTaskDelivery(${t.id})">حذف ❌</button>
-                        </div>
+                    <div class="m-card-row" style="margin-top:6px;">
+                        <button class="btn-pay" onclick="toggleTaskDone(${t.id})">${t.done ? 'إلغاء الإكتمال 🔄' : 'تأكيد الإنجاز ✅'}</button>
+                        <button class="btn-del" onclick="deleteTaskDelivery(${t.id})">حذف ❌</button>
                     </div>
                 `;
                 list.appendChild(card);
@@ -1672,16 +1940,15 @@
             db.officeNeeds.forEach(n => {
                 let card = document.createElement('div');
                 card.className = 'm-card';
-                card.style.borderRight = n.bought ? '4px solid var(--mint)' : '4px solid var(--gold)';
                 card.innerHTML = `
                     <div class="m-card-row">
-                        <span class="m-value" style="color:var(--lavender); font-size:13px;">${n.item}</span>
+                        <span class="m-value" style="font-size:13px;">${n.item}</span>
                         <span class="badge ${n.bought ? 'badge-mint' : 'badge-gold'}">${n.bought ? 'تم الشراء ✅' : 'مطلوب 🛒'}</span>
                     </div>
                     <div class="m-card-row">
-                        <span class="m-label">السعر التقديري: ${n.cost ? n.cost + ' ج.م' : 'غير محدد'}</span>
+                        <span class="m-label">التكلفة التقديرية: ${n.cost || 0} ج.م</span>
                         <div style="display:flex; gap:6px;">
-                            <button class="btn-pay" onclick="toggleNeedBought(${n.id})">${n.bought ? 'إعادة للقائمة' : 'تأكيد الشراء ✅'}</button>
+                            <button class="btn-pay" onclick="toggleNeedBought(${n.id})">${n.bought ? 'إعادة للقائمة 🔄' : 'تأكيد الشراء ✅'}</button>
                             <button class="btn-del" onclick="deleteOfficeNeed(${n.id})">حذف ❌</button>
                         </div>
                     </div>
@@ -1697,8 +1964,8 @@
             if (!list) return;
 
             list.innerHTML = '';
-            taskEmpSelect.innerHTML = '<option value="" disabled selected>اختر الموظف لتسجيل التاسكات</option>';
-            empSelect.innerHTML = '<option value="" disabled selected>اختر الموظف لتسجيل مسحوبات / رواتب</option>';
+            taskEmpSelect.innerHTML = '<option value="" disabled selected>اختر الموظف</option>';
+            empSelect.innerHTML = '<option value="" disabled selected>اختر الموظف</option>';
 
             db.employees.forEach(emp => {
                 let opt1 = document.createElement('option');
@@ -1712,10 +1979,10 @@
                 empSelect.appendChild(opt2);
 
                 let totalEarned = 0;
-                if (emp.payType === 'task') {
-                    totalEarned = (emp.totalTasks || 0) * (emp.taskRate || 0);
+                if (emp.payType === 'monthly') {
+                    totalEarned = emp.baseSalary;
                 } else {
-                    totalEarned = emp.baseSalary || 0;
+                    totalEarned = (emp.totalTasks || 0) * (emp.taskRate || 0);
                 }
 
                 let remaining = totalEarned - emp.paid;
@@ -1724,18 +1991,19 @@
                 card.className = 'm-card';
                 card.innerHTML = `
                     <div class="m-card-row">
-                        <span class="m-value" style="color:var(--mint); font-size:14px;">${emp.name} ${emp.isOwner ? '👑' : ''}</span>
-                        <span class="badge ${emp.payType === 'task' ? 'badge-gold' : 'badge-mint'}">${emp.payType === 'task' ? 'نظام التاسك 🎯' : 'راتب شهري 📅'}</span>
+                        <span class="m-value" style="color:var(--accent-teal); font-size:14px;">${emp.name} ${emp.isOwner ? '👑' : ''}</span>
+                        <span class="badge badge-purple">${emp.role}</span>
                     </div>
                     <div class="m-card-row">
-                        <span class="m-label">المسمى الوظيفي: ${emp.role}</span>
-                        <span class="m-label">${emp.payType === 'task' ? `التاسكات المنجزة: ${emp.totalTasks || 0} (${emp.taskRate} ج.م/تاسك)` : `الراتب الأساسي: ${emp.baseSalary} ج.م`}</span>
+                        <span class="m-label">نظام المحاسبة: ${emp.payType === 'monthly' ? 'شهري ثابت' : 'بالتاسك'}</span>
+                        <span class="m-label">${emp.payType === 'monthly' ? `أساسي: ${emp.baseSalary} ج.م` : `التاسكات: ${emp.totalTasks || 0} (سعر: ${emp.taskRate}ج.م)`}</span>
                     </div>
                     <div class="m-card-row">
-                        <span class="m-label">المستحق الإجمالي: ${totalEarned} ج.م | المسحوبات: ${emp.paid} ج.م</span>
-                        <span class="m-value" style="color:${remaining >= 0 ? 'var(--mint)' : '#ff5252'};">المتبقي له: ${remaining} ج.م</span>
+                        <span class="m-label">إجمالي المستحق: ${totalEarned} ج.م | المسحوبات: ${emp.paid} ج.م</span>
+                        <span class="m-value" style="color:${remaining > 0 ? 'var(--accent-gold)' : 'var(--accent-teal)'};">المتبقي: ${remaining} ج.م</span>
                     </div>
-                    <div class="m-card-row" style="margin-top:8px;">
+                    <div class="m-card-row" style="margin-top:6px;">
+                        <span></span>
                         <button class="btn-del" onclick="deleteEmployee(${emp.id})">حذف الموظف ❌</button>
                     </div>
                 `;
@@ -1753,11 +2021,12 @@
                 card.className = 'm-card';
                 card.innerHTML = `
                     <div class="m-card-row">
-                        <span class="m-value" style="color:var(--lavender); font-size:13px;">${e.title}</span>
-                        <span class="m-value" style="color:#ff5252;">${e.amount} ج.م</span>
+                        <span class="m-value" style="font-size:13px;">${e.title}</span>
+                        <span class="m-value" style="color:var(--accent-red);">${e.amount} ج.م</span>
                     </div>
-                    <div class="m-card-row">
-                        <button class="btn-del" onclick="deleteExpense(${e.id})">حذف المصروف ❌</button>
+                    <div class="m-card-row" style="margin-top:6px;">
+                        <span></span>
+                        <button class="btn-del" onclick="deleteExpense(${e.id})">حذف ❌</button>
                     </div>
                 `;
                 list.appendChild(card);
@@ -1767,88 +2036,86 @@
         function renderMasterReport(selectedWeek, weekIncome, monthlyClientsSubsQuarter) {
             const weeklyBreakdownList = document.getElementById('master-weekly-breakdown-list');
             const weeklyDetailsTbody = document.getElementById('master-weekly-details-tbody');
-            const masterDailyContainer = document.getElementById('master-daily-container');
-            const masterTasksContainer = document.getElementById('master-tasks-container');
-            const masterMobileList = document.getElementById('master-mobile-list');
+            const dailyContainer = document.getElementById('master-daily-container');
+            const tasksContainer = document.getElementById('master-tasks-container');
+            const masterList = document.getElementById('master-mobile-list');
 
-            if (!weeklyBreakdownList) return;
+            if (!weeklyBreakdownList || !weeklyDetailsTbody || !dailyContainer || !tasksContainer || !masterList) return;
 
-            weeklyBreakdownList.innerHTML = '';
+            weeklyBreakdownList.innerHTML = `
+                <div class="m-card">
+                    <div class="m-card-row"><span class="m-label">دخل الخدمات اليومية بالأسبوع:</span><span class="m-value" style="color:var(--accent-teal);">${db.dailyIncome.filter(d => d.week === selectedWeek).reduce((sum, d) => sum + d.cost, 0)} ج.م</span></div>
+                    <div class="m-card-row"><span class="m-label">الدفعات المجدولة المحصلة:</span><span class="m-value" style="color:var(--accent-gold);">${db.scheduledPayments.filter(p => p.week === selectedWeek && p.collected).reduce((sum, p) => sum + p.amount, 0)} ج.م</span></div>
+                    <div class="m-card-row"><span class="m-label">حصة الاشتراكات الشهرية التقديرية (1/4):</span><span class="m-value" style="color:var(--accent-purple);">${monthlyClientsSubsQuarter} ج.م</span></div>
+                    <div class="m-card-row" style="border-top:1px dashed var(--border-color); padding-top:6px; margin-top:6px;"><span class="m-label">إجمالي دخل الأسبوع:</span><span class="m-value" style="color:var(--accent-teal); font-size:14px;">${weekIncome} ج.م</span></div>
+                </div>
+            `;
+
             weeklyDetailsTbody.innerHTML = '';
-            masterDailyContainer.innerHTML = '';
-            masterTasksContainer.innerHTML = '';
-            masterMobileList.innerHTML = '';
-
-            let dailyIncomes = db.dailyIncome.filter(d => d.week === selectedWeek);
-            let scheduledP = db.scheduledPayments.filter(p => p.week === selectedWeek && p.collected);
-
-            dailyIncomes.forEach(d => {
-                let card = document.createElement('div');
-                card.className = 'm-card';
-                card.innerHTML = `<div class="m-card-row"><span>دخل خدمة يومية: ${d.client} (${d.service})</span><span style="color:var(--mint); font-weight:bold;">+${d.cost} ج.م</span></div>`;
-                weeklyBreakdownList.appendChild(card);
-            });
-
-            scheduledP.forEach(p => {
-                let card = document.createElement('div');
-                card.className = 'm-card';
-                card.innerHTML = `<div class="m-card-row"><span>دفعة مجدولة محصلة: ${p.clientName}</span><span style="color:var(--gold); font-weight:bold;">+${p.amount} ج.م</span></div>`;
-                weeklyBreakdownList.appendChild(card);
-            });
-
-            if (db.manualWeekSubs[selectedWeek]) {
-                let card = document.createElement('div');
-                card.className = 'm-card';
-                card.innerHTML = `<div class="m-card-row"><span>قسمة اشتراكات العملاء الثابتين:</span><span style="color:var(--gold-light); font-weight:bold;">+${monthlyClientsSubsQuarter} ج.م</span></div>`;
-                weeklyBreakdownList.appendChild(card);
-            }
-
             daysOrder.forEach(day => {
-                let scheduleItems = db.monthSchedule.filter(s => s.week == selectedWeek && s.day === day);
-                scheduleItems.forEach(item => {
-                    let client = db.clients.find(c => c.name === item.client);
+                let clients = db.clients.filter(c => c.day === day);
+                clients.forEach(c => {
                     let tr = document.createElement('tr');
                     tr.innerHTML = `
-                        <td>${item.client}</td>
-                        <td>${day}</td>
-                        <td>${client ? (client.deliveredReels || 0) + ' / ' + client.reels : '-'}</td>
-                        <td>${client ? client.reels - (client.deliveredReels || 0) : '-'}</td>
-                        <td>${client ? client.salary + ' ج.م' : '-'}</td>
-                        <td>${client ? client.paid + ' ج.م' : '-'}</td>
-                        <td style="color:#ff5252;">${client ? (client.salary - client.paid) + ' ج.م' : '-'}</td>
+                        <td>${c.name}</td>
+                        <td>${c.day}</td>
+                        <td>${c.deliveredReels || 0} / ${c.reels}</td>
+                        <td>${c.reels - (c.deliveredReels || 0)}</td>
+                        <td>${c.salary} ج.م</td>
+                        <td>${c.paid} ج.م</td>
+                        <td style="color:var(--accent-red); font-weight:bold;">${c.salary - c.paid} ج.م</td>
                     `;
                     weeklyDetailsTbody.appendChild(tr);
                 });
             });
 
-            db.dailyIncome.forEach(d => {
+            dailyContainer.innerHTML = '';
+            db.dailyIncome.filter(d => d.week === selectedWeek).forEach(d => {
                 let card = document.createElement('div');
                 card.className = 'm-card';
-                card.innerHTML = `<div class="m-card-row"><span>${d.client} - ${d.service} (${d.empName})</span><span style="color:var(--mint);">${d.cost} ج.م</span></div>`;
-                masterDailyContainer.appendChild(card);
+                card.innerHTML = `
+                    <div class="m-card-row"><span class="m-value" style="color:var(--accent-teal);">${d.client} - ${d.service}</span><span class="badge badge-gold">${d.day}</span></div>
+                    <div class="m-card-row"><span class="m-label">المسؤول: ${d.empName}</span><span class="m-value" style="color:var(--accent-gold-light);">${d.cost} ج.م</span></div>
+                `;
+                dailyContainer.appendChild(card);
             });
 
+            tasksContainer.innerHTML = '';
             db.taskDeliveries.forEach(t => {
                 let card = document.createElement('div');
                 card.className = 'm-card';
-                card.innerHTML = `<div class="m-card-row"><span>${t.empName}: ${t.task}</span><span class="badge ${t.done ? 'badge-mint' : 'badge-red'}">${t.done ? 'مكتمل' : 'قيد الانتظار'}</span></div>`;
-                masterTasksContainer.appendChild(card);
+                card.innerHTML = `
+                    <div class="m-card-row"><span class="m-value">${t.empName}</span><span class="badge ${t.done ? 'badge-mint' : 'badge-gold'}">${t.done ? 'مكتملة ✅' : 'قيد الانتظار ⏳'}</span></div>
+                    <div class="m-card-row"><span class="m-label">${t.task}</span><span class="m-label">${t.date}</span></div>
+                `;
+                tasksContainer.appendChild(card);
             });
 
+            masterList.innerHTML = '';
             db.clients.forEach(c => {
                 let card = document.createElement('div');
                 card.className = 'm-card';
-                card.innerHTML = `<div class="m-card-row"><span>${c.name}</span><span>إجمالي الاتفاق: ${c.salary} ج.م | المحصل: ${c.paid} ج.م</span></div>`;
-                masterMobileList.appendChild(card);
+                card.innerHTML = `
+                    <div class="m-card-row"><span class="m-value" style="color:var(--accent-teal);">${c.name}</span><span class="m-label">التسليم: ${c.deliveredReels || 0}/${c.reels}</span></div>
+                    <div class="m-card-row"><span class="m-label">المتحصل: ${c.paid} ج.م</span><span class="m-value" style="color:var(--accent-red);">المتبقي: ${c.salary - c.paid} ج.م</span></div>
+                `;
+                masterList.appendChild(card);
             });
         }
 
-        // تشغيل التهيئة عند فتح النظام
-        document.addEventListener('DOMContentLoaded', () => {
+        window.onload = function() {
             initPriceControlTable();
-            document.getElementById('inv-date').innerText = new Date().toLocaleDateString('ar-EG');
             renderAll();
-        });
+            
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+            const formattedDate = `${year}-${month}-${day}`;
+            
+            const invDateElem = document.getElementById('inv-date');
+            if (invDateElem) invDateElem.innerText = formattedDate;
+        };
     </script>
 </body>
 </html>
