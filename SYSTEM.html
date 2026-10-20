@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Alexandria:wght@400;600;800&family=Poppins:wght@600;800&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#0b0b0d;--card:#141418;--card2:#1b1b21;--line:#26262e;--tx:#f2f1ee;--mu:#8d8c95;--or:#ff7a1a;--or2:#ffb070;--ok:#3ccf8e;--bad:#ff5c5c;--warn:#ffc04d;--r:18px}
+:root{--bg:#0b0b0d;--card:#141418;--card2:#1b1b21;--line:#26262e;--tx:#f2f1ee;--mu:#8d8c95;--or:#2f7bff;--or2:#8ab4ff;--ok:#3ccf8e;--bad:#ff5c5c;--warn:#ffc04d;--r:18px}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html,body{background:var(--bg);color:var(--tx);font-family:Alexandria,system-ui,sans-serif;font-size:15px}
 body{padding:env(safe-area-inset-top) 0 calc(76px + env(safe-area-inset-bottom))}
@@ -18,7 +18,7 @@ header{display:flex;align-items:center;justify-content:space-between;gap:12px;pa
 .brand{font:800 26px/1 Poppins;letter-spacing:1px;direction:ltr}.brand span{color:var(--or)}
 .sub{color:var(--mu);font-size:12px;margin-top:4px}
 .hbtn{display:flex;gap:8px}
-button{font:600 14px Alexandria;border:0;border-radius:12px;padding:11px 16px;cursor:pointer;background:var(--or);color:#140a02}
+button{font:600 14px Alexandria;border:0;border-radius:12px;padding:11px 16px;cursor:pointer;background:var(--or);color:#fff}
 button.g{background:var(--card2);color:var(--tx);border:1px solid var(--line)}
 button.s{padding:6px 10px;font-size:12px;border-radius:9px}
 button.d{background:transparent;color:var(--bad);border:1px solid #3a2226}
@@ -33,7 +33,7 @@ label{display:block;font-size:12px;color:var(--mu);margin:0 2px 6px}
 .card h3 i{width:8px;height:8px;border-radius:50%;background:var(--or);display:inline-block}
 .kpi .v{font:800 22px/1.2 Poppins;margin-top:6px;direction:ltr;text-align:right}
 .kpi .l{color:var(--mu);font-size:12px}
-.kpi.hot{background:linear-gradient(150deg,#2a1608,#141418 60%);border-color:#4a2a12}
+.kpi.hot{background:linear-gradient(150deg,#0f1d3a,#141418 60%);border-color:#1f3566}
 .sec{display:none}.sec.on{display:block}
 .stack>*+*{margin-top:12px}
 .meter{margin-top:10px}.meter .t{display:flex;justify-content:space-between;font-size:12px;color:var(--mu);margin-bottom:6px}
@@ -53,7 +53,7 @@ th{color:var(--mu);font-weight:600;text-align:right;padding:10px 8px;border-bott
 td{padding:10px 8px;border-bottom:1px solid var(--line);vertical-align:middle}
 td.n{font-family:Poppins;white-space:nowrap}
 .pill{display:inline-block;padding:3px 10px;border-radius:99px;font-size:11px;background:var(--card2);color:var(--mu)}
-.pill.ok{background:#12301f;color:var(--ok)}.pill.bad{background:#341619;color:var(--bad)}.pill.or{background:#33200f;color:var(--or2)}
+.pill.ok{background:#12301f;color:var(--ok)}.pill.bad{background:#341619;color:var(--bad)}.pill.or{background:#12223f;color:var(--or2)}
 .empty{color:var(--mu);text-align:center;padding:18px;font-size:13px}
 .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
 .chk{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--mu)}.chk input{width:18px;height:18px;accent-color:var(--or)}
@@ -65,7 +65,18 @@ nav button svg{width:22px;height:22px}nav button.on{color:var(--or)}
 .inv .ih{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:3px solid var(--or);padding-bottom:12px;margin-bottom:12px}
 .inv table{min-width:0}.inv th{color:#666;border-color:#eee}.inv td{border-color:#eee}
 .inv .tot{display:flex;justify-content:space-between;padding:6px 0;font-size:14px}.inv .tot.f{font:800 18px Alexandria;color:var(--or);border-top:2px solid #eee;margin-top:6px;padding-top:10px}
-.toast{position:fixed;left:50%;bottom:96px;transform:translateX(-50%) translateY(20px);background:var(--or);color:#140a02;padding:10px 18px;border-radius:12px;font-weight:600;opacity:0;transition:.25s;z-index:20}
+.days{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:8px}@media(max-width:760px){.days{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.day{background:var(--card2);border:1px solid var(--line);border-radius:14px;padding:10px;min-height:120px}
+.day h4{font-size:13px;color:var(--or2);margin-bottom:8px;display:flex;justify-content:space-between}
+.day h4 span{color:var(--mu);font-family:Poppins;font-size:11px}
+.it{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:7px 8px;margin-top:6px;font-size:12px;display:flex;justify-content:space-between;gap:6px;align-items:center}
+.it.cl{border-color:#1f3566;background:linear-gradient(150deg,#0f1d3a,#141418)}
+.it.x{border-color:#4a2026}
+.it .sub{margin-top:2px;font-size:10px}
+.it button{padding:2px 7px;font-size:11px}
+.al{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 14px;border-radius:14px;margin-top:8px;font-size:13px}.al.r{background:#2a1215;border:1px solid #5a2228}.al.y{background:#2a1d0c;border:1px solid #5a3a12}.al b{font-family:Poppins}
+.li{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:9px 0;border-bottom:1px solid var(--line)}
+.toast{position:fixed;left:50%;bottom:96px;transform:translateX(-50%) translateY(20px);background:var(--or);color:#fff;padding:10px 18px;border-radius:12px;font-weight:600;opacity:0;transition:.25s;z-index:20}
 .toast.on{opacity:1;transform:translateX(-50%)}
 </style>
 </head>
@@ -78,12 +89,13 @@ nav button svg{width:22px;height:22px}nav button.on{color:var(--or)}
 
 <!-- ============ DASHBOARD ============ -->
 <section class="sec on" id="s-home"><div class="stack">
- <div class="card"><div class="row" style="justify-content:space-between"><b>الأسبوع</b><div class="wsel" id="wsel"></div></div></div>
+ <div class="card"><div class="row" style="justify-content:space-between"><b>الأسبوع</b><div class="wsel" id="wsel"></div><button class="s" onclick="snapHome()">📸 صورة للرئيسية</button></div></div>
+ <div id="alerts"></div>
  <div class="grid g3" id="kpis"></div>
  <div class="card"><h3><i></i>المؤشرات</h3><div class="rings" id="rings"></div><div id="meters"></div></div>
  <div class="card"><h3><i></i>الدخل في الأسابيع الأربعة</h3><div class="weeks" id="weeks"></div></div>
  <div class="card"><h3><i></i>عملاء الأسبوع</h3><div class="tw"><table><thead><tr><th>العميل</th><th>يوم التصوير</th><th>الريلز</th><th>الاتفاق</th><th>المستلم</th><th>المتبقي</th></tr></thead><tbody id="wkClients"></tbody></table></div></div>
- <div class="card"><h3><i></i>مواعيد الأسبوع</h3><div id="wkSched"></div></div>
+ <div class="card"><h3><i></i>جدول الأسبوع</h3><div class="tw"><div id="wkSched"></div></div></div>
 </div></section>
 
 <!-- ============ INCOME ============ -->
@@ -109,10 +121,16 @@ nav button svg{width:22px;height:22px}nav button.on{color:var(--or)}
    <div><label>رقم الهاتف</label><input id="c_p" type="tel" inputmode="tel"></div>
    <div><label>عدد الريلز المطلوبة</label><input id="c_r" type="number"></div>
    <div><label>إجمالي الاتفاق (ج.م)</label><input id="c_t" type="number"></div>
-   <div><label>الدفعة المستلمة (ج.م)</label><input id="c_pd" type="number"></div>
+   <div><label>نوع الاشتراك</label><select id="c_plan"><option value="1">شهر</option><option value="3">3 شهور</option></select></div>
+   <div><label>خصم % (اختياري)</label><input id="c_ds" type="number" placeholder="0"></div>
+   <div><label>تاريخ بداية الاشتراك</label><input id="c_st" type="date"></div>
    <div><label>يوم التصوير الثابت</label><select id="c_day"></select></div>
+   <div><label>الدفعة المستلمة (ج.م)</label><input id="c_pd" type="number"></div>
+   <div><label>ميعاد تحصيل الباقي (لو مدفعش كامل)</label><input id="c_rd" type="date"></div>
+   <div><label>دفعة قادمة: المبلغ (ج.م)</label><input id="c_na" type="number"></div>
+   <div><label>دفعة قادمة: ميعاد التحصيل</label><input id="c_nd" type="date"></div>
   </div><div style="margin-top:12px"><button onclick="addClient()">حفظ العميل</button></div></div>
- <div class="card"><h3><i></i>العملاء</h3><div class="tw"><table><thead><tr><th>العميل</th><th>التليفون</th><th>الريلز</th><th>التحصيل</th><th>المتبقي</th><th></th></tr></thead><tbody id="cliT"></tbody></table></div></div>
+ <div class="card"><h3><i></i>العملاء</h3><div class="tw"><table><thead><tr><th>العميل</th><th>الاشتراك</th><th>التليفون</th><th>الريلز</th><th>التحصيل</th><th>المتبقي</th><th></th></tr></thead><tbody id="cliT"></tbody></table></div></div>
  <div class="grid g2 f1">
   <div class="card"><h3><i></i>دفعة جديدة / قادمة</h3>
    <div class="stack"><div><label>العميل</label><select id="p_c" class="clientSel"></select></div>
@@ -124,7 +142,9 @@ nav button svg{width:22px;height:22px}nav button.on{color:var(--or)}
    <div><label>عناوين الفيديوهات (كل فيديو في سطر)</label><textarea id="dv_t" rows="3"></textarea></div>
    <button onclick="addDelivery()">تسجيل التسليم</button></div></div>
  </div>
+ <div class="card"><h3><i></i>خصم لعميل %</h3><div class="row"><select id="ds_c" class="clientSel" style="flex:2;min-width:140px"></select><input id="ds_p" type="number" placeholder="%" style="flex:1;min-width:80px"><input id="ds_r" placeholder="السبب (اختياري)" style="flex:2;min-width:140px"><button onclick="addDisc()">إضافة الخصم</button></div><div id="discL" style="margin-top:12px"></div></div>
  <div class="card"><h3><i></i>دفعات منتظرة</h3><div id="payL"></div></div>
+ <div class="grid g2 f1"><div class="card"><h3><i></i>سجل الدفعات المستلمة</h3><div id="paidL"></div></div><div class="card"><h3><i></i>سجل التسليمات</h3><div id="delL"></div></div></div>
 </div></section>
 
 <!-- ============ SCHEDULE ============ -->
@@ -138,7 +158,7 @@ nav button svg{width:22px;height:22px}nav button.on{color:var(--or)}
   </div>
   <div style="margin-top:12px"><label>تفاصيل</label><input id="sc_t"></div>
   <div class="row" style="margin-top:12px;justify-content:space-between"><label class="chk"><input type="checkbox" id="sc_rep"> كرّره في الأربع أسابيع</label><button onclick="addSched()">إضافة للجدول</button></div></div>
- <div class="card"><h3><i></i>الجدول</h3><div class="wsel" id="scWsel" style="margin-bottom:12px"></div><div id="schedL"></div></div>
+ <div class="card"><h3><i></i>جدول الأسبوع</h3><div class="wsel" id="scWsel" style="margin-bottom:12px"></div><div class="tw"><div id="schedL"></div></div><div class="sub" style="margin-top:8px">العملاء بيتحطوا لوحدهم في يوم التصوير الثابت بتاعهم كل أسبوع.</div></div>
 </div></section>
 
 <!-- ============ TEAM ============ -->
@@ -161,6 +181,7 @@ nav button svg{width:22px;height:22px}nav button.on{color:var(--or)}
    <button onclick="addWithdraw()">تسجيل الصرف</button></div></div>
  </div>
  <div class="card"><h3><i></i>المهام</h3><div id="taskL"></div></div>
+ <div class="card"><h3><i></i>سجل الصرف</h3><div id="wdL"></div></div>
  <div class="card"><h3><i></i>المستحقات</h3><div class="tw"><table><thead><tr><th>الاسم</th><th>النظام</th><th>تاسكات منجزة</th><th>المستحق</th><th>المصروف</th><th>الباقي</th><th></th></tr></thead><tbody id="teamT"></tbody></table></div></div>
 </div></section>
 
@@ -188,6 +209,7 @@ nav button svg{width:22px;height:22px}nav button.on{color:var(--or)}
   <div class="grid g2 f1"><div><label>العميل / الشركة</label><input id="iv_c" list="clientList" oninput="renderInv()"></div><div><label>الخصم %</label><input id="iv_d" type="number" value="0" oninput="renderInv()"></div>
   <div><label>الخدمة</label><select id="iv_s"></select></div><div><label>العدد</label><input id="iv_q" type="number" value="1"></div></div>
   <div class="row" style="margin-top:12px"><button onclick="addInvItem()">+ إضافة للفاتورة</button><button class="g" onclick="S.inv=[];save();renderInv()">مسح</button><button class="g" onclick="downloadInv()">تحميل كصورة</button></div></div>
+ <div class="card"><h3><i></i>بنود الفاتورة</h3><div id="invL"></div></div>
  <div class="inv" id="invBox"></div>
 </div></section>
 </div>
@@ -202,7 +224,7 @@ const KEY='offgrid_system_v2';
 const DAYS=['السبت','الأحد','الإثنين','الثلاثاء','الأربعاء','الخميس','الجمعة'];
 const W=[1,2,3,4];
 let S=load();let curW=1,scW=1;
-function blank(){return{income:[],clients:[],pays:[],sched:[],team:[],tasks:[],wd:[],exp:[],debts:[],shorts:[],svcs:[{n:'ريل',p:500},{n:'تصوير منتج',p:300},{n:'مونتاج',p:250}],inv:[],invNo:1}}
+function blank(){return{income:[],clients:[],pays:[],sched:[],team:[],tasks:[],wd:[],exp:[],debts:[],shorts:[],discs:[],svcs:[{n:'ريل',p:500},{n:'تصوير منتج',p:300},{n:'مونتاج',p:250}],inv:[],invNo:1}}
 function load(){try{return Object.assign(blank(),JSON.parse(localStorage.getItem(KEY))||{})}catch(e){return blank()}}
 function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){toast('مفيش مساحة للحفظ')}render()}
 const $=id=>document.getElementById(id);const v=id=>$(id).value.trim();const num=id=>parseFloat($(id).value)||0;
@@ -216,8 +238,18 @@ function opts(sel,list,valF,txtF){document.querySelectorAll(sel).forEach(e=>{con
 function wkOpts(){['in_w','p_w','sc_w','e_w'].forEach(i=>$(i).innerHTML=W.map(w=>`<option value="${w}">الأسبوع ${w}</option>`).join(''));['in_d','sc_d','c_day'].forEach(i=>$(i).innerHTML=DAYS.map(d=>`<option>${d}</option>`).join(''))}
 // ---------- actions ----------
 function addIncome(){if(!num('in_a'))return toast('اكتب المبلغ');S.income.push({id:id(),w:+v('in_w'),d:v('in_d'),c:v('in_c'),s:v('in_s'),by:v('in_by'),due:v('in_due'),a:num('in_a')});clr('in_c','in_s','in_by','in_due','in_a');save();toast('اتسجل ✓')}
-function addClient(){if(!v('c_n'))return toast('اكتب اسم العميل');S.clients.push({id:id(),n:v('c_n'),p:v('c_p'),r:num('c_r'),t:num('c_t'),day:v('c_day'),del:[],paid:0});const c=S.clients[S.clients.length-1];
- if(num('c_pd'))S.pays.push({id:id(),c:c.id,a:num('c_pd'),w:curW,due:'',done:true});clr('c_n','c_p','c_r','c_t','c_pd');save();toast('العميل اتضاف ✓')}
+function addClient(){if(!v('c_n'))return toast('اكتب اسم العميل');const today=new Date().toISOString().slice(0,10);
+ const c={id:id(),n:v('c_n'),p:v('c_p'),r:num('c_r'),t:num('c_t'),plan:+v('c_plan'),st:v('c_st')||today,day:v('c_day'),del:[]};S.clients.push(c);
+ if(num('c_ds'))S.discs.push({id:id(),c:c.id,p:num('c_ds'),r:'خصم الاشتراك'});
+ const paid=num('c_pd');if(paid)S.pays.push({id:id(),c:c.id,a:paid,w:curW,due:today,done:true});
+ const net=clientNet(c);if(v('c_rd')&&net-paid>0)S.pays.push({id:id(),c:c.id,a:net-paid,w:curW,due:v('c_rd'),done:false,note:'باقي الدفعة'});
+ if(num('c_na')&&v('c_nd'))S.pays.push({id:id(),c:c.id,a:num('c_na'),w:curW,due:v('c_nd'),done:false,note:'دفعة قادمة'});
+ clr('c_n','c_p','c_r','c_t','c_pd','c_ds','c_st','c_rd','c_na','c_nd');$('c_plan').value='1';save();toast('العميل اتضاف ✓')}
+function addDisc(){const c=v('ds_c');if(!c||!num('ds_p'))return toast('اختار العميل والنسبة');S.discs.push({id:id(),c,p:Math.min(100,num('ds_p')),r:v('ds_r')});clr('ds_p','ds_r');save();toast('الخصم اتضاف ✓')}
+function clientDisc(c){return Math.min(100,sum(S.discs.filter(d=>d.c===c.id),d=>d.p))}
+function clientNet(c){return c.t*(1-clientDisc(c)/100)}
+function endDate(c){if(!c.st)return'';const d=new Date(c.st);d.setMonth(d.getMonth()+(c.plan||1));return d.toISOString().slice(0,10)}
+function daysTo(ds){if(!ds)return 9999;const a=new Date(ds+'T00:00:00'),b=new Date(new Date().toISOString().slice(0,10)+'T00:00:00');return Math.round((a-b)/864e5)}
 function addPay(done){const c=v('p_c');if(!c||!num('p_a'))return toast('اختار العميل والمبلغ');S.pays.push({id:id(),c,a:num('p_a'),w:+v('p_w'),due:v('p_due'),done});clr('p_a','p_due');save();toast(done?'اتحصّلت ✓':'اتجدولت ✓')}
 function payDone(i){const p=S.pays.find(x=>x.id===i);if(p){p.done=true;p.w=curW;save();toast('اتحصّلت ✓')}}
 function addDelivery(){const c=S.clients.find(x=>x.id===v('dv_c'));const t=v('dv_t').split('\n').map(s=>s.trim()).filter(Boolean);if(!c||!t.length)return toast('اختار العميل واكتب العناوين');c.del.push(...t.map(x=>({t:x,at:new Date().toISOString().slice(0,10)})));clr('dv_t');save();toast('اتسجل التسليم ✓')}
@@ -232,16 +264,19 @@ function payDebt(i){const d=S.debts.find(x=>x.id===i);d.paid=!d.paid;save()}
 function addShort(){if(!v('sh_t'))return;S.shorts.push({id:id(),t:v('sh_t'),a:num('sh_a'),done:false});clr('sh_t','sh_a');save()}
 function buyShort(i){const s=S.shorts.find(x=>x.id===i);if(!s.done){s.done=true;if(s.a)S.exp.push({id:id(),t:s.t,a:s.a,w:curW,k:'نواقص المكتب'})}save();toast('اتشترى واتسجل مصروف ✓')}
 function addSvc(){if(!v('sv_n'))return;S.svcs.push({id:id(),n:v('sv_n'),p:num('sv_p')});clr('sv_n','sv_p');save()}
+function renew(i){const c=S.clients.find(x=>x.id===i);if(!c)return;c.st=endDate(c);S.pays.push({id:id(),c:c.id,a:clientNet(c),w:curW,due:c.st,done:false,note:'تجديد الاشتراك'});save();toast('اتجدد واتسجلت دفعة التجديد ✓')}
+function delDel(c,i){const x=S.clients.find(k=>k.id===c);if(x){x.del.splice(i,1);save();toast('اتمسح')}}
+function snapHome(){if(!window.html2canvas)return toast('محتاج نت لعمل الصورة');toast('بجهز الصورة…');const el=$('s-home');html2canvas(el,{scale:2,backgroundColor:'#0b0b0d',windowWidth:el.scrollWidth}).then(c=>{const a=document.createElement('a');a.download='OFFGRID-week'+curW+'-'+new Date().toISOString().slice(0,10)+'.png';a.href=c.toDataURL('image/png');a.click()})}
 function addInvItem(){const s=S.svcs[+v('iv_s')];if(!s)return;S.inv.push({n:s.n,p:s.p,q:num('iv_q')||1});save()}
 // ---------- calc ----------
-function clientCalc(c){const paid=sum(S.pays.filter(p=>p.c===c.id&&p.done),p=>p.a);return{paid,left:Math.max(0,c.t-paid),dl:c.del.length,rl:Math.max(0,c.r-c.del.length)}}
+function clientCalc(c){const paid=sum(S.pays.filter(p=>p.c===c.id&&p.done),p=>p.a);const net=clientNet(c);return{paid,net,left:Math.max(0,net-paid),dl:c.del.length,rl:Math.max(0,c.r-c.del.length)}}
 function teamCalc(m){const done=S.tasks.filter(k=>k.e===m.id&&k.done).length;const due=m.m==='m'?m.s:done*m.tp;const got=sum(S.wd.filter(x=>x.e===m.id),x=>x.a);return{done,due,got,left:due-got}}
 function totals(w){const clientPaid=sum(S.pays.filter(p=>p.done),p=>p.a);const inc=sum(S.income,x=>x.a);
  const collected=inc+clientPaid;const market=sum(S.clients,c=>clientCalc(c).left);
  const wkInc=sum(S.income.filter(x=>x.w===w),x=>x.a)+sum(S.pays.filter(p=>p.done&&p.w===w),p=>p.a);
  const exp=sum(S.exp,x=>x.a);const sal=sum(S.wd,x=>x.a);const debts=sum(S.debts.filter(d=>!d.paid),d=>d.a);
  const out=exp+sal;const profit=collected-out;
- const agreed=sum(S.clients,c=>c.t);const reelsReq=sum(S.clients,c=>c.r);const reelsDone=sum(S.clients,c=>Math.min(c.r,c.del.length));
+ const agreed=sum(S.clients,c=>clientNet(c));const reelsReq=sum(S.clients,c=>c.r);const reelsDone=sum(S.clients,c=>Math.min(c.r,c.del.length));
  const tasksAll=S.tasks.length,tasksDone=S.tasks.filter(k=>k.done).length;
  return{collected,market,wkInc,out,debts,profit,agreed,clientPaid,reelsReq,reelsDone,tasksAll,tasksDone,exp,sal}}
 // ---------- render ----------
@@ -249,6 +284,10 @@ const NAV=[['home','الرئيسية','M3 12l9-8 9 8M5 10v10h14V10'],['income','
 function go(s){document.querySelectorAll('.sec').forEach(e=>e.classList.toggle('on',e.id==='s-'+s));document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.dataset.s===s));scrollTo(0,0)}
 function render(){
  const T=totals(curW);
+ const cn0=i=>(S.clients.find(c=>c.id===i)||{}).n||'—';const A=[];
+ S.pays.filter(p=>!p.done&&p.due).forEach(p=>{const d=daysTo(p.due);if(d<=3)A.push([d,`<div class="al ${d<0?'r':'y'}"><div>💰 <b style="font-family:Alexandria">${cn0(p.c)}</b> · ${p.note||'دفعة'} <span class="sub">${d<0?'متأخرة '+(-d)+' يوم':d===0?'النهارده':'بعد '+d+' يوم'} (${p.due})</span></div><div class="row"><b>${fm(p.a)}</b><button class="s" onclick="payDone('${p.id}')">اتحصلت</button></div></div>`])});
+ S.clients.forEach(c=>{const d=daysTo(endDate(c));if(d<=5)A.push([d,`<div class="al ${d<0?'r':'y'}"><div>🔁 اشتراك <b style="font-family:Alexandria">${c.n}</b> (${(c.plan||1)==3?'3 شهور':'شهر'}) <span class="sub">${d<0?'خلص من '+(-d)+' يوم':d===0?'بيخلص النهارده':'بيخلص بعد '+d+' يوم'}</span></div><button class="s g" onclick="renew('${c.id}')">تجديد</button></div>`])});
+ A.sort((a,b)=>a[0]-b[0]);$('alerts').innerHTML=A.length?`<div class="card"><h3><i style="background:var(--bad)"></i>تنبيهات (${A.length})</h3>${A.map(a=>a[1]).join('')}</div>`:'';
  $('wsel').innerHTML=W.map(w=>`<button class="${w===curW?'':'g'}" onclick="curW=${w};render()">${w}</button>`).join('');
  $('scWsel').innerHTML=W.map(w=>`<button class="${w===scW?'':'g'}" onclick="scW=${w};render()">الأسبوع ${w}</button>`).join('');
  const K=[['إجمالي المحصّل',T.collected,1],['دخل الأسبوع '+curW,T.wkInc,0],['فلوس في السوق',T.market,0],['المصروفات والرواتب',T.out,0],['علينا (التزامات)',T.debts,0],['صافي الربح',T.profit,1]];
@@ -259,15 +298,19 @@ function render(){
  $('meters').innerHTML=M.map(m=>`<div class="meter"><div class="t"><span>${m[0]}</span><b>${m[1]}%</b></div><div class="bar"><span style="width:${m[1]}%"></span></div></div>`).join('');
  const wk=W.map(w=>totals(w).wkInc);const mx=Math.max(...wk,1);
  $('weeks').innerHTML=W.map((w,i)=>`<div><b>${Math.round(wk[i]).toLocaleString('en-US')}</b><span style="height:${wk[i]/mx*100}%;${w===curW?'':'opacity:.45'}"></span>أسبوع ${w}</div>`).join('');
- $('wkClients').innerHTML=S.clients.map(c=>{const x=clientCalc(c);return`<tr><td>${c.n}</td><td>${c.day||'-'}</td><td class="n">${x.dl}/${c.r}</td><td class="n">${fm(c.t)}</td><td class="n">${fm(x.paid)}</td><td class="n" style="color:${x.left?'var(--warn)':'var(--ok)'}">${fm(x.left)}</td></tr>`}).join('')||`<tr><td colspan="6" class="empty">لسه مفيش عملاء</td></tr>`;
+ $('wkClients').innerHTML=S.clients.map(c=>{const x=clientCalc(c);return`<tr><td>${c.n}</td><td>${c.day||'-'}</td><td class="n">${x.dl}/${c.r}</td><td class="n">${fm(x.net)}</td><td class="n">${fm(x.paid)}</td><td class="n" style="color:${x.left?'var(--warn)':'var(--ok)'}">${fm(x.left)}</td></tr>`}).join('')||`<tr><td colspan="6" class="empty">لسه مفيش عملاء</td></tr>`;
  $('wkSched').innerHTML=schedHtml(curW);
  $('incT').innerHTML=S.income.slice().reverse().map(x=>`<tr><td>${x.w}</td><td>${x.d}</td><td>${x.c||'-'}</td><td>${x.s||'-'}</td><td>${x.by||'-'}</td><td class="n">${x.due||'-'}</td><td class="n">${fm(x.a)}</td><td><button class="d s" onclick="del('income','${x.id}')">✕</button></td></tr>`).join('')||`<tr><td colspan="8" class="empty">مفيش دخل متسجل</td></tr>`;
- $('cliT').innerHTML=S.clients.map(c=>{const x=clientCalc(c);const p=pct(x.paid,c.t);return`<tr><td><b>${c.n}</b><div class="sub">${c.day||''}</div></td><td class="n">${c.p?`<a href="tel:${c.p}" style="color:var(--or2)">${c.p}</a>`:'-'}</td><td><span class="pill ${x.rl?'or':'ok'}">${x.dl}/${c.r}</span></td><td style="min-width:110px"><div class="bar"><span style="width:${p}%"></span></div><div class="sub">${p}%</div></td><td class="n">${fm(x.left)}</td><td><button class="d s" onclick="if(confirm('تمسح العميل؟'))del('clients','${c.id}')">✕</button></td></tr>`}).join('')||`<tr><td colspan="6" class="empty">ضيف أول عميل</td></tr>`;
+ $('cliT').innerHTML=S.clients.map(c=>{const x=clientCalc(c);const p=pct(x.paid,x.net);const ds=clientDisc(c);return`<tr><td><b>${c.n}</b><div><select style="padding:4px 8px;font-size:12px;width:auto;margin-top:4px" onchange="S.clients.find(k=>k.id==='${c.id}').day=this.value;save()">${DAYS.map(d=>`<option ${d===c.day?'selected':''}>${d}</option>`).join('')}</select></div></td><td><span class="pill or">${(c.plan||1)==3?'3 شهور':'شهر'}</span><div class="sub">لحد ${endDate(c)||'-'}</div>${ds?`<div class="sub" style="color:var(--ok)">خصم ${ds}%</div>`:''}</td><td class="n">${c.p?`<a href="tel:${c.p}" style="color:var(--or2)">${c.p}</a>`:'-'}</td><td><span class="pill ${x.rl?'or':'ok'}">${x.dl}/${c.r}</span></td><td style="min-width:110px"><div class="bar"><span style="width:${p}%"></span></div><div class="sub">${p}%</div></td><td class="n">${fm(x.left)}</td><td><button class="d s" onclick="if(confirm('تمسح العميل؟'))del('clients','${c.id}')">✕</button></td></tr>`}).join('')||`<tr><td colspan="7" class="empty">ضيف أول عميل</td></tr>`;
  const cn=i=>(S.clients.find(c=>c.id===i)||{}).n||'—';
- const up=S.pays.filter(p=>!p.done);$('payL').innerHTML=up.map(p=>`<div class="row" style="justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--line)"><div><b>${cn(p.c)}</b><div class="sub">أسبوع ${p.w} ${p.due?'· '+p.due:''}</div></div><div class="row"><span class="n" style="font-family:Poppins">${fm(p.a)}</span><button class="s" onclick="payDone('${p.id}')">اتحصلت</button><button class="d s" onclick="del('pays','${p.id}')">✕</button></div></div>`).join('')||'<div class="empty">مفيش دفعات منتظرة</div>';
+ const up=S.pays.filter(p=>!p.done);$('payL').innerHTML=up.map(p=>`<div class="row" style="justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--line)"><div><b>${cn(p.c)}</b><div class="sub">${p.note?p.note+' · ':''}${p.due?p.due:'أسبوع '+p.w}${p.due&&daysTo(p.due)<0?' <span class="pill bad">متأخرة</span>':''}</div></div><div class="row"><span class="n" style="font-family:Poppins">${fm(p.a)}</span><button class="s" onclick="payDone('${p.id}')">اتحصلت</button><button class="d s" onclick="del('pays','${p.id}')">✕</button></div></div>`).join('')||'<div class="empty">مفيش دفعات منتظرة</div>';
  $('schedL').innerHTML=schedHtml(scW,true);
+ $('discL').innerHTML=S.discs.map(d=>`<div class="li"><div><b>${cn(d.c)}</b><div class="sub">${d.r||''}</div></div><div class="row"><span class="pill ok">${d.p}%</span><button class="d s" onclick="del('discs','${d.id}')">✕</button></div></div>`).join('')||'<div class="empty">مفيش خصومات</div>';
+ const dn=S.pays.filter(p=>p.done);$('paidL').innerHTML=dn.slice().reverse().map(p=>`<div class="li"><div><b>${cn(p.c)}</b><div class="sub">أسبوع ${p.w}</div></div><div class="row"><span style="font-family:Poppins">${fm(p.a)}</span><button class="d s" onclick="del('pays','${p.id}')">✕</button></div></div>`).join('')||'<div class="empty">مفيش دفعات</div>';
+ const dl=[];S.clients.forEach(c=>c.del.forEach((d,i)=>dl.push({c,d,i})));$('delL').innerHTML=dl.reverse().map(o=>`<div class="li"><div><b>${o.d.t}</b><div class="sub">${o.c.n} · ${o.d.at}</div></div><button class="d s" onclick="delDel('${o.c.id}',${o.i})">✕</button></div>`).join('')||'<div class="empty">مفيش تسليمات</div>';
  const tn=i=>(S.team.find(m=>m.id===i)||{}).n||'—';
  $('taskL').innerHTML=S.tasks.slice().reverse().map(k=>`<div class="row" style="justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--line)"><label class="chk" style="color:var(--tx)"><input type="checkbox" ${k.done?'checked':''} onchange="togTask('${k.id}')"><span style="${k.done?'text-decoration:line-through;color:var(--mu)':''}">${k.t}</span></label><div class="row"><span class="pill">${tn(k.e)}</span>${k.d?`<span class="pill ${!k.done&&k.d<new Date().toISOString().slice(0,10)?'bad':''}">${k.d}</span>`:''}<button class="d s" onclick="del('tasks','${k.id}')">✕</button></div></div>`).join('')||'<div class="empty">مفيش مهام</div>';
+ $('wdL').innerHTML=S.wd.slice().reverse().map(x=>`<div class="li"><div><b>${tn(x.e)}</b><div class="sub">${x.at||''}</div></div><div class="row"><span style="font-family:Poppins">${fm(x.a)}</span><button class="d s" onclick="del('wd','${x.id}')">✕</button></div></div>`).join('')||'<div class="empty">مفيش صرف</div>';
  $('teamT').innerHTML=S.team.map(m=>{const x=teamCalc(m);return`<tr><td><b>${m.n}</b> ${m.r==='o'?'👑':''}<div class="sub">${m.j||''}</div></td><td>${m.m==='m'?'شهري':'بالتاسك'}</td><td class="n">${x.done}</td><td class="n">${fm(x.due)}</td><td class="n">${fm(x.got)}</td><td class="n" style="color:${x.left>0?'var(--warn)':'var(--ok)'}">${fm(x.left)}</td><td><button class="d s" onclick="if(confirm('تمسح العضو؟'))del('team','${m.id}')">✕</button></td></tr>`}).join('')||`<tr><td colspan="7" class="empty">ضيف الفريق</td></tr>`;
  $('expT').innerHTML=S.exp.slice().reverse().map(x=>`<tr><td>${x.w}</td><td>${x.t||'-'}</td><td><span class="pill">${x.k}</span></td><td class="n">${fm(x.a)}</td><td><button class="d s" onclick="del('exp','${x.id}')">✕</button></td></tr>`).join('')||`<tr><td colspan="5" class="empty">مفيش مصروفات</td></tr>`;
  $('debtL').innerHTML=S.debts.map(d=>`<div class="row" style="justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--line)"><div><b>${d.n||'—'}</b><div class="sub">${d.r||''}</div></div><div class="row"><span style="font-family:Poppins">${fm(d.a)}</span><button class="s ${d.paid?'g':''}" onclick="payDebt('${d.id}')">${d.paid?'اتدفعت ✓':'دفعناها'}</button><button class="d s" onclick="del('debts','${d.id}')">✕</button></div></div>`).join('')||'<div class="empty">مفيش مديونيات</div>';
@@ -276,9 +319,11 @@ function render(){
  $('iv_s').innerHTML=S.svcs.map((s,i)=>`<option value="${i}">${s.n} — ${s.p}</option>`).join('');
  $('clientList').innerHTML=S.clients.map(c=>`<option value="${c.n}">`).join('');$('svcList').innerHTML=S.svcs.map(s=>`<option value="${s.n}">`).join('');$('teamList').innerHTML=S.team.map(m=>`<option value="${m.n}">`).join('');
  opts('.clientSel',S.clients,c=>c.id,c=>c.n);opts('.teamSel',S.team,m=>m.id,m=>m.n);
+ $('invL').innerHTML=S.inv.map((x,i)=>`<div class="li"><span>${x.n} × ${x.q}</span><div class="row"><span style="font-family:Poppins">${fm(x.p*x.q)}</span><button class="d s" onclick="S.inv.splice(${i},1);save()">✕</button></div></div>`).join('')||'<div class="empty">ضيف خدمات للفاتورة</div>';
  renderInv();}
-function schedHtml(w,delBtn){const L=S.sched.filter(x=>x.w===w);if(!L.length)return'<div class="empty">مفيش مواعيد في الأسبوع ده</div>';
- return DAYS.map(d=>{const it=L.filter(x=>x.d===d);if(!it.length)return'';return`<div style="padding:10px 0;border-bottom:1px solid var(--line)"><b style="color:var(--or2)">${d}</b>${it.map(x=>`<div class="row" style="justify-content:space-between;margin-top:6px"><span>${x.c} ${x.k==='x'?'<span class="pill bad">استثنائي</span>':''} <span class="sub">${x.t||''}</span></span>${delBtn?`<button class="d s" onclick="del('sched','${x.id}')">✕</button>`:''}</div>`).join('')}</div>`}).join('')}
+function schedHtml(w,delBtn){
+ return '<div class="days">'+DAYS.map(d=>{const cl=S.clients.filter(c=>c.day===d);const it=S.sched.filter(x=>x.w===w&&x.d===d);
+  return`<div class="day"><h4>${d}<span>${cl.length+it.length||''}</span></h4>${cl.map(c=>{const x=clientCalc(c);return`<div class="it cl"><div><b>${c.n}</b><div class="sub">ريلز ${x.dl}/${c.r}</div></div><span class="pill or">ثابت</span></div>`}).join('')}${it.map(x=>`<div class="it ${x.k==='x'?'x':''}"><div><b>${x.c}</b>${x.k==='x'?' <span class="pill bad">استثنائي</span>':''}${x.t?`<div class="sub">${x.t}</div>`:''}</div>${delBtn?`<button class="d s" onclick="del('sched','${x.id}')">✕</button>`:''}</div>`).join('')}${!cl.length&&!it.length?'<div class="sub" style="text-align:center;margin-top:18px">—</div>':''}</div>`}).join('')+'</div>'}
 function renderInv(){const sub=sum(S.inv,x=>x.p*x.q);const d=Math.max(0,Math.min(100,num('iv_d')));const tot=sub*(1-d/100);
  $('invBox').innerHTML=`<div class="ih"><div><div class="brand" style="color:#111">OFF<span>GRID</span></div><div style="color:#888;font-size:12px">Media Production Agency</div></div><div style="text-align:left;direction:ltr;font-size:12px;color:#555"><b style="font-size:16px;color:#111">#OG-${String(S.invNo).padStart(3,'0')}</b><br>${new Date().toLocaleDateString('en-GB')}</div></div>
  <div style="margin-bottom:10px;font-size:14px">مطلوب من: <b>${v('iv_c')||'عميل جديد'}</b></div>
