@@ -11,14 +11,16 @@
 <style>
 :root{--bg:#0b0b0d;--card:#141418;--card2:#1b1b21;--line:#26262e;--tx:#f2f1ee;--mu:#8d8c95;--or:#2f7bff;--or2:#8ab4ff;--ok:#3ccf8e;--bad:#ff5c5c;--warn:#ffc04d;--r:18px}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+[hidden]{display:none!important}
 html,body{background:var(--bg);color:var(--tx);font-family:Alexandria,system-ui,sans-serif;font-size:15px}
 body{padding:env(safe-area-inset-top) 0 calc(76px + env(safe-area-inset-bottom))}
 .wrap{max-width:1100px;margin:0 auto;padding:16px}
-header{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:6px 0 16px}
+header{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:6px 0 16px;flex-wrap:wrap}
 .brand{font:800 26px/1 Poppins;letter-spacing:1px;direction:ltr}.brand span{color:var(--or)}
 .sub{color:var(--mu);font-size:12px;margin-top:4px}
-.hbtn{display:flex;gap:8px}
+.hbtn{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
 button{font:600 14px Alexandria;border:0;border-radius:12px;padding:11px 16px;cursor:pointer;background:var(--or);color:#fff}
+button:disabled{opacity:.55;cursor:wait}
 button.g{background:var(--card2);color:var(--tx);border:1px solid var(--line)}
 button.s{padding:6px 10px;font-size:12px;border-radius:9px}
 button.d{background:transparent;color:var(--bad);border:1px solid #3a2226}
@@ -76,19 +78,61 @@ nav button svg{width:22px;height:22px}nav button.on{color:var(--or)}
 .it button{padding:2px 7px;font-size:11px}
 .al{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 14px;border-radius:14px;margin-top:8px;font-size:13px}.al.r{background:#2a1215;border:1px solid #5a2228}.al.y{background:#2a1d0c;border:1px solid #5a3a12}.al b{font-family:Poppins}
 .li{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:9px 0;border-bottom:1px solid var(--line)}
-.toast{position:fixed;left:50%;bottom:96px;transform:translateX(-50%) translateY(20px);background:var(--or);color:#fff;padding:10px 18px;border-radius:12px;font-weight:600;opacity:0;transition:.25s;z-index:20}
+.toast{position:fixed;left:50%;bottom:96px;transform:translateX(-50%) translateY(20px);background:var(--or);color:#fff;padding:10px 18px;border-radius:12px;font-weight:600;opacity:0;transition:.25s;z-index:60;pointer-events:none;max-width:calc(100% - 32px);text-align:center}
 .toast.on{opacity:1;transform:translateX(-50%)}
+/* ---- online / users ---- */
+.by{display:inline-flex;align-items:center;gap:4px;font-size:10.5px;color:var(--mu);background:var(--card2);border:1px solid var(--line);border-radius:99px;padding:1px 8px 1px 7px;margin-top:4px;white-space:nowrap;font-weight:500}
+.by::before{content:"";width:9px;height:9px;background:currentColor;-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='7' r='5'/%3E%3Cpath d='M2 23a10 10 0 0120 0z'/%3E%3C/svg%3E") center/contain no-repeat;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='7' r='5'/%3E%3Cpath d='M2 23a10 10 0 0120 0z'/%3E%3C/svg%3E") center/contain no-repeat}
+.me{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--mu);background:var(--card);border:1px solid var(--line);border-radius:12px;padding:7px 10px}
+.me b{color:var(--tx);font-weight:600}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--mu);flex:none}.dot.ok{background:var(--ok)}.dot.busy{background:var(--warn)}.dot.err{background:var(--bad)}
+body.locked .wrap,body.locked nav{display:none}
+.auth{position:fixed;inset:0;z-index:50;background:radial-gradient(120% 80% at 50% 0,#0f1d3a 0,var(--bg) 60%);display:grid;place-items:center;padding:16px;overflow:auto}
+.authc{width:100%;max-width:380px}
+.authc .brand{text-align:center;font-size:34px}
+.authc .lead{text-align:center;color:var(--mu);font-size:13px;margin:8px 0 18px}
+.amsg{min-height:18px;font-size:13px;color:var(--warn);text-align:center;margin-top:10px}
+.authc button.w{width:100%}
+.oldbox{background:linear-gradient(150deg,#0f1d3a,#141418 60%);border-color:#1f3566}
 </style>
 </head>
-<body>
+<body class="locked">
+<!-- ============ LOGIN ============ -->
+<div class="auth" id="auth">
+ <div class="card authc">
+  <div class="brand">OFF<span>GRID</span></div>
+  <div class="lead" id="authLead">جاري التحميل…</div>
+  <form id="loginF" class="stack" hidden onsubmit="event.preventDefault();doLogin()">
+   <div><label>اسم المستخدم</label><input id="lg_u" autocomplete="username" autocapitalize="none" spellcheck="false" dir="ltr"></div>
+   <div><label>كلمة السر</label><input id="lg_p" type="password" autocomplete="current-password" dir="ltr"></div>
+   <button class="w" id="lgBtn">دخول</button>
+  </form>
+  <form id="setupF" class="stack" hidden onsubmit="event.preventDefault();doSetup()">
+   <div><label>اسمك (هيظهر جنب اللي بتضيفه)</label><input id="su_n"></div>
+   <div><label>اسم المستخدم (إنجليزي)</label><input id="su_u" autocomplete="username" autocapitalize="none" spellcheck="false" dir="ltr" placeholder="admin"></div>
+   <div><label>كلمة السر</label><input id="su_p" type="password" autocomplete="new-password" dir="ltr"></div>
+   <div><label>اكتب كلمة السر تاني</label><input id="su_p2" type="password" autocomplete="new-password" dir="ltr"></div>
+   <button class="w" id="suBtn">إنشاء حساب المدير</button>
+  </form>
+  <div class="amsg" id="authMsg"></div><button class="g w" id="retryBtn" hidden onclick="location.reload()" style="margin-top:12px">حاول تاني</button>
+ </div>
+</div>
+
 <div class="wrap">
 <header>
- <div><div class="brand">OFF<span>GRID</span></div><div class="sub">نظام إدارة الشغل والفلوس · البيانات محفوظة على جهازك</div></div>
- <div class="hbtn"><button class="g s" onclick="exportData()">نسخة احتياطية</button><button class="g s" onclick="document.getElementById('imp').click()">استرجاع</button><input id="imp" type="file" accept=".json" hidden onchange="importData(this)"></div>
+ <div><div class="brand">OFF<span>GRID</span></div><div class="sub">نظام إدارة الشغل والفلوس · متزامن أونلاين</div></div>
+ <div class="hbtn">
+  <div class="me" id="meBox"><span class="dot" id="sdot"></span><b id="meName"></b></div>
+  <button class="g s" id="usersBtn" onclick="go('users');loadUsers()">حسابي</button>
+  <button class="g s" onclick="exportData()">نسخة احتياطية</button>
+  <button class="g s" id="impBtn" hidden onclick="document.getElementById('imp').click()">استرجاع</button><input id="imp" type="file" accept=".json" hidden onchange="importData(this)">
+  <button class="d s" onclick="logout()">خروج</button>
+ </div>
 </header>
 
 <!-- ============ DASHBOARD ============ -->
 <section class="sec on" id="s-home"><div class="stack">
+ <div class="card oldbox" id="oldBox" hidden><h3><i></i>بيانات قديمة على الجهاز ده</h3><div class="row" style="justify-content:space-between"><div class="sub" style="margin:0">لقيت <b id="oldN" style="font-family:Poppins;color:var(--tx)">0</b> عنصر من النسخة القديمة محفوظين على الجهاز ده بس. ارفعهم عشان يظهروا للكل.</div><div class="row"><button class="s" onclick="moveOld()">ارفعهم للسيستم</button><button class="g s" onclick="hideOld()">لا شكرًا</button></div></div></div>
  <div class="card"><div class="row" style="justify-content:space-between"><b>الأسبوع</b><div class="wsel" id="wsel"></div><button class="s" onclick="snapHome()">📸 صورة للرئيسية</button></div></div>
  <div id="alerts"></div>
  <div class="grid g3" id="kpis"></div>
@@ -212,30 +256,174 @@ nav button svg{width:22px;height:22px}nav button.on{color:var(--or)}
  <div class="card"><h3><i></i>بنود الفاتورة</h3><div id="invL"></div></div>
  <div class="inv" id="invBox"></div>
 </div></section>
+
+<!-- ============ USERS / ACCOUNT ============ -->
+<section class="sec" id="s-users"><div class="stack">
+ <div class="card"><h3><i></i>حسابي</h3>
+  <div class="sub" id="myInfo" style="margin:0 0 12px"></div>
+  <div class="grid g2 f1"><div><label>كلمة سر جديدة</label><input id="my_p" type="password" autocomplete="new-password" dir="ltr"></div><div><label>اكتبها تاني</label><input id="my_p2" type="password" autocomplete="new-password" dir="ltr"></div></div>
+  <div style="margin-top:12px"><button onclick="chPass()">تغيير كلمة السر</button></div></div>
+ <div class="card" id="admAdd" hidden><h3><i></i>مستخدم جديد</h3>
+  <div class="grid g2 f1">
+   <div><label>الاسم (هيظهر جنب اللي بيضيفه)</label><input id="us_n"></div>
+   <div><label>اسم المستخدم (إنجليزي)</label><input id="us_u" autocapitalize="none" spellcheck="false" dir="ltr" autocomplete="off"></div>
+   <div><label>كلمة السر</label><input id="us_p" type="text" dir="ltr" autocomplete="off"></div>
+   <div><label>الصلاحية</label><select id="us_r"><option value="user">مستخدم</option><option value="admin">مدير (يضيف ويشيل مستخدمين)</option></select></div>
+  </div><div style="margin-top:12px"><button id="usBtn" onclick="addUser()">إضافة المستخدم</button></div></div>
+ <div class="card" id="admList" hidden><h3><i></i>المستخدمين</h3><div id="usL"></div></div>
+</div></section>
 </div>
 
 <nav id="nav"></nav>
 <div class="toast" id="toast"></div>
 <datalist id="clientList"></datalist><datalist id="svcList"></datalist><datalist id="teamList"></datalist>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.110.9/dist/umd/supabase.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script>
-const KEY='offgrid_system_v2';
+/* ======== إعدادات قاعدة البيانات ======== */
+const SB_URL='https://inucitipqkixhcxrpufp.supabase.co';
+const SB_KEY='sb_publishable_MtF1Nj_93rVB-ouSvuRi5w_dQOUzFIA';
+const USER_DOMAIN='offgrid.local'; // اسم المستخدم بيتحول لإيميل داخلي: name@offgrid.local
+
+const KEY='offgrid_system_v2';           // مكان البيانات القديمة على الجهاز
+const INV_KEY='offgrid_inv_v3';          // مسودة الفاتورة (لكل جهاز لوحده)
 const DAYS=['السبت','الأحد','الإثنين','الثلاثاء','الأربعاء','الخميس','الجمعة'];
 const W=[1,2,3,4];
-let S=load();let curW=1,scW=1;
-function blank(){return{income:[],clients:[],pays:[],sched:[],team:[],tasks:[],wd:[],exp:[],debts:[],shorts:[],discs:[],svcs:[{n:'ريل',p:500},{n:'تصوير منتج',p:300},{n:'مونتاج',p:250}],inv:[],invNo:1}}
-function load(){try{return Object.assign(blank(),JSON.parse(localStorage.getItem(KEY))||{})}catch(e){return blank()}}
-function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){toast('مفيش مساحة للحفظ')}render()}
-const $=id=>document.getElementById(id);const v=id=>$(id).value.trim();const num=id=>parseFloat($(id).value)||0;
+const SYNC=['income','clients','pays','sched','team','tasks','wd','exp','debts','shorts','discs','svcs'];
+let S=blank();let curW=1,scW=1;
+let sb=null,ME=null,chan=null,snap=new Map(),collOf=new Map(),META=new Map(),chain=Promise.resolve(),pend=0,syncErr=false,rtOk=false,subOnce=false;
+function blank(){return{income:[],clients:[],pays:[],sched:[],team:[],tasks:[],wd:[],exp:[],debts:[],shorts:[],discs:[],svcs:[{id:'svc-reel',n:'ريل',p:500},{id:'svc-prod',n:'تصوير منتج',p:300},{id:'svc-edit',n:'مونتاج',p:250}],inv:[],invNo:1}}
+function loadInv(){try{const a=JSON.parse(localStorage.getItem(INV_KEY));return Array.isArray(a)?clean(a):[]}catch(e){return[]}}
+function save(){try{localStorage.setItem(INV_KEY,JSON.stringify(S.inv))}catch(e){}const ops=ME?diff():[];render();if(ops.length)push(ops)}
+const CL={'<':'‹','>':'›','"':'”',"'":'’','`':'‵'};
+const cs=s=>typeof s==='string'?s.replace(/[<>"'`]/g,c=>CL[c]):s;
+function clean(o){if(typeof o==='string')return cs(o);if(Array.isArray(o))return o.map(clean);if(o&&typeof o==='object'){const r={};for(const k in o)r[k]=clean(o[k]);return r}return o}
+const okId=i=>typeof i==='string'&&/^[\w-]{1,64}$/.test(i);
+function stable(o){if(Array.isArray(o))return'['+o.map(stable).join(',')+']';if(o&&typeof o==='object')return'{'+Object.keys(o).sort().filter(k=>o[k]!==undefined).map(k=>JSON.stringify(k)+':'+stable(o[k])).join(',')+'}';const j=JSON.stringify(o);return j===undefined?'null':j}
+const $=id=>document.getElementById(id);const v=id=>cs($(id).value.trim());const num=id=>parseFloat($(id).value)||0;
 const id=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,6);
 const fm=n=>Math.round(n).toLocaleString('en-US')+' ج.م';const sum=(a,f)=>a.reduce((s,x)=>s+(+f(x)||0),0);
 const pct=(a,b)=>b>0?Math.max(0,Math.min(100,Math.round(a/b*100))):0;
-function toast(t){const e=$('toast');e.textContent=t;e.classList.add('on');setTimeout(()=>e.classList.remove('on'),1600)}
+function toast(t){const e=$('toast');e.textContent=t;e.classList.add('on');clearTimeout(e._t);e._t=setTimeout(()=>e.classList.remove('on'),2200)}
 function clr(...ids){ids.forEach(i=>$(i).value='')}
 function del(arr,i){S[arr]=S[arr].filter(x=>x.id!==i);save();toast('اتمسح')}
 function opts(sel,list,valF,txtF){document.querySelectorAll(sel).forEach(e=>{const cur=e.value;e.innerHTML=list.map(x=>`<option value="${valF(x)}">${txtF(x)}</option>`).join('');if(cur)e.value=cur})}
 function wkOpts(){['in_w','p_w','sc_w','e_w'].forEach(i=>$(i).innerHTML=W.map(w=>`<option value="${w}">الأسبوع ${w}</option>`).join(''));['in_d','sc_d','c_day'].forEach(i=>$(i).innerHTML=DAYS.map(d=>`<option>${d}</option>`).join(''))}
+/* اسم اللي ضاف */
+function by(x){const m=x&&META.get(x.id);return m&&m.by?`<span class="by" title="أضافه ${m.by}">${m.by}</span>`:''}
+const byl=x=>{const b=by(x);return b?`<div>${b}</div>`:''};
+
+/* ======== المزامنة مع قاعدة البيانات ======== */
+function diff(){const ops=[],seen=new Set();
+ SYNC.forEach(k=>(S[k]||[]).forEach(x=>{if(!okId(x.id))x.id=id();const {id:_i,...d}=x;const j=stable(d);seen.add(x.id);const old=snap.get(x.id);
+  if(old===undefined){ops.push({t:'ins',id:x.id,coll:k,data:d});snap.set(x.id,j);collOf.set(x.id,k);META.set(x.id,{by:ME.name,at:new Date().toISOString()})}
+  else if(old!==j){ops.push({t:'upd',id:x.id,data:d});snap.set(x.id,j)}}));
+ const mj=stable({n:S.invNo});seen.add('invNo');
+ if(snap.get('invNo')!==mj){ops.push({t:snap.has('invNo')?'upd':'ins',id:'invNo',coll:'meta',data:{n:S.invNo}});snap.set('invNo',mj);collOf.set('invNo','meta')}
+ [...snap.keys()].forEach(k=>{if(!seen.has(k)){ops.push({t:'del',id:k});snap.delete(k);collOf.delete(k);META.delete(k)}});
+ return ops}
+function push(ops){pend++;setSync();chain=chain.then(async()=>{
+  const ins=ops.filter(o=>o.t==='ins').map(o=>({id:o.id,coll:o.coll,data:o.data}));
+  for(let i=0;i<ins.length;i+=500){const {error}=await sb.from('items').upsert(ins.slice(i,i+500));if(error)throw error}
+  for(const o of ops.filter(o=>o.t==='upd')){const {error}=await sb.from('items').update({data:o.data}).eq('id',o.id);if(error)throw error}
+  const dl=ops.filter(o=>o.t==='del').map(o=>o.id);
+  for(let i=0;i<dl.length;i+=200){const {error}=await sb.from('items').delete().in('id',dl.slice(i,i+200));if(error)throw error}
+ }).catch(e=>{console.error(e);syncErr=true;toast(navigator.onLine?'حصلت مشكلة في الحفظ — بحمّل آخر نسخة':'مفيش نت — التعديل ماتحفظش');setTimeout(refresh,1500)}).finally(()=>{pend--;setSync()})}
+async function pull(){const out=[];for(let f=0;;f+=1000){const {data,error}=await sb.from('items').select('id,coll,data,created_by_name,created_at').order('created_at').order('id').range(f,f+999);if(error)throw error;out.push(...data);if(data.length<1000)break}return out}
+function ingest(s,r){if(!r||!okId(r.id))return;const d=clean(r.data&&typeof r.data==='object'?r.data:{});
+ META.set(r.id,{by:cs(r.created_by_name||''),at:r.created_at});
+ if(r.coll==='meta'){if(r.id==='invNo')s.invNo=Math.max(1,+d.n||1);snap.set(r.id,stable(d));collOf.set(r.id,'meta');return}
+ if(!SYNC.includes(r.coll))return;const j=stable(d);if(snap.get(r.id)===j&&collOf.get(r.id)===r.coll)return;
+ snap.set(r.id,j);collOf.set(r.id,r.coll);const o=Object.assign({},d,{id:r.id});const a=s[r.coll];const ix=a.findIndex(x=>x.id===r.id);if(ix>=0)a[ix]=o;else a.push(o)}
+function buildS(rows){const s=blank();SYNC.forEach(k=>s[k]=[]);snap=new Map();collOf=new Map();META=new Map();rows.forEach(r=>ingest(s,r));s.inv=loadInv();return s}
+async function refresh(){if(!ME)return;try{const rows=await pull();S=buildS(rows);syncErr=false;render()}catch(e){console.error(e);syncErr=true}setSync()}
+function live(){if(chan)sb.removeChannel(chan);
+ chan=sb.channel('og-items').on('postgres_changes',{event:'*',schema:'public',table:'items'},p=>{
+  if(p.eventType==='DELETE'){const i=p.old&&p.old.id;const k=collOf.get(i);if(k&&k!=='meta'&&S[k])S[k]=S[k].filter(x=>x.id!==i);snap.delete(i);collOf.delete(i);META.delete(i)}
+  else ingest(S,p.new);
+  later()}).subscribe(st=>{rtOk=st==='SUBSCRIBED';if(rtOk){if(subOnce)refresh();subOnce=true}setSync()})}
+let rq=0;function later(){if(rq)return;rq=requestAnimationFrame(()=>{rq=0;const a=document.activeElement;if(a&&a.closest&&a.closest('#svcL,#cliT')){setTimeout(later,700);return}render()})}
+function setSync(){const d=$('sdot');if(!d)return;const st=(syncErr||(ME&&!rtOk))?'err':pend>0?'busy':'ok';d.className='dot '+st;d.title=st==='ok'?'متزامن':st==='busy'?'بيحفظ…':'مش متصل — هيحاول تاني'}
+addEventListener('online',()=>{if(ME)refresh()});
+
+/* ======== الدخول والمستخدمين ======== */
+const normU=s=>(s||'').trim().toLowerCase();const okU=u=>/^[a-z0-9._-]{3,30}$/.test(u);const u2e=u=>u+'@'+USER_DOMAIN;
+function authMsg(t){$('authMsg').textContent=t||''}
+function showAuth(mode,msg){document.body.classList.add('locked');$('auth').hidden=false;$('loginF').hidden=mode!=='login';$('setupF').hidden=mode!=='setup';
+ $('authLead').textContent=mode==='setup'?'أول مرة: اعمل حساب المدير (إنت)':mode==='login'?'سجّل دخولك':(msg?'مش قادر أوصل لقاعدة البيانات':'جاري التحميل…');$('retryBtn').hidden=!!mode||!msg;authMsg(msg);if(mode==='login')setTimeout(()=>$('lg_u').focus(),50)}
+function busy(b){['lgBtn','suBtn'].forEach(i=>$(i).disabled=b)}
+function errAr(e){const m=String(e&&e.message||e||'');
+ if(/already registered|already exists|user_already_exists/i.test(m))return'اسم المستخدم ده موجود قبل كده — اختار اسم تاني';
+ if(/Invalid login credentials/i.test(m))return'اسم المستخدم أو كلمة السر غلط';
+ if(/password/i.test(m)&&/(least|short|weak|characters)/i.test(m))return'كلمة السر ضعيفة — خليها 6 حروف أو أكتر';
+ if(/email/i.test(m)&&/invalid/i.test(m))return'اسم المستخدم مش مقبول — استخدم حروف إنجليزي وأرقام بس';
+ if(/rate limit|too many/i.test(m))return'محاولات كتير — استنى دقيقة وجرب تاني';
+ if(/signups? not allowed|disabled/i.test(m))return'إضافة مستخدمين مقفولة من إعدادات Supabase';
+ if(/fetch|network|load failed/i.test(m))return'مش قادر أوصل للسيرفر — افتح السيستم من اللينك (مش من معاينة الملف) واتأكد من النت';
+ return m}
+async function boot(){
+ if(!window.supabase){showAuth('','مش قادر أوصل للسيرفر — افتح السيستم من اللينك (مش من معاينة الملف) واتأكد من النت');return}
+ sb=supabase.createClient(SB_URL,SB_KEY,{auth:{persistSession:true,autoRefreshToken:true,storageKey:'og-auth'}});
+ sb.auth.onAuthStateChange(ev=>{if(ev==='SIGNED_OUT'&&ME)location.reload()});
+ try{const {data:{session}}=await sb.auth.getSession();if(session)return enter(session.user);
+  const r=await sb.rpc('setup_needed');if(r.error)throw r.error;showAuth(r.data===true?'setup':'login')}
+ catch(e){console.error(e);showAuth('',errAr(e))}}
+async function enter(user){
+ try{const {data:m,error}=await sb.from('members').select('user_id,username,name,role').eq('user_id',user.id).maybeSingle();if(error)throw error;
+  if(!m){await sb.auth.signOut();return showAuth('login','الحساب ده مش متفعّل في السيستم — كلّم المدير')}
+  ME={id:user.id,name:cs(m.name),u:m.username,admin:m.role==='admin'};
+  $('meName').textContent=ME.name;$('usersBtn').textContent=ME.admin?'المستخدمين':'حسابي';$('impBtn').hidden=!ME.admin;
+  $('authLead').textContent='بحمّل البيانات…';$('loginF').hidden=$('setupF').hidden=true;
+  const rows=await pull();S=buildS(rows);
+  document.body.classList.remove('locked');$('auth').hidden=true;render();
+  const {data:{session}}=await sb.auth.getSession();if(session)try{sb.realtime.setAuth(session.access_token)}catch(e){}
+  live();if(!rows.length&&ME.admin){S.svcs=blank().svcs;save()}
+  checkOld();setSync()}
+ catch(e){console.error(e);ME=null;showAuth('login',errAr(e))}}
+async function doLogin(){const u=normU($('lg_u').value),p=$('lg_p').value;if(!u||!p)return authMsg('اكتب اسم المستخدم وكلمة السر');busy(true);authMsg('');
+ const {data,error}=await sb.auth.signInWithPassword({email:u2e(u),password:p});busy(false);
+ if(error)return authMsg(errAr(error));$('lg_p').value='';enter(data.user)}
+async function doSetup(){const n=v('su_n'),u=normU($('su_u').value),p=$('su_p').value,p2=$('su_p2').value;
+ if(!n)return authMsg('اكتب اسمك');if(!okU(u))return authMsg('اسم المستخدم: حروف إنجليزي صغيرة وأرقام بس (3 حروف على الأقل)');
+ if(p.length<6)return authMsg('كلمة السر 6 حروف على الأقل');if(p!==p2)return authMsg('كلمتين السر مش زي بعض');
+ busy(true);authMsg('');const {data,error}=await sb.auth.signUp({email:u2e(u),password:p,options:{data:{name:n}}});
+ if(error){busy(false);return authMsg(errAr(error))}
+ if(!data.session){busy(false);return authMsg('الحساب اتعمل بس محتاج تفعيل — لازم «Confirm email» يتقفل في Supabase')}
+ const r=await sb.rpc('claim_admin',{p_username:u,p_name:n});busy(false);
+ if(r.error||r.data!==true){await sb.auth.signOut();showAuth('login','فيه مدير متسجل بالفعل — ادخل بحسابك');return}
+ clr('su_p','su_p2');enter(data.user)}
+async function logout(){try{await sb.auth.signOut()}catch(e){}location.reload()}
+async function loadUsers(){if(!ME)return;$('myInfo').innerHTML=`إنت داخل باسم <b style="color:var(--tx)">${ME.name}</b> · اسم المستخدم <b style="color:var(--tx);font-family:Poppins">${ME.u}</b>${ME.admin?' · <span class="pill or">مدير</span>':''}`;
+ $('admAdd').hidden=$('admList').hidden=!ME.admin;if(!ME.admin)return;$('usL').innerHTML='<div class="empty">بحمّل…</div>';
+ const {data,error}=await sb.from('members').select('user_id,username,name,role,created_at').order('created_at');
+ if(error){$('usL').innerHTML=`<div class="empty">${cs(errAr(error))}</div>`;return}
+ $('usL').innerHTML=data.map(m=>{const me=m.user_id===ME.id,ad=m.role==='admin';return`<div class="li"><div><b>${cs(m.name)}</b> ${ad?'<span class="pill or">مدير</span>':''} ${me?'<span class="pill ok">إنت</span>':''}<div class="sub" style="font-family:Poppins;direction:ltr;text-align:right">${cs(m.username)}</div></div>${me?'':`<div class="row"><button class="g s" onclick="setRole('${m.user_id}','${ad?'user':'admin'}')">${ad?'شيل الإدارة':'خليه مدير'}</button><button class="d s" onclick="rmUser('${m.user_id}')">شيله</button></div>`}</div>`}).join('')||'<div class="empty">مفيش مستخدمين</div>'}
+async function addUser(){if(!ME||!ME.admin)return;const n=v('us_n'),u=normU($('us_u').value),p=$('us_p').value,role=$('us_r').value;
+ if(!n)return toast('اكتب الاسم');if(!okU(u))return toast('اسم المستخدم: حروف إنجليزي صغيرة وأرقام بس (3 حروف على الأقل)');if(p.length<6)return toast('كلمة السر 6 حروف على الأقل');
+ $('usBtn').disabled=true;try{
+  const tmp=supabase.createClient(SB_URL,SB_KEY,{auth:{persistSession:false,autoRefreshToken:false,detectSessionInUrl:false,storageKey:'og-tmp-'+id()}});
+  const {data,error}=await tmp.auth.signUp({email:u2e(u),password:p,options:{data:{name:n}}});if(error)throw error;
+  const uid=data.user&&data.user.id;if(!uid||!data.session)throw new Error(data.user?'محتاج تقفل «Confirm email» في Supabase':'مقدرتش أعمل الحساب');
+  const r=await sb.from('members').insert({user_id:uid,username:u,name:n,role});try{await tmp.auth.signOut({scope:'local'})}catch(e){}
+  if(r.error)throw(r.error.code==='23505'?new Error('اسم المستخدم ده موجود قبل كده — اختار اسم تاني'):r.error);
+  clr('us_n','us_u','us_p');$('us_r').value='user';toast('المستخدم اتضاف ✓ — ابعتله اسم المستخدم وكلمة السر');loadUsers()}
+ catch(e){console.error(e);toast(errAr(e))}finally{$('usBtn').disabled=false}}
+async function rmUser(uid){if(!confirm('تشيل المستخدم ده؟ مش هيقدر يدخل السيستم تاني (البيانات اللي ضافها هتفضل).'))return;const {error}=await sb.from('members').delete().eq('user_id',uid);toast(error?errAr(error):'اتشال ✓');loadUsers()}
+async function setRole(uid,role){const {error}=await sb.from('members').update({role}).eq('user_id',uid);toast(error?errAr(error):'اتعدلت الصلاحية ✓');loadUsers()}
+async function chPass(){const p=$('my_p').value,p2=$('my_p2').value;if(p.length<6)return toast('كلمة السر 6 حروف على الأقل');if(p!==p2)return toast('كلمتين السر مش زي بعض');
+ const {error}=await sb.auth.updateUser({password:p});if(error)return toast(errAr(error));clr('my_p','my_p2');toast('كلمة السر اتغيرت ✓')}
+/* البيانات القديمة اللي على الجهاز */
+function oldLocal(){try{return JSON.parse(localStorage.getItem(KEY)||'null')}catch(e){return null}}
+function oldCount(o){return o?SYNC.filter(k=>k!=='svcs').reduce((n,k)=>n+(Array.isArray(o[k])?o[k].length:0),0):0}
+function checkOld(){let moved=false;try{moved=localStorage.getItem(KEY+'_moved')==='1'}catch(e){}const n=oldCount(oldLocal());$('oldN').textContent=n;$('oldBox').hidden=!n||moved}
+function hideOld(){try{localStorage.setItem(KEY+'_moved','1')}catch(e){}$('oldBox').hidden=true}
+function moveOld(){const o=clean(oldLocal()||{});let added=0;
+ SYNC.forEach(k=>{if(!Array.isArray(o[k]))return;o[k].forEach(x=>{if(!x||typeof x!=='object')return;
+  if(k==='svcs'){if(S.svcs.some(s=>s.n===x.n))return}else if(okId(x.id)&&S[k].some(y=>y.id===x.id))return;
+  const it=Object.assign({},x);if(!okId(it.id))it.id=id();if(k==='clients'&&!Array.isArray(it.del))it.del=[];S[k].push(it);added++})});
+ if(+o.invNo>S.invNo)S.invNo=+o.invNo;save();hideOld();toast('اترفع '+added+' عنصر ✓')}
+
 // ---------- actions ----------
 function addIncome(){if(!num('in_a'))return toast('اكتب المبلغ');S.income.push({id:id(),w:+v('in_w'),d:v('in_d'),c:v('in_c'),s:v('in_s'),by:v('in_by'),due:v('in_due'),a:num('in_a')});clr('in_c','in_s','in_by','in_due','in_a');save();toast('اتسجل ✓')}
 function addClient(){if(!v('c_n'))return toast('اكتب اسم العميل');const today=new Date().toISOString().slice(0,10);
@@ -248,35 +436,37 @@ function addClient(){if(!v('c_n'))return toast('اكتب اسم العميل');c
 function addDisc(){const c=v('ds_c');if(!c||!num('ds_p'))return toast('اختار العميل والنسبة');S.discs.push({id:id(),c,p:Math.min(100,num('ds_p')),r:v('ds_r')});clr('ds_p','ds_r');save();toast('الخصم اتضاف ✓')}
 function clientDisc(c){return Math.min(100,sum(S.discs.filter(d=>d.c===c.id),d=>d.p))}
 function clientNet(c){return c.t*(1-clientDisc(c)/100)}
-function endDate(c){if(!c.st)return'';const d=new Date(c.st);d.setMonth(d.getMonth()+(c.plan||1));return d.toISOString().slice(0,10)}
+function endDate(c){if(!c.st)return'';const d=new Date(c.st);if(isNaN(d))return'';d.setMonth(d.getMonth()+(c.plan||1));return d.toISOString().slice(0,10)}
 function daysTo(ds){if(!ds)return 9999;const a=new Date(ds+'T00:00:00'),b=new Date(new Date().toISOString().slice(0,10)+'T00:00:00');return Math.round((a-b)/864e5)}
 function addPay(done){const c=v('p_c');if(!c||!num('p_a'))return toast('اختار العميل والمبلغ');S.pays.push({id:id(),c,a:num('p_a'),w:+v('p_w'),due:v('p_due'),done});clr('p_a','p_due');save();toast(done?'اتحصّلت ✓':'اتجدولت ✓')}
 function payDone(i){const p=S.pays.find(x=>x.id===i);if(p){p.done=true;p.w=curW;save();toast('اتحصّلت ✓')}}
-function addDelivery(){const c=S.clients.find(x=>x.id===v('dv_c'));const t=v('dv_t').split('\n').map(s=>s.trim()).filter(Boolean);if(!c||!t.length)return toast('اختار العميل واكتب العناوين');c.del.push(...t.map(x=>({t:x,at:new Date().toISOString().slice(0,10)})));clr('dv_t');save();toast('اتسجل التسليم ✓')}
+function addDelivery(){const c=S.clients.find(x=>x.id===v('dv_c'));const t=v('dv_t').split('\n').map(s=>s.trim()).filter(Boolean);if(!c||!t.length)return toast('اختار العميل واكتب العناوين');if(!Array.isArray(c.del))c.del=[];c.del.push(...t.map(x=>({t:x,at:new Date().toISOString().slice(0,10),by:ME?ME.name:''})));clr('dv_t');save();toast('اتسجل التسليم ✓')}
 function addSched(){if(!v('sc_c'))return toast('اكتب العميل');const ws=$('sc_rep').checked?W:[+v('sc_w')];ws.forEach(w=>S.sched.push({id:id(),w,d:v('sc_d'),c:v('sc_c'),k:v('sc_k'),t:v('sc_t')}));clr('sc_c','sc_t');$('sc_rep').checked=false;save();toast('اتضاف للجدول ✓')}
 function addTeam(){if(!v('t_n'))return toast('اكتب الاسم');S.team.push({id:id(),n:v('t_n'),j:v('t_j'),m:v('t_m'),r:v('t_r'),s:num('t_s'),tp:num('t_tp')});clr('t_n','t_j','t_s','t_tp');save();toast('اتضاف ✓')}
 function addTask(){if(!v('k_e')||!v('k_t'))return toast('اختار الموظف واكتب المهمة');S.tasks.push({id:id(),e:v('k_e'),t:v('k_t'),d:v('k_d'),done:false});clr('k_t','k_d');save();toast('المهمة اتسجلت ✓')}
-function togTask(i){const k=S.tasks.find(x=>x.id===i);k.done=!k.done;save()}
+function togTask(i){const k=S.tasks.find(x=>x.id===i);if(!k)return;k.done=!k.done;save()}
 function addWithdraw(){if(!v('w_e')||!num('w_a'))return toast('اختار الموظف والمبلغ');S.wd.push({id:id(),e:v('w_e'),a:num('w_a'),w:curW,at:new Date().toISOString().slice(0,10)});clr('w_a');save();toast('اتسجل ✓')}
 function addExp(){if(!num('e_a'))return toast('اكتب المبلغ');S.exp.push({id:id(),t:v('e_t'),a:num('e_a'),w:+v('e_w'),k:v('e_k')});clr('e_t','e_a');save();toast('اتسجل ✓')}
 function addDebt(){if(!num('b_a'))return toast('اكتب المبلغ');S.debts.push({id:id(),n:v('b_n'),a:num('b_a'),r:v('b_r'),paid:false});clr('b_n','b_a','b_r');save();toast('اتسجلت ✓')}
-function payDebt(i){const d=S.debts.find(x=>x.id===i);d.paid=!d.paid;save()}
+function payDebt(i){const d=S.debts.find(x=>x.id===i);if(!d)return;d.paid=!d.paid;save()}
 function addShort(){if(!v('sh_t'))return;S.shorts.push({id:id(),t:v('sh_t'),a:num('sh_a'),done:false});clr('sh_t','sh_a');save()}
-function buyShort(i){const s=S.shorts.find(x=>x.id===i);if(!s.done){s.done=true;if(s.a)S.exp.push({id:id(),t:s.t,a:s.a,w:curW,k:'نواقص المكتب'})}save();toast('اتشترى واتسجل مصروف ✓')}
+function buyShort(i){const s=S.shorts.find(x=>x.id===i);if(!s)return;if(!s.done){s.done=true;if(s.a)S.exp.push({id:id(),t:s.t,a:s.a,w:curW,k:'نواقص المكتب'})}save();toast('اتشترى واتسجل مصروف ✓')}
 function addSvc(){if(!v('sv_n'))return;S.svcs.push({id:id(),n:v('sv_n'),p:num('sv_p')});clr('sv_n','sv_p');save()}
 function renew(i){const c=S.clients.find(x=>x.id===i);if(!c)return;c.st=endDate(c);S.pays.push({id:id(),c:c.id,a:clientNet(c),w:curW,due:c.st,done:false,note:'تجديد الاشتراك'});save();toast('اتجدد واتسجلت دفعة التجديد ✓')}
-function delDel(c,i){const x=S.clients.find(k=>k.id===c);if(x){x.del.splice(i,1);save();toast('اتمسح')}}
+function delDel(c,i){const x=S.clients.find(k=>k.id===c);if(x&&Array.isArray(x.del)){x.del.splice(i,1);save();toast('اتمسح')}}
+function setDay(cid,d){const c=S.clients.find(k=>k.id===cid);if(c){c.day=cs(d);save()}}
+function setSvcP(sid,p){const s=S.svcs.find(k=>k.id===sid);if(s){s.p=+p||0;save()}}
 function snapHome(){if(!window.html2canvas)return toast('محتاج نت لعمل الصورة');toast('بجهز الصورة…');const el=$('s-home');html2canvas(el,{scale:2,backgroundColor:'#0b0b0d',windowWidth:el.scrollWidth}).then(c=>{const a=document.createElement('a');a.download='OFFGRID-week'+curW+'-'+new Date().toISOString().slice(0,10)+'.png';a.href=c.toDataURL('image/png');a.click()})}
-function addInvItem(){const s=S.svcs[+v('iv_s')];if(!s)return;S.inv.push({n:s.n,p:s.p,q:num('iv_q')||1});save()}
+function addInvItem(){const s=S.svcs.find(x=>x.id===$('iv_s').value);if(!s)return;S.inv.push({n:s.n,p:s.p,q:num('iv_q')||1});save()}
 // ---------- calc ----------
-function clientCalc(c){const paid=sum(S.pays.filter(p=>p.c===c.id&&p.done),p=>p.a);const net=clientNet(c);return{paid,net,left:Math.max(0,net-paid),dl:c.del.length,rl:Math.max(0,c.r-c.del.length)}}
+function clientCalc(c){const dl=Array.isArray(c.del)?c.del.length:0;const paid=sum(S.pays.filter(p=>p.c===c.id&&p.done),p=>p.a);const net=clientNet(c);return{paid,net,left:Math.max(0,net-paid),dl,rl:Math.max(0,c.r-dl)}}
 function teamCalc(m){const done=S.tasks.filter(k=>k.e===m.id&&k.done).length;const due=m.m==='m'?m.s:done*m.tp;const got=sum(S.wd.filter(x=>x.e===m.id),x=>x.a);return{done,due,got,left:due-got}}
 function totals(w){const clientPaid=sum(S.pays.filter(p=>p.done),p=>p.a);const inc=sum(S.income,x=>x.a);
  const collected=inc+clientPaid;const market=sum(S.clients,c=>clientCalc(c).left);
  const wkInc=sum(S.income.filter(x=>x.w===w),x=>x.a)+sum(S.pays.filter(p=>p.done&&p.w===w),p=>p.a);
  const exp=sum(S.exp,x=>x.a);const sal=sum(S.wd,x=>x.a);const debts=sum(S.debts.filter(d=>!d.paid),d=>d.a);
  const out=exp+sal;const profit=collected-out;
- const agreed=sum(S.clients,c=>clientNet(c));const reelsReq=sum(S.clients,c=>c.r);const reelsDone=sum(S.clients,c=>Math.min(c.r,c.del.length));
+ const agreed=sum(S.clients,c=>clientNet(c));const reelsReq=sum(S.clients,c=>c.r);const reelsDone=sum(S.clients,c=>Math.min(c.r,clientCalc(c).dl));
  const tasksAll=S.tasks.length,tasksDone=S.tasks.filter(k=>k.done).length;
  return{collected,market,wkInc,out,debts,profit,agreed,clientPaid,reelsReq,reelsDone,tasksAll,tasksDone,exp,sal}}
 // ---------- render ----------
@@ -300,30 +490,30 @@ function render(){
  $('weeks').innerHTML=W.map((w,i)=>`<div><b>${Math.round(wk[i]).toLocaleString('en-US')}</b><span style="height:${wk[i]/mx*100}%;${w===curW?'':'opacity:.45'}"></span>أسبوع ${w}</div>`).join('');
  $('wkClients').innerHTML=S.clients.map(c=>{const x=clientCalc(c);return`<tr><td>${c.n}</td><td>${c.day||'-'}</td><td class="n">${x.dl}/${c.r}</td><td class="n">${fm(x.net)}</td><td class="n">${fm(x.paid)}</td><td class="n" style="color:${x.left?'var(--warn)':'var(--ok)'}">${fm(x.left)}</td></tr>`}).join('')||`<tr><td colspan="6" class="empty">لسه مفيش عملاء</td></tr>`;
  $('wkSched').innerHTML=schedHtml(curW);
- $('incT').innerHTML=S.income.slice().reverse().map(x=>`<tr><td>${x.w}</td><td>${x.d}</td><td>${x.c||'-'}</td><td>${x.s||'-'}</td><td>${x.by||'-'}</td><td class="n">${x.due||'-'}</td><td class="n">${fm(x.a)}</td><td><button class="d s" onclick="del('income','${x.id}')">✕</button></td></tr>`).join('')||`<tr><td colspan="8" class="empty">مفيش دخل متسجل</td></tr>`;
- $('cliT').innerHTML=S.clients.map(c=>{const x=clientCalc(c);const p=pct(x.paid,x.net);const ds=clientDisc(c);return`<tr><td><b>${c.n}</b><div><select style="padding:4px 8px;font-size:12px;width:auto;margin-top:4px" onchange="S.clients.find(k=>k.id==='${c.id}').day=this.value;save()">${DAYS.map(d=>`<option ${d===c.day?'selected':''}>${d}</option>`).join('')}</select></div></td><td><span class="pill or">${(c.plan||1)==3?'3 شهور':'شهر'}</span><div class="sub">لحد ${endDate(c)||'-'}</div>${ds?`<div class="sub" style="color:var(--ok)">خصم ${ds}%</div>`:''}</td><td class="n">${c.p?`<a href="tel:${c.p}" style="color:var(--or2)">${c.p}</a>`:'-'}</td><td><span class="pill ${x.rl?'or':'ok'}">${x.dl}/${c.r}</span></td><td style="min-width:110px"><div class="bar"><span style="width:${p}%"></span></div><div class="sub">${p}%</div></td><td class="n">${fm(x.left)}</td><td><button class="d s" onclick="if(confirm('تمسح العميل؟'))del('clients','${c.id}')">✕</button></td></tr>`}).join('')||`<tr><td colspan="7" class="empty">ضيف أول عميل</td></tr>`;
+ $('incT').innerHTML=S.income.slice().reverse().map(x=>`<tr><td>${x.w}</td><td>${x.d}</td><td>${x.c||'-'}${byl(x)}</td><td>${x.s||'-'}</td><td>${x.by||'-'}</td><td class="n">${x.due||'-'}</td><td class="n">${fm(x.a)}</td><td><button class="d s" onclick="del('income','${x.id}')">✕</button></td></tr>`).join('')||`<tr><td colspan="8" class="empty">مفيش دخل متسجل</td></tr>`;
+ $('cliT').innerHTML=S.clients.map(c=>{const x=clientCalc(c);const p=pct(x.paid,x.net);const ds=clientDisc(c);return`<tr><td><b>${c.n}</b>${byl(c)}<div><select style="padding:4px 8px;font-size:12px;width:auto;margin-top:4px" onchange="setDay('${c.id}',this.value)">${DAYS.map(d=>`<option ${d===c.day?'selected':''}>${d}</option>`).join('')}</select></div></td><td><span class="pill or">${(c.plan||1)==3?'3 شهور':'شهر'}</span><div class="sub">لحد ${endDate(c)||'-'}</div>${ds?`<div class="sub" style="color:var(--ok)">خصم ${ds}%</div>`:''}</td><td class="n">${c.p?`<a href="tel:${c.p}" style="color:var(--or2)">${c.p}</a>`:'-'}</td><td><span class="pill ${x.rl?'or':'ok'}">${x.dl}/${c.r}</span></td><td style="min-width:110px"><div class="bar"><span style="width:${p}%"></span></div><div class="sub">${p}%</div></td><td class="n">${fm(x.left)}</td><td><button class="d s" onclick="if(confirm('تمسح العميل؟'))del('clients','${c.id}')">✕</button></td></tr>`}).join('')||`<tr><td colspan="7" class="empty">ضيف أول عميل</td></tr>`;
  const cn=i=>(S.clients.find(c=>c.id===i)||{}).n||'—';
- const up=S.pays.filter(p=>!p.done);$('payL').innerHTML=up.map(p=>`<div class="row" style="justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--line)"><div><b>${cn(p.c)}</b><div class="sub">${p.note?p.note+' · ':''}${p.due?p.due:'أسبوع '+p.w}${p.due&&daysTo(p.due)<0?' <span class="pill bad">متأخرة</span>':''}</div></div><div class="row"><span class="n" style="font-family:Poppins">${fm(p.a)}</span><button class="s" onclick="payDone('${p.id}')">اتحصلت</button><button class="d s" onclick="del('pays','${p.id}')">✕</button></div></div>`).join('')||'<div class="empty">مفيش دفعات منتظرة</div>';
+ const up=S.pays.filter(p=>!p.done);$('payL').innerHTML=up.map(p=>`<div class="row" style="justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--line)"><div><b>${cn(p.c)}</b><div class="sub">${p.note?p.note+' · ':''}${p.due?p.due:'أسبوع '+p.w}${p.due&&daysTo(p.due)<0?' <span class="pill bad">متأخرة</span>':''}</div>${byl(p)}</div><div class="row"><span class="n" style="font-family:Poppins">${fm(p.a)}</span><button class="s" onclick="payDone('${p.id}')">اتحصلت</button><button class="d s" onclick="del('pays','${p.id}')">✕</button></div></div>`).join('')||'<div class="empty">مفيش دفعات منتظرة</div>';
  $('schedL').innerHTML=schedHtml(scW,true);
- $('discL').innerHTML=S.discs.map(d=>`<div class="li"><div><b>${cn(d.c)}</b><div class="sub">${d.r||''}</div></div><div class="row"><span class="pill ok">${d.p}%</span><button class="d s" onclick="del('discs','${d.id}')">✕</button></div></div>`).join('')||'<div class="empty">مفيش خصومات</div>';
- const dn=S.pays.filter(p=>p.done);$('paidL').innerHTML=dn.slice().reverse().map(p=>`<div class="li"><div><b>${cn(p.c)}</b><div class="sub">أسبوع ${p.w}</div></div><div class="row"><span style="font-family:Poppins">${fm(p.a)}</span><button class="d s" onclick="del('pays','${p.id}')">✕</button></div></div>`).join('')||'<div class="empty">مفيش دفعات</div>';
- const dl=[];S.clients.forEach(c=>c.del.forEach((d,i)=>dl.push({c,d,i})));$('delL').innerHTML=dl.reverse().map(o=>`<div class="li"><div><b>${o.d.t}</b><div class="sub">${o.c.n} · ${o.d.at}</div></div><button class="d s" onclick="delDel('${o.c.id}',${o.i})">✕</button></div>`).join('')||'<div class="empty">مفيش تسليمات</div>';
+ $('discL').innerHTML=S.discs.map(d=>`<div class="li"><div><b>${cn(d.c)}</b><div class="sub">${d.r||''}</div>${byl(d)}</div><div class="row"><span class="pill ok">${d.p}%</span><button class="d s" onclick="del('discs','${d.id}')">✕</button></div></div>`).join('')||'<div class="empty">مفيش خصومات</div>';
+ const dn=S.pays.filter(p=>p.done);$('paidL').innerHTML=dn.slice().reverse().map(p=>`<div class="li"><div><b>${cn(p.c)}</b><div class="sub">أسبوع ${p.w}</div>${byl(p)}</div><div class="row"><span style="font-family:Poppins">${fm(p.a)}</span><button class="d s" onclick="del('pays','${p.id}')">✕</button></div></div>`).join('')||'<div class="empty">مفيش دفعات</div>';
+ const dl=[];S.clients.forEach(c=>(Array.isArray(c.del)?c.del:[]).forEach((d,i)=>dl.push({c,d,i})));$('delL').innerHTML=dl.reverse().map(o=>`<div class="li"><div><b>${o.d.t}</b><div class="sub">${o.c.n} · ${o.d.at}</div>${o.d.by?`<div><span class="by">${o.d.by}</span></div>`:''}</div><button class="d s" onclick="delDel('${o.c.id}',${o.i})">✕</button></div>`).join('')||'<div class="empty">مفيش تسليمات</div>';
  const tn=i=>(S.team.find(m=>m.id===i)||{}).n||'—';
- $('taskL').innerHTML=S.tasks.slice().reverse().map(k=>`<div class="row" style="justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--line)"><label class="chk" style="color:var(--tx)"><input type="checkbox" ${k.done?'checked':''} onchange="togTask('${k.id}')"><span style="${k.done?'text-decoration:line-through;color:var(--mu)':''}">${k.t}</span></label><div class="row"><span class="pill">${tn(k.e)}</span>${k.d?`<span class="pill ${!k.done&&k.d<new Date().toISOString().slice(0,10)?'bad':''}">${k.d}</span>`:''}<button class="d s" onclick="del('tasks','${k.id}')">✕</button></div></div>`).join('')||'<div class="empty">مفيش مهام</div>';
- $('wdL').innerHTML=S.wd.slice().reverse().map(x=>`<div class="li"><div><b>${tn(x.e)}</b><div class="sub">${x.at||''}</div></div><div class="row"><span style="font-family:Poppins">${fm(x.a)}</span><button class="d s" onclick="del('wd','${x.id}')">✕</button></div></div>`).join('')||'<div class="empty">مفيش صرف</div>';
- $('teamT').innerHTML=S.team.map(m=>{const x=teamCalc(m);return`<tr><td><b>${m.n}</b> ${m.r==='o'?'👑':''}<div class="sub">${m.j||''}</div></td><td>${m.m==='m'?'شهري':'بالتاسك'}</td><td class="n">${x.done}</td><td class="n">${fm(x.due)}</td><td class="n">${fm(x.got)}</td><td class="n" style="color:${x.left>0?'var(--warn)':'var(--ok)'}">${fm(x.left)}</td><td><button class="d s" onclick="if(confirm('تمسح العضو؟'))del('team','${m.id}')">✕</button></td></tr>`}).join('')||`<tr><td colspan="7" class="empty">ضيف الفريق</td></tr>`;
- $('expT').innerHTML=S.exp.slice().reverse().map(x=>`<tr><td>${x.w}</td><td>${x.t||'-'}</td><td><span class="pill">${x.k}</span></td><td class="n">${fm(x.a)}</td><td><button class="d s" onclick="del('exp','${x.id}')">✕</button></td></tr>`).join('')||`<tr><td colspan="5" class="empty">مفيش مصروفات</td></tr>`;
- $('debtL').innerHTML=S.debts.map(d=>`<div class="row" style="justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--line)"><div><b>${d.n||'—'}</b><div class="sub">${d.r||''}</div></div><div class="row"><span style="font-family:Poppins">${fm(d.a)}</span><button class="s ${d.paid?'g':''}" onclick="payDebt('${d.id}')">${d.paid?'اتدفعت ✓':'دفعناها'}</button><button class="d s" onclick="del('debts','${d.id}')">✕</button></div></div>`).join('')||'<div class="empty">مفيش مديونيات</div>';
- $('shortL').innerHTML=S.shorts.map(s=>`<div class="row" style="justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--line)"><span style="${s.done?'text-decoration:line-through;color:var(--mu)':''}">${s.t}</span><div class="row"><span style="font-family:Poppins">${fm(s.a)}</span>${s.done?'':`<button class="s" onclick="buyShort('${s.id}')">اتشترى</button>`}<button class="d s" onclick="del('shorts','${s.id}')">✕</button></div></div>`).join('')||'<div class="empty">مفيش نواقص</div>';
- $('svcL').innerHTML=S.svcs.map((s,i)=>`<div class="row" style="justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--line)"><span>${s.n}</span><div class="row"><input type="number" value="${s.p}" style="width:110px;padding:6px 10px" onchange="S.svcs[${i}].p=+this.value;save()"><button class="d s" onclick="S.svcs.splice(${i},1);save()">✕</button></div></div>`).join('');
- $('iv_s').innerHTML=S.svcs.map((s,i)=>`<option value="${i}">${s.n} — ${s.p}</option>`).join('');
+ $('taskL').innerHTML=S.tasks.slice().reverse().map(k=>`<div class="row" style="justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--line)"><label class="chk" style="color:var(--tx)"><input type="checkbox" ${k.done?'checked':''} onchange="togTask('${k.id}')"><span style="${k.done?'text-decoration:line-through;color:var(--mu)':''}">${k.t}</span></label><div class="row"><span class="pill">${tn(k.e)}</span>${k.d?`<span class="pill ${!k.done&&k.d<new Date().toISOString().slice(0,10)?'bad':''}">${k.d}</span>`:''}${by(k)}<button class="d s" onclick="del('tasks','${k.id}')">✕</button></div></div>`).join('')||'<div class="empty">مفيش مهام</div>';
+ $('wdL').innerHTML=S.wd.slice().reverse().map(x=>`<div class="li"><div><b>${tn(x.e)}</b><div class="sub">${x.at||''}</div>${byl(x)}</div><div class="row"><span style="font-family:Poppins">${fm(x.a)}</span><button class="d s" onclick="del('wd','${x.id}')">✕</button></div></div>`).join('')||'<div class="empty">مفيش صرف</div>';
+ $('teamT').innerHTML=S.team.map(m=>{const x=teamCalc(m);return`<tr><td><b>${m.n}</b> ${m.r==='o'?'👑':''}<div class="sub">${m.j||''}</div>${byl(m)}</td><td>${m.m==='m'?'شهري':'بالتاسك'}</td><td class="n">${x.done}</td><td class="n">${fm(x.due)}</td><td class="n">${fm(x.got)}</td><td class="n" style="color:${x.left>0?'var(--warn)':'var(--ok)'}">${fm(x.left)}</td><td><button class="d s" onclick="if(confirm('تمسح العضو؟'))del('team','${m.id}')">✕</button></td></tr>`}).join('')||`<tr><td colspan="7" class="empty">ضيف الفريق</td></tr>`;
+ $('expT').innerHTML=S.exp.slice().reverse().map(x=>`<tr><td>${x.w}</td><td>${x.t||'-'}${byl(x)}</td><td><span class="pill">${x.k}</span></td><td class="n">${fm(x.a)}</td><td><button class="d s" onclick="del('exp','${x.id}')">✕</button></td></tr>`).join('')||`<tr><td colspan="5" class="empty">مفيش مصروفات</td></tr>`;
+ $('debtL').innerHTML=S.debts.map(d=>`<div class="row" style="justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--line)"><div><b>${d.n||'—'}</b><div class="sub">${d.r||''}</div>${byl(d)}</div><div class="row"><span style="font-family:Poppins">${fm(d.a)}</span><button class="s ${d.paid?'g':''}" onclick="payDebt('${d.id}')">${d.paid?'اتدفعت ✓':'دفعناها'}</button><button class="d s" onclick="del('debts','${d.id}')">✕</button></div></div>`).join('')||'<div class="empty">مفيش مديونيات</div>';
+ $('shortL').innerHTML=S.shorts.map(s=>`<div class="row" style="justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--line)"><div><span style="${s.done?'text-decoration:line-through;color:var(--mu)':''}">${s.t}</span>${byl(s)}</div><div class="row"><span style="font-family:Poppins">${fm(s.a)}</span>${s.done?'':`<button class="s" onclick="buyShort('${s.id}')">اتشترى</button>`}<button class="d s" onclick="del('shorts','${s.id}')">✕</button></div></div>`).join('')||'<div class="empty">مفيش نواقص</div>';
+ $('svcL').innerHTML=S.svcs.map(s=>`<div class="row" style="justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--line)"><div><span>${s.n}</span>${byl(s)}</div><div class="row"><input type="number" value="${+s.p||0}" style="width:110px;padding:6px 10px" onchange="setSvcP('${s.id}',this.value)"><button class="d s" onclick="del('svcs','${s.id}')">✕</button></div></div>`).join('');
+ const ivs=$('iv_s').value;$('iv_s').innerHTML=S.svcs.map(s=>`<option value="${s.id}">${s.n} — ${s.p}</option>`).join('');if(ivs&&S.svcs.some(s=>s.id===ivs))$('iv_s').value=ivs;
  $('clientList').innerHTML=S.clients.map(c=>`<option value="${c.n}">`).join('');$('svcList').innerHTML=S.svcs.map(s=>`<option value="${s.n}">`).join('');$('teamList').innerHTML=S.team.map(m=>`<option value="${m.n}">`).join('');
  opts('.clientSel',S.clients,c=>c.id,c=>c.n);opts('.teamSel',S.team,m=>m.id,m=>m.n);
  $('invL').innerHTML=S.inv.map((x,i)=>`<div class="li"><span>${x.n} × ${x.q}</span><div class="row"><span style="font-family:Poppins">${fm(x.p*x.q)}</span><button class="d s" onclick="S.inv.splice(${i},1);save()">✕</button></div></div>`).join('')||'<div class="empty">ضيف خدمات للفاتورة</div>';
- renderInv();}
+ renderInv();setSync();}
 function schedHtml(w,delBtn){
  return '<div class="days">'+DAYS.map(d=>{const cl=S.clients.filter(c=>c.day===d);const it=S.sched.filter(x=>x.w===w&&x.d===d);
-  return`<div class="day"><h4>${d}<span>${cl.length+it.length||''}</span></h4>${cl.map(c=>{const x=clientCalc(c);return`<div class="it cl"><div><b>${c.n}</b><div class="sub">ريلز ${x.dl}/${c.r}</div></div><span class="pill or">ثابت</span></div>`}).join('')}${it.map(x=>`<div class="it ${x.k==='x'?'x':''}"><div><b>${x.c}</b>${x.k==='x'?' <span class="pill bad">استثنائي</span>':''}${x.t?`<div class="sub">${x.t}</div>`:''}</div>${delBtn?`<button class="d s" onclick="del('sched','${x.id}')">✕</button>`:''}</div>`).join('')}${!cl.length&&!it.length?'<div class="sub" style="text-align:center;margin-top:18px">—</div>':''}</div>`}).join('')+'</div>'}
+  return`<div class="day"><h4>${d}<span>${cl.length+it.length||''}</span></h4>${cl.map(c=>{const x=clientCalc(c);return`<div class="it cl"><div><b>${c.n}</b><div class="sub">ريلز ${x.dl}/${c.r}</div></div><span class="pill or">ثابت</span></div>`}).join('')}${it.map(x=>`<div class="it ${x.k==='x'?'x':''}"><div><b>${x.c}</b>${x.k==='x'?' <span class="pill bad">استثنائي</span>':''}${x.t?`<div class="sub">${x.t}</div>`:''}${delBtn?byl(x):''}</div>${delBtn?`<button class="d s" onclick="del('sched','${x.id}')">✕</button>`:''}</div>`).join('')}${!cl.length&&!it.length?'<div class="sub" style="text-align:center;margin-top:18px">—</div>':''}</div>`}).join('')+'</div>'}
 function renderInv(){const sub=sum(S.inv,x=>x.p*x.q);const d=Math.max(0,Math.min(100,num('iv_d')));const tot=sub*(1-d/100);
  $('invBox').innerHTML=`<div class="ih"><div><div class="brand" style="color:#111">OFF<span>GRID</span></div><div style="color:#888;font-size:12px">Media Production Agency</div></div><div style="text-align:left;direction:ltr;font-size:12px;color:#555"><b style="font-size:16px;color:#111">#OG-${String(S.invNo).padStart(3,'0')}</b><br>${new Date().toLocaleDateString('en-GB')}</div></div>
  <div style="margin-bottom:10px;font-size:14px">مطلوب من: <b>${v('iv_c')||'عميل جديد'}</b></div>
@@ -331,10 +521,13 @@ function renderInv(){const sub=sum(S.inv,x=>x.p*x.q);const d=Math.max(0,Math.min
  <div style="margin-top:10px"><div class="tot"><span>قبل الخصم</span><b>${fm(sub)}</b></div><div class="tot"><span>الخصم (${d}%)</span><b>${fm(sub-tot)}</b></div><div class="tot f"><span>الإجمالي النهائي</span><span>${fm(tot)}</span></div></div>
  <div style="text-align:center;color:#999;font-size:12px;margin-top:14px">شكرًا لثقتك في OFFGRID</div>`}
 function downloadInv(){if(!window.html2canvas)return toast('محتاج نت لتحميل الصورة');html2canvas($('invBox'),{scale:2,backgroundColor:'#ffffff'}).then(c=>{const a=document.createElement('a');a.download=`OFFGRID-invoice-${S.invNo}.png`;a.href=c.toDataURL();a.click();S.invNo++;save()})}
-function exportData(){const b=new Blob([JSON.stringify(S,null,1)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='offgrid-backup-'+new Date().toISOString().slice(0,10)+'.json';a.click();toast('النسخة اتحفظت ✓')}
-function importData(inp){const f=inp.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{S=Object.assign(blank(),JSON.parse(r.result));save();toast('اترجعت البيانات ✓')}catch(e){toast('الملف مش سليم')}};r.readAsText(f);inp.value=''}
+function exportData(){const out={};SYNC.forEach(k=>out[k]=S[k]);out.invNo=S.invNo;const b=new Blob([JSON.stringify(out,null,1)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='offgrid-backup-'+new Date().toISOString().slice(0,10)+'.json';a.click();toast('النسخة اتحفظت ✓')}
+function importData(inp){const f=inp.files[0];inp.value='';if(!f||!ME||!ME.admin)return;const r=new FileReader();r.onload=()=>{try{const o=clean(JSON.parse(r.result));
+  if(!confirm('الاسترجاع هيمسح البيانات الحالية عند كل المستخدمين ويحط بيانات الملف مكانها. متأكد؟'))return;
+  const s=blank();SYNC.forEach(k=>s[k]=Array.isArray(o[k])?o[k].filter(x=>x&&typeof x==='object').map(x=>Object.assign({},x,{id:okId(x.id)?x.id:id()})):(k==='svcs'?s.svcs:[]));
+  s.clients.forEach(c=>{if(!Array.isArray(c.del))c.del=[]});s.invNo=Math.max(1,+o.invNo||1);s.inv=S.inv;S=s;save();toast('اترجعت البيانات ✓')}catch(e){toast('الملف مش سليم')}};r.readAsText(f)}
 $('nav').innerHTML=NAV.map(n=>`<button data-s="${n[0]}" class="${n[0]==='home'?'on':''}" onclick="go('${n[0]}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="${n[2]}"/></svg>${n[1]}</button>`).join('');
-wkOpts();render();
+wkOpts();render();boot();
 </script>
 </body>
 </html>
