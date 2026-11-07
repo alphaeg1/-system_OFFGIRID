@@ -90,11 +90,16 @@ body.sh #shade{opacity:1;pointer-events:auto}body.sh #sheet{transform:none}
 #toast.on{transform:translate(-50%,0)}
 #inst{display:none;margin-bottom:12px;background:linear-gradient(135deg,#1c2e55,#141c2e);border:1px solid #2c467c;border-radius:18px;padding:14px 16px;font-size:14.5px}
 #inst b{display:block;font-size:16px;margin-bottom:4px}
+#portal{display:none;min-height:100%;padding:calc(var(--st) + 14px) 16px calc(var(--sb) + 30px)}
+#portal .ph{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+#portal .hi{font-size:24px;font-weight:800;margin:6px 2px 2px}
+.ptab{display:flex;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:3px;margin-bottom:6px}.ptab button{flex:1;padding:9px;border-radius:9px;color:var(--mu);font-weight:700}.ptab button.on{background:var(--ac);color:#fff}
 </style></head><body>
 
 <div id="auth"><h1><span class="wm" style="font-size:46px">OFF<b>GRID</b></span></h1><p class="mu" style="margin-top:-6px">نظام إدارة الشغل والفلوس</p><p class="mu" id="alead">بحمّل…</p>
  <div id="aform" style="display:none;flex-direction:column;gap:10px"></div><div id="amsg"></div></div>
 
+<div id="portal"></div>
 <div id="app"><header><h2 id="ht"></h2><div id="sync"><i></i><span id="syt"></span></div></header>
  <main id="main"></main>
  <button id="fab" onclick="quickAdd()" aria-label="إضافة"><svg class="i" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button>
@@ -105,7 +110,7 @@ body.sh #shade{opacity:1;pointer-events:auto}body.sh #sheet{transform:none}
 'use strict';
 /* OFFGRID — أبلكيشن الآيفون
    كل جهاز بيحفظ عنده الأول (يشتغل من غير نت)، وأول ما يلقط نت بيرفع اللي اتسجل ويجيب اللي الأجهزة التانية ضافته */
-const SB_URL = 'https://inucitipqkixhcxrpufp.supabase.co', SB_KEY = 'sb_publishable_MtF1Nj_93rVB-ouSvuRi5w_dQOUzFIA', DOMAIN = 'offgrid.local', VER = '3.1';
+const SB_URL = 'https://inucitipqkixhcxrpufp.supabase.co', SB_KEY = 'sb_publishable_MtF1Nj_93rVB-ouSvuRi5w_dQOUzFIA', DOMAIN = 'offgrid.local', VER = '3.3';
 const $ = id => document.getElementById(id);
 const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const pad = n => String(n).padStart(2, '0');
@@ -207,6 +212,7 @@ function errAr(e) {
   if (/already registered|already exists|23505/i.test(m)) return 'اسم المستخدم ده موجود قبل كده';
   if (/password/i.test(m) && /(least|short|weak|characters)/i.test(m)) return 'كلمة السر 6 حروف على الأقل';
   if (/row-level|permission|not allowed/i.test(m)) return 'مش مسموح — دي للمدير بس';
+  if (/client_portal|Could not find the function|PGRST202/i.test(m)) return 'حسابات العملاء لسه متفعلتش — كلّم فريق OFFGRID';
   if (/fetch|network|load failed|Failed/i.test(m)) return 'مفيش نت دلوقتي';
   return m;
 }
@@ -262,7 +268,9 @@ async function pull(full) {
     LASTFULL = Date.now();
   }
 }
+let LCP = 0;
 async function sync(full) {
+  if (ME && ME.client) { if (!full && Date.now() - LCP < 25000) return; LCP = Date.now(); return clientPull(); }
   if (syncing || !SES || !navigator.onLine) { syncStatus(); return; }
   syncing = true; syncStatus();
   try { await flush(); await pull(full || Date.now() - LASTFULL > 180000); syncErr = ''; }
@@ -280,6 +288,7 @@ function syncStatus() {
 
 /* ---------- الحفظ على الجهاز ---------- */
 function saveRec(coll, id, data) {
+  if (ME && ME.client) return;
   const row = ROWS.get(id), prev = OUT.get(id);
   const o = { t: 'put', coll, data: clone(data), b: prev && prev.t === 'put' ? prev.b : (row && row.u ? clone(row.data) : null), u: prev && prev.t === 'put' ? prev.u : (row ? row.u : '') };
   OUT.set(id, o); IDB.put('out', id, o);
@@ -433,6 +442,7 @@ function openRec(id) {
   if (a && linked(s, r).some(x => x.s.flow === 'in')) h += '<div class="big"><div class="k"><div class="l">المتفق عليه' + (a.pct ? ' بعد خصم ' + fm(a.pct) + '%' : '') + '</div><div class="v num" style="font-size:20px">' + money(a.total) + '</div></div><div class="k"><div class="l">اتدفع</div><div class="v num ok" style="font-size:20px">' + money(a.paid) + '</div></div>' + (a.left ? '<div class="k w" style="background:var(--card);border-color:var(--line)"><div class="l">الباقي</div><div class="v num" style="font-size:22px;color:var(--warn)">' + money(a.left) + '</div></div>' : '') + '</div>';
   if (s.goal) { const need = +d[s.goal.field] || 0, got = recs(s.goal.from).filter(x => Object.values(x.data).indexOf(r.id) >= 0).length; if (need) h += '<div class="card"><div class="row" style="justify-content:space-between"><span>' + esc(s.goal.label) + '</span><b class="num">' + got + ' من ' + need + '</b></div><div class="prog"><i style="width:' + Math.min(100, got / need * 100) + '%"></i></div></div>'; }
   if (s.sub) { const e = subEnd(s, r); if (e) h += '<div class="card row" style="justify-content:space-between"><span>الاشتراك بيخلص ' + dshort(e) + '</span><button class="btn g" style="padding:8px 14px;font-size:15px" onclick="renew(\'' + id + '\')">تجديد</button></div>'; }
+  if (r.coll === 'clients' && ME.admin) h += accCard(r);
   linked(s, r).forEach(x => { if (!x.rs.length && x.s.hidden) return; h += '<div class="ttl">' + esc(x.s.n) + ' <button onclick="addLinked(\'' + x.s.k + '\',\'' + id + '\')">+ إضافة</button></div>' + (x.rs.length ? '<div class="list">' + x.rs.sort((p, q) => recDate(x.s, q) < recDate(x.s, p) ? -1 : 1).slice(0, 30).map(y => itemHtml(x.s, y)).join('') + '</div>' : '<div class="card empty" style="padding:14px">مفيش</div>'); });
   h += '<p class="mu sm" style="text-align:center;margin-top:14px">' + (r.by ? 'ضافه ' + esc(r.by) : '') + (r.at ? ' · ' + dshort(r.at) : '') + (r.ub && r.ub !== r.by ? ' · آخر تعديل ' + esc(r.ub) : '') + '</p>';
   sheet(recTitle(s, r), h, 'تعديل', () => editRec(r.coll, id));
@@ -449,7 +459,7 @@ function renew(id) {
 function moreHtml() {
   const cs = CFG().sections.filter(s => !s.hidden);
   return '<div class="grid" style="margin-bottom:14px">' + cs.map(s => '<button class="tile" onclick="go(\'' + s.k + '\')"><span class="ic">' + ico(s.i, 26) + '</span>' + esc(s.n) + '<small>' + recs(s.k).length + '</small></button>').join('') + '</div>' +
-    '<div class="list">' + (ME.admin ? '<div class="it" onclick="cfgEdit()"><div class="ic">' + ico('gear') + '</div><div class="tx"><div class="t1">شكل السيستم</div><div class="t2">زوّد أو شيل أقسام وخانات</div></div></div><div class="it" onclick="usersPage()"><div class="ic">' + ico('team') + '</div><div class="tx"><div class="t1">المستخدمين</div><div class="t2">مين يقدر يدخل</div></div></div>' : '') +
+    '<div class="list">' + (ME.admin ? '<div class="it" onclick="cfgEdit()"><div class="ic">' + ico('gear') + '</div><div class="tx"><div class="t1">شكل السيستم</div><div class="t2">زوّد أو شيل أقسام وخانات</div></div></div><div class="it" onclick="usersPage()"><div class="ic">' + ico('team') + '</div><div class="tx"><div class="t1">الحسابات</div><div class="t2">الفريق والعملاء</div></div></div>' : '') +
     '<div class="it" onclick="sync(true)"><div class="ic">' + ico('sync') + '</div><div class="tx"><div class="t1">حدّث دلوقتي</div><div class="t2">' + (OUT.size ? OUT.size + ' حاجة مستنية تترفع' : 'كله متزامن') + '</div></div></div>' +
     '<div class="it" onclick="myAcc()"><div class="ic">' + ico('user') + '</div><div class="tx"><div class="t1">' + esc(ME.name) + '</div><div class="t2 en">' + esc(ME.u) + (ME.admin ? ' · admin' : '') + '</div></div></div></div><p class="mu sm" style="text-align:center">OFFGRID ' + VER + '</p>';
 }
@@ -457,7 +467,7 @@ function myAcc() {
   sheet('حسابي', '<div class="fld"><label>كلمة سر جديدة</label><input id="np" type="password" autocomplete="new-password"></div><button class="btn" style="width:100%;margin-bottom:10px" onclick="chPass()">غيّر كلمة السر</button>' +
     '<button class="btn r" style="width:100%" onclick="logout()">' + ico('x', 18) + ' خروج من الحساب</button><p class="mu sm" style="margin-top:12px">الأبلكيشن بيفضل فاكر حسابك. الخروج بس لو هتدّي التليفون لحد تاني.</p>');
 }
-async function chPass() { const p = $('np').value; if (p.length < 6) return toast('كلمة السر 6 حروف على الأقل'); try { await api('/auth/v1/user', { method: 'PUT', body: { password: p } }); toast('كلمة السر اتغيرت ✓'); closeSheet(); } catch (e) { toast(errAr(e)); } }
+async function chPass() { const p = enDigits($('np').value); if (p.length < 4) return toast('كلمة السر 4 حروف على الأقل'); try { await api('/auth/v1/user', { method: 'PUT', body: { password: PW(p) } }); toast('كلمة السر اتغيرت ✓'); closeSheet(); } catch (e) { toast(errAr(e)); } }
 function logout() {
   if (OUT.size) return sheet('استنى', '<p>فيه ' + OUT.size + ' حاجة لسه مترفعتش. اتأكد إن فيه نت ودوس «حدّث دلوقتي» الأول عشان متضيعش.</p>');
   try { localStorage.removeItem('og-session'); localStorage.removeItem('og-auth'); } catch (e) { /* */ }
@@ -496,46 +506,85 @@ function setType(j, t) { const f = CE.sections[SE].fields[j]; f.t = t; if (t ===
 function mvF(j) { if (!j) return; const a = CE.sections[SE].fields; [a[j - 1], a[j]] = [a[j], a[j - 1]]; secEdit(SE); }
 function cfgSave() { CE.sections.forEach(s => { s.n = String(s.n || '').trim() || 'قسم'; }); saveRec('meta', 'cfg', CE); closeSheet(); render(); toast('شكل السيستم اتحفظ ✓ وهيظهر على كل الأجهزة'); }
 
-/* ---------- المستخدمين (للمدير) ---------- */
-async function usersPage() {
-  sheet('المستخدمين', '<div class="empty">بحمّل…</div>');
-  let L = []; try { L = await api('/rest/v1/members?select=*&order=created_at.asc') || []; } catch (e) { $('shB').innerHTML = '<div class="empty">' + errAr(e) + '</div>'; return; }
-  $('shB').innerHTML = '<div class="list">' + L.map(m => '<div class="it"><div class="ic">' + ico('user') + '</div><div class="tx"><div class="t1">' + esc(m.name) + '</div><div class="t2 en">' + esc(m.username) + '</div></div><span class="pill' + (m.role === 'admin' ? ' g' : '') + '">' + (m.owner ? 'صاحب السيستم' : m.role === 'admin' ? 'مدير' : 'مستخدم') + '</span>' + (m.user_id !== ME.id && !m.owner ? '<button onclick="rmUser(\'' + m.user_id + '\')">' + ico('trash', 18) + '</button>' : '') + '</div>').join('') + '</div>' +
-    '<div class="ttl">مستخدم جديد</div><div class="fld"><label>الاسم</label><input id="nu_n"></div><div class="fld"><label>اسم الدخول (إنجليزي)</label><input id="nu_u" class="en" autocapitalize="off" autocorrect="off"></div><div class="fld"><label>كلمة السر</label><input id="nu_p" type="password" autocomplete="new-password"></div>' +
-    '<div class="fld"><div class="chips" id="nu_r" data-v="user"><button class="on" data-r="user" onclick="pick(this)">مستخدم</button><button data-r="admin" onclick="pick(this)">مدير</button></div></div><button class="btn" style="width:100%" id="nu_b" onclick="addUser()">إضافة</button>';
+/* ---------- الحسابات (للمدير): الفريق والعملاء ---------- */
+const enDigits = s => String(s || '').replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d)).replace(/[۰-۹]/g, d => '۰۱۲۳۴۵۶۷۸۹'.indexOf(d));
+/* Supabase مش بيقبل كلمة سر أقل من 6 — فالقصيرة (زي 12345) بتتكمّل من جوه بنفس الطريقة في كل مكان */
+const PW = p => { p = enDigits(p); return p.length >= 6 ? p : p + '#og26'; };
+const ACC = uid => { const r = ROWS.get('acc_' + uid); return r ? r.data : null; };
+const accOf = cid => { let f = null; ROWS.forEach(r => { if (r.id.indexOf('acc_') === 0 && r.data && r.data.client === cid) f = Object.assign({ uid: r.id.slice(4) }, r.data); }); return f; };
+function showOpts() {
+  const L = [['money', 'الفلوس: المتفق عليه واللي دفعه والباقي'], ['videos', 'عدد الفيديوهات اللي استلمها'], ['sub', 'مدة الاشتراك']];
+  CFG().sections.forEach(s => { if (s.k !== 'clients' && s.fields.some(f => f.t === 'link' && f.to === 'clients' && !f.off)) L.push(['sec:' + s.k, 'قائمة ' + s.n]); });
+  L.push(['sched', 'مواعيد التصوير']); return L;
 }
+const defShow = () => ({ money: 1, videos: 1, sub: 1, sched: 1, 'sec:pays': 1, 'sec:dels': 1 });
+const showChecks = (px, sh) => showOpts().map((o, i) => '<div class="fld" style="margin-bottom:6px"><div class="tog" onclick="this.querySelector(\'.sw\').classList.toggle(\'on\')"><span>' + esc(o[1]) + '</span><span class="sw' + (sh[o[0]] ? ' on' : '') + '" id="' + px + i + '" data-k="' + o[0] + '"></span></div></div>').join('');
+const readShow = px => { const o = {}; showOpts().forEach((x, i) => { const e = $(px + i); if (e && e.classList.contains('on')) o[x[0]] = 1; }); return o; };
+const clientOpts = sel => recs('clients').sort((a, b) => String(a.data.n || '').localeCompare(String(b.data.n || ''), 'ar')).map(r => '<option value="' + r.id + '"' + (r.id === sel ? ' selected' : '') + '>' + esc(r.data.n || '') + '</option>').join('');
+async function usersPage(preClient) {
+  sheet('الحسابات', '<div class="empty">بحمّل…</div>');
+  let L = []; try { L = await api('/rest/v1/members?select=*&order=created_at.asc') || []; } catch (e) { $('shB').innerHTML = '<div class="empty">' + errAr(e) + '</div>'; return; }
+  const row = m => { const a = ACC(m.user_id), c = a && ROWS.get(a.client), kind = m.owner ? 'صاحب السيستم' : a ? 'عميل' : m.role === 'admin' ? 'مدير' : 'موظف';
+    return '<div class="it"' + (a ? ' onclick="accEdit(\'' + m.user_id + '\')"' : '') + '><div class="ic">' + ico(a ? 'users' : 'user') + '</div><div class="tx"><div class="t1">' + esc(m.name) + '</div><div class="t2"><span class="en">' + esc(m.username) + '</span>' + (a ? ' · ' + esc(c ? c.data.n : 'العميل اتمسح') : '') + '</div></div><span class="pill' + (m.role === 'admin' ? ' g' : a ? ' y' : '') + '">' + kind + '</span>' +
+      (m.user_id !== ME.id && !m.owner ? '<button onclick="event.stopPropagation();rmUser(\'' + m.user_id + '\')">' + ico('trash', 18) + '</button>' : '') + '</div>'; };
+  const team = L.filter(m => !ACC(m.user_id)), cls = L.filter(m => ACC(m.user_id)), role = preClient ? 'client' : 'user';
+  $('shB').innerHTML = '<div class="ttl" style="margin-top:4px">فريق الشغل</div><div class="list">' + team.map(row).join('') + '</div>' +
+    (cls.length ? '<div class="ttl">العملاء</div><div class="list">' + cls.map(row).join('') + '</div>' : '') +
+    '<div class="ttl">حساب جديد</div><div class="fld"><div class="chips" id="nu_r" data-v="' + role + '">' + [['user', 'موظف'], ['admin', 'مدير'], ['client', 'عميل']].map(x => '<button class="' + (x[0] === role ? 'on' : '') + '" data-r="' + x[0] + '" onclick="pickRole(this)">' + x[1] + '</button>').join('') + '</div></div>' +
+    '<div id="nu_cl" style="display:' + (preClient ? 'block' : 'none') + '"><div class="fld"><label>العميل</label><select id="nu_c" onchange="$(\'nu_n\').value=this.options[this.selectedIndex].text"><option value="">اختار العميل</option>' + clientOpts(preClient) + '</select></div><div class="fld"><label>يظهر له</label>' + showChecks('ns', defShow()) + '</div></div>' +
+    '<div class="fld"><label>الاسم</label><input id="nu_n" value="' + esc(preClient && ROWS.get(preClient) ? ROWS.get(preClient).data.n || '' : '') + '"></div><div class="fld"><label>اسم الدخول (إنجليزي)</label><input id="nu_u" class="en" autocapitalize="off" autocorrect="off"></div><div class="fld"><label>كلمة السر</label><input id="nu_p" class="en" autocapitalize="off" autocorrect="off" value="' + (preClient ? '12345' : '') + '"></div><button class="btn" style="width:100%" id="nu_b" onclick="addUser()">إضافة</button>';
+}
+function pickRole(b) { pick(b); $('nu_cl').style.display = b.dataset.r === 'client' ? 'block' : 'none'; if (b.dataset.r === 'client' && !$('nu_p').value) $('nu_p').value = '12345'; }
 async function addUser() {
-  const n = $('nu_n').value.trim(), u = normU($('nu_u').value), p = $('nu_p').value, role = $('nu_r').dataset.v === 'admin' ? 'admin' : 'user';
-  if (!n) return toast('اكتب الاسم'); if (!okU(u)) return toast('اسم الدخول حروف إنجليزي صغيرة وأرقام (3 على الأقل)'); if (p.length < 6) return toast('كلمة السر 6 حروف على الأقل');
+  const kind = $('nu_r').dataset.v, n = $('nu_n').value.trim(), u = normU($('nu_u').value), p = enDigits($('nu_p').value.trim()), cid = kind === 'client' ? $('nu_c').value : '';
+  if (kind === 'client' && !cid) return toast('اختار العميل');
+  if (!n) return toast('اكتب الاسم'); if (!okU(u)) return toast('اسم الدخول حروف إنجليزي صغيرة وأرقام (3 على الأقل)'); if (p.length < 4) return toast('كلمة السر 4 حروف أو أرقام على الأقل');
   $('nu_b').disabled = true;
   try {
-    const j = await api('/auth/v1/signup', { method: 'POST', auth: false, body: { email: u2e(u), password: p, data: { name: n } } });
+    const sh = kind === 'client' ? readShow('ns') : null;
+    const j = await api('/auth/v1/signup', { method: 'POST', auth: false, body: { email: u2e(u), password: PW(p), data: { name: n } } });
     const uidv = (j.user && j.user.id) || j.id; if (!uidv) throw new Error('مقدرتش أعمل الحساب');
-    await api('/rest/v1/members', { method: 'POST', body: { user_id: uidv, username: u, name: n, role } });
-    toast('اتضاف ✓ ابعتله اسم الدخول وكلمة السر'); usersPage();
+    if (kind === 'client') { saveRec('meta', 'acc_' + uidv, { client: cid, show: sh, u, pw: p }); await flush(); }
+    await api('/rest/v1/members', { method: 'POST', body: { user_id: uidv, username: u, name: n, role: kind === 'admin' ? 'admin' : 'user' } });
+    toast('الحساب اتعمل ✓ اسم الدخول ' + u + ' وكلمة السر ' + p); usersPage();
   } catch (e) { toast(errAr(e)); $('nu_b').disabled = false; }
 }
-async function rmUser(uidv) { try { await api('/rest/v1/members?user_id=eq.' + uidv, { method: 'DELETE' }); toast('اتشال'); usersPage(); } catch (e) { toast(errAr(e)); } }
+function accEdit(uid) {
+  const a = ACC(uid); if (!a) return;
+  sheet('حساب العميل', '<div class="card" style="padding:4px 16px"><div class="kv"><span>اسم الدخول</span><b class="en">' + esc(a.u || '') + '</b></div><div class="kv"><span>كلمة السر</span><b class="en">' + esc(a.pw || '') + '</b></div></div>' +
+    '<div class="fld"><label>العميل</label><select id="ae_c">' + clientOpts(a.client) + '</select></div><div class="fld"><label>يظهر له</label>' + showChecks('ae', a.show || defShow()) + '</div><p class="mu sm">عشان تغيّر كلمة السر امسح الحساب واعمله تاني.</p>', 'حفظ', () => {
+      const n = clone(a); n.client = $('ae_c').value; n.show = readShow('ae'); saveRec('meta', 'acc_' + uid, n); closeSheet(); toast('اتحفظ ✓ وهيظهر عند العميل');
+    });
+}
+async function rmUser(uidv) {
+  try { await api('/rest/v1/members?user_id=eq.' + uidv, { method: 'DELETE' }); if (ROWS.get('acc_' + uidv)) delRec('acc_' + uidv); toast('الحساب اتشال'); usersPage(); } catch (e) { toast(errAr(e)); }
+}
+function accCard(r) {
+  const a = accOf(r.id);
+  return '<div class="card"><div class="row" style="justify-content:space-between"><b>حساب العميل</b>' + (a ? '<span class="pill g">شغال</span>' : '<span class="pill">مفيش</span>') + '</div>' +
+    (a ? '<div class="kv"><span>اسم الدخول</span><b class="en">' + esc(a.u || '') + '</b></div><div class="kv"><span>كلمة السر</span><b class="en">' + esc(a.pw || '') + '</b></div><button class="btn g" style="width:100%;padding:10px;margin-top:8px;font-size:15px" onclick="accEdit(\'' + a.uid + '\')">اختار اللي يظهر له</button>'
+      : '<p class="mu sm" style="margin:6px 0 10px">اعمله حساب يدخل بيه الأبلكيشن ويشوف بياناته هو بس.</p><button class="btn" style="width:100%;padding:10px;font-size:15px" onclick="usersPage(\'' + r.id + '\')">اعمل حساب للعميل ده</button>') + '</div>';
+}
 
 /* ---------- الدخول ---------- */
 function authUI(mode, msg) {
-  $('auth').style.display = 'flex'; $('app').style.display = 'none'; const f = $('aform'); $('amsg').textContent = msg || '';
+  $('auth').style.display = 'flex'; $('app').style.display = 'none'; $('portal').style.display = 'none'; const f = $('aform'); $('amsg').textContent = msg || '';
   if (!mode) { f.style.display = 'none'; return; }
   f.style.display = 'flex';
-  if (mode === 'login') { $('alead').textContent = 'سجّل دخولك مرة واحدة بس'; f.innerHTML = '<input id="lu" class="en" placeholder="اسم المستخدم" autocapitalize="off" autocorrect="off"><input id="lp" type="password" placeholder="كلمة السر"><button class="btn" id="lb" onclick="doLogin()">دخول</button>'; $('lp').onkeydown = e => { if (e.key === 'Enter') doLogin(); }; }
+  if (mode === 'login') { $('alead').textContent = 'سجّل دخولك مرة واحدة بس'; f.innerHTML = '<input id="lu" class="en" placeholder="اسم الدخول" autocapitalize="off" autocorrect="off"><input id="lp" type="password" placeholder="كلمة السر"><button class="btn" id="lb" onclick="doLogin()">دخول</button>'; $('lp').onkeydown = e => { if (e.key === 'Enter') doLogin(); }; }
   else { $('alead').textContent = 'أول مرة: اعمل حساب المدير'; f.innerHTML = '<input id="sn" placeholder="اسمك"><input id="su" class="en" placeholder="اسم الدخول (إنجليزي)" autocapitalize="off"><input id="sp" type="password" placeholder="كلمة السر"><button class="btn" id="lb" onclick="doSetup()">ابدأ</button>'; }
 }
 async function doLogin() {
-  const u = normU($('lu').value), p = $('lp').value; if (!u || !p) return authUI('login', 'اكتب اسم المستخدم وكلمة السر');
+  const u = normU($('lu').value), p = $('lp').value; if (!u || !p) return authUI('login', 'اكتب اسم الدخول وكلمة السر');
   $('lb').disabled = true;
-  try { const j = await api('/auth/v1/token?grant_type=password', { method: 'POST', auth: false, body: { email: u2e(u), password: p } }); setSes(j); await enter(true); }
+  try { const j = await api('/auth/v1/token?grant_type=password', { method: 'POST', auth: false, body: { email: u2e(u), password: PW(p) } }); setSes(j); await enter(true); }
   catch (e) { $('lb').disabled = false; $('amsg').textContent = errAr(e); }
 }
 async function doSetup() {
   const n = $('sn').value.trim(), u = normU($('su').value), p = $('sp').value;
   if (!n || !okU(u) || p.length < 6) return $('amsg').textContent = 'اكتب اسمك واسم دخول إنجليزي وكلمة سر 6 حروف';
   $('lb').disabled = true;
-  try { const j = await api('/auth/v1/signup', { method: 'POST', auth: false, body: { email: u2e(u), password: p, data: { name: n } } }); if (!j.access_token) throw new Error('محتاج تقفل Confirm email في Supabase'); setSes(j);
+  try { const j = await api('/auth/v1/signup', { method: 'POST', auth: false, body: { email: u2e(u), password: PW(p), data: { name: n } } }); if (!j.access_token) throw new Error('محتاج تقفل Confirm email في Supabase'); setSes(j);
     const ok = await api('/rest/v1/rpc/claim_admin', { method: 'POST', body: { p_username: u, p_name: n } }); if (ok !== true) throw new Error('فيه مدير متسجل بالفعل'); await enter(true); }
   catch (e) { $('lb').disabled = false; $('amsg').textContent = errAr(e); }
 }
@@ -543,12 +592,57 @@ function needLogin() { SES = null; try { localStorage.removeItem('og-session'); 
 async function loadMe() {
   const L = await api('/rest/v1/members?select=*&user_id=eq.' + SES.user.id) || [], m = L[0];
   if (!m) throw Object.assign(new Error('الحساب ده مش متفعّل — كلّم المدير'), { noMember: true });
-  ME = { id: SES.user.id, name: m.name, u: m.username, admin: m.role === 'admin', owner: !!m.owner }; IDB.put('kv', 'me', ME);
+  const A = await api('/rest/v1/items?select=*&id=eq.' + encodeURIComponent('acc_' + SES.user.id)) || [];
+  A.forEach(r => setRow(r)); const a = A[0] && A[0].data;
+  ME = { id: SES.user.id, name: m.name, u: m.username, admin: !a && m.role === 'admin', owner: !!m.owner, client: a ? { cid: a.client, show: a.show || defShow() } : null }; IDB.put('kv', 'me', ME);
 }
 async function enter(fresh) {
   try { if (fresh || !ME) await loadMe(); }
   catch (e) { if (e.noMember) { needLogin(); $('amsg').textContent = e.message; return; } if (!ME) { authUI('login', errAr(e)); return; } }
-  $('auth').style.display = 'none'; $('app').style.display = 'flex'; render(); sync(true);
+  if (ME.client) return showClient();
+  $('auth').style.display = 'none'; $('portal').style.display = 'none'; $('app').style.display = 'flex'; render(); sync(true);
+}
+
+/* ---------- شاشة العميل (مشاهدة بس — بيتحمّل على تليفونه بياناته هو بس) ---------- */
+let CPULL = false;
+function showClient() { $('auth').style.display = 'none'; $('app').style.display = 'none'; $('portal').style.display = 'block'; clientRender(); clientPull(); }
+async function clientPull() {
+  if (CPULL || !SES || !navigator.onLine) return clientRender(); CPULL = true;
+  try {
+    const keep = new Set(), add = r => { setRow(r); keep.add(r.id); };
+    (await api('/rest/v1/items?select=*&id=' + encodeURIComponent(inList(['acc_' + ME.id, 'cfg']))) || []).forEach(add);
+    const a = ACC(ME.id); if (!a || !keep.has('acc_' + ME.id)) { CPULL = false; return clientGone(); }
+    ME.client = { cid: a.client, show: a.show || defShow() }; IDB.put('kv', 'me', ME);
+    const C = await api('/rest/v1/items?select=*&id=eq.' + encodeURIComponent(a.client)) || []; C.forEach(add);
+    for (const s of CFG().sections) { const f = s.fields.find(x => x.t === 'link' && x.to === 'clients' && !x.off); if (!f || s.k === 'clients') continue;
+      (await api('/rest/v1/items?select=*&coll=eq.' + encodeURIComponent(s.k) + '&' + encodeURIComponent('data->>' + f.k) + '=eq.' + encodeURIComponent(a.client)) || []).forEach(add); }
+    if (C[0] && C[0].data.n) (await api('/rest/v1/items?select=*&coll=eq.sched&' + encodeURIComponent('data->>c') + '=eq.' + encodeURIComponent(C[0].data.n)) || []).forEach(add);
+    [...ROWS.keys()].forEach(id => { if (!keep.has(id)) { ROWS.delete(id); IDB.del('rows', id); } });
+    syncErr = '';
+  } catch (e) { if (e.dead) { CPULL = false; return needLogin(); } syncErr = errAr(e); }
+  CPULL = false; clientRender();
+}
+function clientGone() { try { localStorage.removeItem('og-session'); } catch (e) { /* */ } Promise.all([IDB.clear('rows'), IDB.clear('kv')]).then(() => { SES = null; ME = null; ROWS = new Map(); authUI('login', 'الحساب ده اتقفل — كلّم فريق OFFGRID'); }); }
+function roItem(s, r) {
+  const mf = fOf(s, 'money'), cf = fOf(s, 'check'), df = fOf(s, 'date'), d = r.data, t = s.fields.find(f => !f.off && f.t === 'text'), useM = mf && d[mf.k] != null && d[mf.k] !== '';
+  const head = useM ? money(d[mf.k]) : (t ? showVal(t, d[t.k]) : '');
+  const sub = s.fields.filter(f => !f.off && f.t !== 'link' && f !== mf && f !== cf && (useM || f !== t) && d[f.k] != null && d[f.k] !== '').slice(0, 2).map(f => showVal(f, d[f.k]));
+  let pill = '';
+  if (cf) { if (d[cf.k]) pill = '<span class="pill g">' + esc(cf.l) + (d[cf.k + 'At'] ? ' ' + dshort(d[cf.k + 'At']) : '') + '</span>'; else { const n = df && d[df.k] ? daysTo(d[df.k]) : null; pill = '<span class="pill ' + (n != null && n < 0 ? 'r' : 'y') + '">' + (n == null ? 'لسه' : n < 0 ? 'متأخرة ' + (-n) + ' يوم' : n === 0 ? 'النهارده' : 'ميعادها ' + dshort(d[df.k])) + '</span>'; } }
+  return '<div class="it">' + (cf ? '<div class="chk' + (d[cf.k] ? ' on' : '') + '"></div>' : '<div class="ic">' + ico(s.i) + '</div>') + '<div class="tx"><div class="t1">' + esc(head || '—') + '</div><div class="t2">' + esc(sub.join(' · ')) + '</div></div>' + pill + '</div>';
+}
+function clientRender() {
+  if (!ME || !ME.client) return; const sh = ME.client.show || {}, r = ROWS.get(ME.client.cid), cs = SEC('clients');
+  const head = '<div class="ph"><span class="wm" style="font-size:26px">OFF<b>GRID</b></span><div id="sync" class="' + (!navigator.onLine ? 'off' : syncErr ? 'err' : '') + '"><i></i><span>' + (!navigator.onLine ? 'من غير نت' : 'محدّث') + '</span></div></div>';
+  if (!r || !cs) { $('portal').innerHTML = head + '<div class="card empty">' + (navigator.onLine ? 'بحمّل بياناتك…' : 'محتاج نت أول مرة') + '</div><button class="mu sm" style="display:block;margin:14px auto" onclick="logout()">خروج</button>'; return; }
+  const d = r.data, a = acct(cs, r), L = linked(cs, r); let h = head + '<div class="hi">أهلاً ' + esc(d.n || '') + '</div>';
+  const end = subEnd(cs, r); h += '<p class="mu sm" style="margin:0 2px 14px">' + (sh.sub && end ? 'اشتراكك من ' + dshort(d[cs.sub.start]) + ' لحد ' + dshort(end) : '') + '</p>';
+  if (sh.videos && cs.goal) { const need = +d[cs.goal.field] || 0, got = recs(cs.goal.from).filter(x => Object.values(x.data).indexOf(r.id) >= 0).length; if (need) h += '<div class="card"><div class="row" style="justify-content:space-between"><b>الفيديوهات اللي استلمتها</b><b class="num" style="font-size:20px">' + got + ' من ' + need + '</b></div><div class="prog"><i style="width:' + Math.min(100, got / need * 100) + '%"></i></div></div>'; }
+  if (sh.money && a) h += '<div class="big"><div class="k w"><div class="l">المتفق عليه' + (a.pct ? ' بعد خصم ' + fm(a.pct) + '%' : '') + '</div><div class="v num">' + money(a.total) + '</div></div><div class="k"><div class="l">دفعت</div><div class="v num ok">' + money(a.paid) + '</div></div><div class="k"><div class="l">الباقي</div><div class="v num" style="color:' + (a.left ? 'var(--warn)' : 'var(--ok)') + '">' + money(a.left) + '</div></div></div>';
+  L.forEach(x => { if (!sh['sec:' + x.s.k]) return; const rs = x.rs.sort((p, q) => recDate(x.s, q) < recDate(x.s, p) ? -1 : 1); h += '<div class="ttl">' + esc(x.s.n) + '</div>' + (rs.length ? '<div class="list">' + rs.map(y => roItem(x.s, y)).join('') + '</div>' : '<div class="card empty" style="padding:14px">لسه مفيش</div>'); });
+  if (sh.sched) { const ss = SEC('sched'), sc = ss ? recs('sched').map(y => ({ y, dt: recDate(ss, y) })).filter(x => x.dt >= today()).sort((p, q) => p.dt < q.dt ? -1 : 1) : []; if (sc.length) h += '<div class="ttl">مواعيد التصوير الجاية</div><div class="list">' + sc.slice(0, 10).map(x => '<div class="it"><div class="ic">' + ico('cal') + '</div><div class="tx"><div class="t1">' + dshort(x.dt) + (x.y.data.t ? ' · ' + esc(x.y.data.t) : '') + '</div></div></div>').join('') + '</div>'; }
+  h += '<p class="mu sm" style="text-align:center;margin-top:18px">الصفحة دي للمتابعة بس — لأي تعديل كلّم فريق OFFGRID</p><button class="btn g" style="width:100%;margin-top:6px" onclick="clientPull()">' + ico('sync', 18) + ' حدّث</button><button class="mu sm" style="display:block;margin:14px auto 0" onclick="logout()">خروج</button>';
+  $('portal').innerHTML = h;
 }
 
 /* ---------- التشغيل ---------- */
@@ -563,6 +657,7 @@ async function importOld() {
   } catch (e) { /* */ }
 }
 (async function boot() {
+  if ('serviceWorker' in navigator && location.protocol !== 'file:') navigator.serviceWorker.register('sw.js').then(r => { r.update(); }).catch(() => { /* */ });
   try { await IDB.open(); } catch (e) { authUI('', ''); $('alead').textContent = 'التليفون مش مسامح بالتخزين — افتحه من Safari العادي مش الخاص'; return; }
   (await IDB.all('rows')).forEach(([k, v]) => ROWS.set(k, v)); (await IDB.all('out')).forEach(([k, v]) => OUT.set(k, v));
   (await IDB.all('kv')).forEach(([k, v]) => { if (k === 'me') ME = v; if (k === 'last') LAST = v; });
@@ -576,7 +671,6 @@ async function importOld() {
   window.addEventListener('offline', syncStatus);
   document.addEventListener('visibilitychange', () => { if (!document.hidden) sync(); });
   POLL = setInterval(() => { if (!document.hidden && ME) sync(); }, 8000);
-  if ('serviceWorker' in navigator && location.protocol !== 'file:') navigator.serviceWorker.register('sw.js').then(r => { r.update(); }).catch(() => { /* */ });
 })();
 
 </script>
