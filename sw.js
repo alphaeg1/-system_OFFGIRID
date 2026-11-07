@@ -1,5 +1,4 @@
-/* OFFGRID — بيخلّي الأبلكيشن يفتح من غير نت. البيانات نفسها مش بتعدي من هنا */
-const C = 'offgrid-v3.1';
+const C = 'offgrid-v3.3';
 const SHELL = ['SYSTEM.html', 'manifest.webmanifest', 'icon-192.png', 'icon-512.png'];
 self.addEventListener('install', e => { e.waitUntil(caches.open(C).then(c => Promise.all(SHELL.map(u => c.add(u).catch(() => null)))).then(() => self.skipWaiting())); });
 self.addEventListener('activate', e => { e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => k !== C).map(k => caches.delete(k)))).then(() => self.clients.claim())); });
