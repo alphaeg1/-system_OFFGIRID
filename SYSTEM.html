@@ -160,6 +160,9 @@ body.sh #shade{opacity:1;pointer-events:auto}body.sh #sheet{transform:none}
 .cl{flex:none;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:11px 14px;min-width:130px}.cl b{display:block;font-size:15px}.cl span{color:var(--mu);font-size:12.5px}
 .reg{margin-top:18px;border-radius:22px;padding:16px;background:linear-gradient(135deg,#1a1f33,#121520);border:1px solid #2c3550}.reg b{display:flex;align-items:center;gap:6px;font-size:17px}.reg p{margin:4px 0 10px;color:var(--mu);font-size:13.5px}.reg .row input{flex:1;min-width:0}
 .ibl{margin-top:10px;display:flex;flex-direction:column;gap:6px}.ibl>div{display:flex;align-items:center;gap:8px;background:rgba(0,0,0,.2);border-radius:10px;padding:7px 10px}.ibl b{flex:1;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.wks{display:flex;gap:12px;overflow-x:auto;margin:0 -16px;padding:0 16px 4px;scrollbar-width:none}.wks::-webkit-scrollbar{display:none}
+.wk{flex:none;width:62%;max-width:260px}.wk .fr{aspect-ratio:9/16;border-radius:18px;overflow:hidden;background:#000;border:1px solid var(--line)}.wk iframe,.dfr iframe{width:100%;height:100%;border:0;display:block}.wk b{display:block;font-size:14px;margin-top:6px}
+.dfr{height:430px;border-radius:18px;overflow:hidden;background:#fff;border:1px solid var(--line)}
 .upl{display:flex;align-items:center;justify-content:center;aspect-ratio:4/3;border:1.5px dashed #34518c;border-radius:18px;background:var(--card2);overflow:hidden;margin-bottom:12px;color:var(--ac2);text-align:center;position:relative}
 .upl span{display:flex;flex-direction:column;align-items:center;gap:6px}.upl img{width:100%;height:100%;object-fit:cover}.upl input{position:absolute;inset:0;opacity:0}
 #auth{position:fixed}
@@ -513,6 +516,7 @@ function openRec(id) {
   if (a && linked(s, r).some(x => x.s.flow === 'in')) h += '<div class="big"><div class="k"><div class="l">المتفق عليه' + (a.pct ? ' بعد خصم ' + fm(a.pct) + '%' : '') + '</div><div class="v num" style="font-size:20px">' + money(a.total) + '</div></div><div class="k"><div class="l">اتدفع</div><div class="v num ok" style="font-size:20px">' + money(a.paid) + '</div></div>' + (a.left ? '<div class="k w" style="background:var(--card);border-color:var(--line)"><div class="l">الباقي</div><div class="v num" style="font-size:22px;color:var(--warn)">' + money(a.left) + '</div></div>' : '') + '</div>';
   if (s.goal) { const need = +d[s.goal.field] || 0, got = recs(s.goal.from).filter(x => Object.values(x.data).indexOf(r.id) >= 0).length; if (need) h += '<div class="card"><div class="row" style="justify-content:space-between"><span>' + esc(s.goal.label) + '</span><b class="num">' + got + ' من ' + need + '</b></div><div class="prog"><i style="width:' + Math.min(100, got / need * 100) + '%"></i></div></div>'; }
   if (s.sub) { const e = subEnd(s, r); if (e) h += '<div class="card row" style="justify-content:space-between"><span>الاشتراك بيخلص ' + dshort(e) + '</span><button class="btn g" style="padding:8px 14px;font-size:15px" onclick="renew(\'' + id + '\')">تجديد</button></div>'; }
+  if (r.coll === 'clients') h += '<button class="btn" style="width:100%;margin-bottom:12px" onclick="msgClient(\'' + id + '\')">' + ico('chat', 19) + ' رسايل العميل ده</button>';
   if (r.coll === 'clients' && ME.admin) h += accCard(r);
   linked(s, r).forEach(x => { if (!x.rs.length && x.s.hidden) return; h += '<div class="ttl">' + esc(x.s.n) + ' <button onclick="addLinked(\'' + x.s.k + '\',\'' + id + '\')">+ إضافة</button></div>' + (x.rs.length ? '<div class="list">' + x.rs.sort((p, q) => recDate(x.s, q) < recDate(x.s, p) ? -1 : 1).slice(0, 30).map(y => itemHtml(x.s, y)).join('') + '</div>' : '<div class="card empty" style="padding:14px">مفيش</div>'); });
   h += '<p class="mu sm" style="text-align:center;margin-top:14px">' + (r.by ? 'ضافه ' + esc(r.by) : '') + (r.at ? ' · ' + dshort(r.at) : '') + (r.ub && r.ub !== r.by ? ' · آخر تعديل ' + esc(r.ub) : '') + '</p>';
@@ -689,6 +693,7 @@ async function clientPull() {
     const a = ACC(ME.id); if (!a || !keep.has('acc_' + ME.id)) { CPULL = false; return clientGone(); }
     ME.client = { cid: a.client, show: a.show || defShow() }; IDB.put('kv', 'me', ME);
     const C = await api('/rest/v1/items?select=*&id=eq.' + encodeURIComponent(a.client)) || []; C.forEach(add);
+    (await api('/rest/v1/items?select=*&coll=in.(chat,lead)&' + encodeURIComponent('data->>t') + '=eq.' + encodeURIComponent('c_' + a.client)) || []).forEach(add);
     for (const s of CFG().sections) { const f = s.fields.find(x => x.t === 'link' && x.to === 'clients' && !x.off); if (!f || s.k === 'clients') continue;
       (await api('/rest/v1/items?select=*&coll=eq.' + encodeURIComponent(s.k) + '&' + encodeURIComponent('data->>' + f.k) + '=eq.' + encodeURIComponent(a.client)) || []).forEach(add); }
     if (C[0] && C[0].data.n) (await api('/rest/v1/items?select=*&coll=eq.sched&' + encodeURIComponent('data->>c') + '=eq.' + encodeURIComponent(C[0].data.n)) || []).forEach(add);
@@ -712,6 +717,8 @@ function clientRender() {
   if (!r || !cs) { $('portal').innerHTML = head + '<div class="card empty">' + (navigator.onLine ? 'بحمّل بياناتك…' : 'محتاج نت أول مرة') + '</div><button class="mu sm" style="display:block;margin:14px auto" onclick="logout()">خروج</button>'; return; }
   const d = r.data, a = acct(cs, r), L = linked(cs, r); let h = head + '<div class="hi">أهلاً ' + esc(d.n || '') + '</div>';
   const end = subEnd(cs, r); h += '<p class="mu sm" style="margin:0 2px 14px">' + (sh.sub && end ? 'اشتراكك من ' + dshort(d[cs.sub.start]) + ' لحد ' + dshort(end) : '') + '</p>';
+  { const M = recs('chat').filter(x => x.data.t === 'c_' + ME.client.cid).sort((p, q) => (p.data.at || '') < (q.data.at || '') ? 1 : -1), seen = (() => { try { return localStorage.getItem('og-gseen') || ''; } catch (e) { return ''; } })(), un = M.filter(x => x.data.from === 'team' && (x.at || x.data.at || '') > seen).length;
+    h += '<button class="card ibc" style="width:100%;text-align:right" onclick="clientChat()"><div class="row"><span class="ic2">' + ico('chat', 22) + '</span><div style="flex:1;min-width:0"><b>رسايلك مع OFFGRID</b><div class="mu sm" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + (M[0] ? (M[0].data.from === 'team' ? 'OFFGRID: ' : 'انت: ') + esc(M[0].data.text) : 'ابعتلنا أي حاجة وهنرد عليك هنا') + '</div></div>' + (un ? '<span class="dot">' + un + '</span>' : '') + ico('l', 18) + '</div></button>'; }
   if (sh.videos && cs.goal) { const need = +d[cs.goal.field] || 0, got = recs(cs.goal.from).filter(x => Object.values(x.data).indexOf(r.id) >= 0).length; if (need) h += '<div class="card"><div class="row" style="justify-content:space-between"><b>الفيديوهات اللي استلمتها</b><b class="num" style="font-size:20px">' + got + ' من ' + need + '</b></div><div class="prog"><i style="width:' + Math.min(100, got / need * 100) + '%"></i></div></div>'; }
   if (sh.money && a) h += '<div class="big"><div class="k w"><div class="l">المتفق عليه' + (a.pct ? ' بعد خصم ' + fm(a.pct) + '%' : '') + '</div><div class="v num">' + money(a.total) + '</div></div><div class="k"><div class="l">دفعت</div><div class="v num ok">' + money(a.paid) + '</div></div><div class="k"><div class="l">الباقي</div><div class="v num" style="color:' + (a.left ? 'var(--warn)' : 'var(--ok)') + '">' + money(a.left) + '</div></div></div>';
   L.forEach(x => { if (!sh['sec:' + x.s.k]) return; const rs = x.rs.sort((p, q) => recDate(x.s, q) < recDate(x.s, p) ? -1 : 1); h += '<div class="ttl">' + esc(x.s.n) + '</div>' + (rs.length ? '<div class="list">' + rs.map(y => roItem(x.s, y)).join('') + '</div>' : '<div class="card empty" style="padding:14px">لسه مفيش</div>'); });
@@ -797,7 +804,7 @@ const PUB_DEF = {
   ]
 };
 const PUB_STEPS = [['بتبعتلنا', 'الفيديو اللي صوّرته أو فكرتك، ولو مش عارف تبدأ منين بنكتبلك الاسكريبت.'], ['بنعمل الهوية', 'ألوانك وفونتك وأيقوناتك وشكل القفلة، مرة واحدة وتفضل ثابتة.'], ['معاينة وتعديل', 'بتشوف نسخة وتقولنا رأيك، ونعدّل لحد ما تبقى راضي.'], ['تسليم ونشر', 'فيديو جاهز للفيسبوك والإنستجرام والتيك توك.']];
-let PUB_FROM = '', PUB_MODE = 'home', PUB_OK = null, GROWS = [], GPOLL = 0, PE = null, PTAB = 'info', INBOX_T = null, INBOX_TM = 0, LAST_UNREAD = -1;
+let PUB_CHAT_ONLY = false, PUB_FROM = '', PUB_MODE = 'home', PUB_OK = null, GROWS = [], GPOLL = 0, PE = null, PTAB = 'info', INBOX_T = null, INBOX_TM = 0, LAST_UNREAD = -1;
 const isTeam = () => ME && !ME.client;
 const pubData = () => { const r = isTeam() && ROWS.get('pub'), x = Object.assign({}, PUB_DEF, (r ? r.data : PUB) || {}); if (!(x.sv >= 2)) { x.services = PUB_DEF.services; x.sv = 2; if (!x.addr) x.addr = PUB_DEF.addr; if (!x.wa) x.wa = PUB_DEF.wa; if (!x.phone) x.phone = PUB_DEF.phone; x.name = x.name || PUB_DEF.name; } return x; };
 const imgSrc = id => { if (!id) return ''; const r = ROWS.get(id); return (r && r.data && r.data.img) || IMGC.get(id) || ''; };
@@ -807,17 +814,17 @@ const LST = { new: ['جديد', 'y'], ok: ['اتأكد', 'g'], done: ['خلص', 
 function GST() {
   let g = null; try { g = JSON.parse(localStorage.getItem('og-guest') || 'null'); } catch (e) { /* */ }
   if (!g || !g.t) { const a = new Uint8Array(16); crypto.getRandomValues(a); g = { t: 'g' + Array.from(a, x => pad(x.toString(16))).join(''), name: '', phone: '' }; saveG(g); }
-  if (ME && ME.client && !g.name) { const c = ROWS.get(ME.client.cid); if (c) { g.name = c.data.n || ''; g.phone = c.data.p || ''; } }
+  if (ME && ME.client) { const c = ROWS.get(ME.client.cid); return Object.assign({}, g, { t: 'c_' + ME.client.cid, cl: 1, name: (c && c.data.n) || g.name || '', phone: (c && c.data.p) || g.phone || '' }); }
   return g;
 }
-function saveG(g) { try { localStorage.setItem('og-guest', JSON.stringify(g)); } catch (e) { /* */ } }
+function saveG(g) { try { let o = g; if (g.cl) { o = JSON.parse(localStorage.getItem('og-guest') || '{}'); o.reg = o.reg || g.reg; } localStorage.setItem('og-guest', JSON.stringify(o)); } catch (e) { /* */ } }
 const gSeen = () => { try { return localStorage.getItem('og-gseen') || ''; } catch (e) { return ''; } };
 const gUnread = () => { const s = gSeen(); return GROWS.filter(r => r.coll === 'chat' && r.data.from === 'team' && (r.created_at || '') > s).length; };
 function activeOffers(d) { return (d.offers || []).filter(o => o.on !== false && (!o.until || o.until >= today())); }
 
 /* ---------- العرض للزوار ---------- */
 function pubShow(from) {
-  PUB_FROM = from || ''; PUB_MODE = 'home';
+  PUB_FROM = from || ''; PUB_CHAT_ONLY = false; PUB_MODE = 'home';
   ['auth', 'app', 'portal'].forEach(id => { $(id).style.display = 'none'; }); closeSheet();
   $('pub').style.display = 'block'; window.scrollTo(0, 0); pubRender(); pubFetch(); gPull();
   clearInterval(GPOLL); GPOLL = setInterval(() => { if (!document.hidden && $('pub').style.display !== 'none') gPull(); }, 30000);
@@ -864,6 +871,7 @@ function pubRender() {
     '<div class="row"><button class="btn" onclick="chatOpen()">' + ico('chat', 19) + ' ابعتلنا رسالة' + (un ? ' <span class="dot">' + un + '</span>' : '') + '</button>' + (off.length ? '<button class="btn gl" onclick="document.getElementById(\'offs\').scrollIntoView({behavior:\'smooth\'})">' + ico('tag', 18) + ' العروض (' + off.length + ')</button>' : '<button class="btn gl" onclick="document.getElementById(\'svs\').scrollIntoView({behavior:\'smooth\'})">' + ico('box', 18) + ' خدماتنا</button>') + '</div></div>';
   if (off.length) h += '<div class="sec" id="offs"><b>' + ico('spark', 20) + ' عروض النهارده</b><span>لفترة محدودة</span></div>' + off.map((o, i) => offerCard(o, i)).join('');
   h += '<div class="sec" id="svs"><b>خدماتنا</b><span>' + sv.length + ' خدمة · دوس للتفاصيل</span></div><div class="svs">' + sv.map((s, i) => '<button class="sv rv" onclick="svOpen(' + i + ')"><span class="ic">' + ico(s.i || 'star', 22) + '</span><b>' + esc(s.t) + '</b><p>' + esc(s.d) + '</p>' + (s.p ? '<em>يبدأ من ' + esc(s.p) + '</em>' : '') + '</button>').join('') + '</div>';
+  h += workHtml(d);
   h += '<div class="sec"><b>إزاي بنشتغل</b><span>4 خطوات وفيديوك جاهز</span></div><div class="steps">' + PUB_STEPS.map((x, i) => '<div class="st rv"><i>' + (i + 1) + '</i><div><b>' + x[0] + '</b><p>' + x[1] + '</p></div></div>').join('') + '</div>';
   const C = [['chat', 'ابعتلنا هنا', 'chatOpen()', '#2f7bff', un]];
   if (wa) C.push(['wa', 'واتساب', "openX('https://wa.me/" + wa + "')", '#25d366']);
@@ -896,6 +904,15 @@ async function sendReg() {
 const jsq = s => esc(String(s || '').replace(/['\\]/g, ''));
 const igLink = h => { const s = String(h || '').trim(); if (/^https?:/i.test(s)) return jsq(s); return 'https://ig.me/m/' + jsq(s.replace(/^@/, '')); };
 function openX(u) { const a = document.createElement('a'); a.href = u; a.target = '_blank'; a.rel = 'noopener'; document.body.appendChild(a); a.click(); a.remove(); }
+const driveId = (u, k) => { const s = String(u || ''); const m = s.match(k === 'f' ? /folders\/([\w-]{10,})/ : /\/d\/([\w-]{10,})/) || s.match(/[?&]id=([\w-]{10,})/); return m ? m[1] : ''; };
+function workHtml(d) {
+  const W = (d.works || []).filter(w => driveId(w.u)), fid = driveId(d.drive, 'f'); if (!W.length && !d.drive) return '';
+  let h = '<div class="sec" id="work"><b>' + ico('film', 20) + ' شوف شغلنا</b><span>اتفرج من هنا</span></div>';
+  if (W.length) h += '<div class="wks">' + W.map(w => '<div class="wk rv"><div class="fr"><iframe src="https://drive.google.com/file/d/' + driveId(w.u) + '/preview" loading="lazy" allow="autoplay; fullscreen" allowfullscreen></iframe></div>' + (w.t ? '<b>' + esc(w.t) + '</b>' : '') + '</div>').join('') + '</div>';
+  else if (fid) h += '<div class="dfr rv"><iframe src="https://drive.google.com/embeddedfolderview?id=' + fid + '#grid" loading="lazy"></iframe></div>';
+  if (d.drive) h += '<button class="btn g rv" style="width:100%;margin-top:10px" onclick="openX(\'' + jsq(d.drive) + '\')">' + ico('globe', 18) + ' لينك الدرايف — كل شغلنا</button>';
+  return h;
+}
 const offNew = o => { if (o.p) return o.p; const op = parseFloat(enDigits(String(o.op || '')).replace(/[^\d.]/g, '')); return op && +o.pct ? fm(Math.round(op * (100 - o.pct) / 100)) + ' ج' : ''; };
 function offerCard(o, i) {
   const left = o.until ? daysTo(o.until) : null, pal = ['hot', 'elec', 'lime'][i % 3];
@@ -950,7 +967,8 @@ async function gPull() {
   if ($('pub').style.display !== 'none') { if (PUB_MODE === 'chat') { chatRender(); } else pubRender(); }
 }
 function chatOpen() { PUB_MODE = 'chat'; closeSheet(); chatRender(); gPull(); clearInterval(GPOLL); GPOLL = setInterval(() => { if (!document.hidden) gPull(); }, 6000); setTimeout(() => window.scrollTo(0, document.body.scrollHeight), 50); }
-function chatBack() { PUB_MODE = 'home'; clearInterval(GPOLL); GPOLL = setInterval(() => { if (!document.hidden && $('pub').style.display !== 'none') gPull(); }, 30000); pubRender(); window.scrollTo(0, 0); }
+function clientChat() { pubShow('portal'); PUB_CHAT_ONLY = true; chatOpen(); }
+function chatBack() { PUB_CHAT_ONLY = false; PUB_MODE = 'home'; clearInterval(GPOLL); GPOLL = setInterval(() => { if (!document.hidden && $('pub').style.display !== 'none') gPull(); }, 30000); pubRender(); window.scrollTo(0, 0); }
 function threadHtml(rows, mine) {
   const L = rows.slice().sort((a, b) => ((a.data.at || a.created_at || '') < (b.data.at || b.created_at || '') ? -1 : 1));
   return L.map(r => {
@@ -962,7 +980,8 @@ function threadHtml(rows, mine) {
 }
 function chatRender() {
   const g = GST(), un = GROWS.length;
-  let h = '<div class="pbar"><button class="plog" onclick="chatBack()">' + ico('r', 16) + ' رجوع</button><span class="wm" style="font-size:22px">OFF<b>GRID</b></span></div>';
+  const wa = waNum(pubData().wa);
+  let h = '<div class="pbar"><button class="plog" onclick="' + (PUB_FROM === 'portal' && PUB_CHAT_ONLY ? 'pubHide()' : 'chatBack()') + '">' + ico('r', 16) + ' رجوع</button><span class="wm" style="font-size:22px">OFF<b>GRID</b></span>' + (wa ? '<button class="plog" onclick="openX(\'https://wa.me/' + wa + '\')" title="مكالمة واتساب">' + ico('phone', 16) + ' كلمنا</button>' : '') + '</div>';
   h += '<div class="chat">' + (un ? threadHtml(GROWS, 'guest') : '<div class="card empty">ابعتلنا أي سؤال أو اطلب عرض سعر، وهنرد عليك هنا.<br><span class="sm">الرد بيوصلك هنا في الأبلكيشن</span></div>') + '</div>';
   h += '<div class="cbar">' + (g.name ? '' : '<input id="cg_n" placeholder="اسمك" style="flex:0 0 32%">') + '<textarea id="cg_m" rows="1" placeholder="اكتب رسالتك…"></textarea><button onclick="sendChat()" aria-label="ابعت">' + ico('send', 21) + '</button></div>';
   const keep = $('cg_m') ? $('cg_m').value : '', kn = $('cg_n') ? $('cg_n').value : '', atEnd = window.innerHeight + window.scrollY >= document.body.scrollHeight - 80;
@@ -983,7 +1002,14 @@ function threads() {
   const T = new Map();
   recs('chat').concat(recs('lead')).forEach(r => { const d = r.data; if (!d.t) return; const k = d.t, x = T.get(k) || { t: k, rows: [], last: '', name: '', phone: '', lead: 0 }; x.rows.push(r); const at = d.at || r.at || ''; if (at > x.last) x.last = at;
     if (d.from === 'guest') { if (d.name) x.name = d.name; if (d.phone) x.phone = d.phone; } if (r.coll === 'lead' && d.kind !== 'reg' && (d.status || 'new') === 'new') x.lead++; if (r.coll === 'lead' && d.kind === 'reg') x.reg = 1; T.set(k, x); });
+  T.forEach(x => { if (/^c_/.test(x.t)) { const c = ROWS.get(x.t.slice(2)); x.cl = 1; if (c) { x.name = c.data.n || x.name; x.phone = c.data.p || x.phone; } } });
   return [...T.values()].sort((a, b) => a.last < b.last ? 1 : -1);
+}
+function clientThread(cid) { const c = ROWS.get(cid); return { t: 'c_' + cid, rows: [], last: '', name: c ? c.data.n || 'عميل' : 'عميل', phone: c ? c.data.p || '' : '', lead: 0, cl: 1 }; }
+function msgClient(cid) { inboxOpen('c_' + cid); }
+function newMsgPage() {
+  const cs = recs('clients').sort((a, b) => (a.data.n || '') < (b.data.n || '') ? -1 : 1), hasAcc = new Set(recs('meta').filter(r => /^acc_/.test(r.id) && r.data.client).map(r => r.data.client));
+  sheet('رسالة لعميل', cs.length ? '<p class="mu sm" style="margin:0 2px 10px">الرسالة بتوصل للعميل في الأبلكيشن لما يدخل بحسابه.</p><div class="list">' + cs.map(r => '<div class="it" onclick="msgClient(\'' + r.id + '\')"><div class="ic">' + ico('users') + '</div><div class="tx"><div class="t1">' + esc(r.data.n || '—') + '</div><div class="t2">' + (hasAcc.has(r.id) ? 'عنده حساب ✓' : 'لسه معندوش حساب — اعمله من صفحة العميل') + '</div></div></div>').join('') + '</div>' : '<div class="empty">مفيش عملاء لسه</div>');
 }
 const seenMap = () => { try { return JSON.parse(localStorage.getItem('og-seen') || '{}'); } catch (e) { return {}; } };
 function unreadOf(x, S) { const s = (S || seenMap())[x.t] || ''; return x.rows.filter(r => r.data.from === 'guest' && (r.data.at || r.at || '') > s).length; }
@@ -1003,13 +1029,13 @@ function inboxCard() {
 }
 function inboxPage() {
   INBOX_T = null; const L = threads(), S = seenMap();
-  sheet('الطلبات والرسايل', L.length ? '<div class="list">' + L.map(x => { const u = unreadOf(x, S), lr = x.rows.slice().sort((a, b) => (a.data.at || '') < (b.data.at || '') ? 1 : -1)[0], ld = lr.data;
-    return '<div class="it" onclick="inboxOpen(\'' + esc(x.t) + '\')"><div class="ic">' + ico(x.lead ? 'cal' : 'chat') + '</div><div class="tx"><div class="t1">' + esc(x.name || 'زائر') + (x.lead ? ' <span class="pill y">حجز جديد</span>' : '') + (x.reg ? ' <span class="pill g">متسجل</span>' : '') + '</div><div class="t2">' + esc(lr.coll === 'lead' ? (ld.kind === 'reg' ? 'سجّل رقمه: ' + ld.phone : 'طلب حجز: ' + ld.s) : (ld.from === 'team' ? 'انت: ' : '') + ld.text) + '</div></div><div style="text-align:left"><div class="mu sm">' + tm(x.last) + '</div>' + (u ? '<span class="dot">' + u + '</span>' : '') + '</div></div>'; }).join('') + '</div>'
-    : '<div class="empty">لسه مفيش طلبات ولا رسايل.<br>أول ما حد يحجز أو يبعت من الواجهة هيظهر هنا.</div>');
+  sheet('الطلبات والرسايل', '<button class="btn g" style="width:100%;margin-bottom:12px" onclick="newMsgPage()">' + ico('plus', 18) + ' ابعت رسالة لعميل</button>' + (L.length ? '<div class="list">' + L.map(x => { const u = unreadOf(x, S), lr = x.rows.slice().sort((a, b) => (a.data.at || '') < (b.data.at || '') ? 1 : -1)[0], ld = lr.data;
+    return '<div class="it" onclick="inboxOpen(\'' + esc(x.t) + '\')"><div class="ic">' + ico(x.lead ? 'cal' : 'chat') + '</div><div class="tx"><div class="t1">' + esc(x.name || 'زائر') + (x.lead ? ' <span class="pill y">حجز جديد</span>' : '') + (x.reg ? ' <span class="pill g">متسجل</span>' : '') + (x.cl ? ' <span class="pill">عميل</span>' : '') + '</div><div class="t2">' + esc(lr.coll === 'lead' ? (ld.kind === 'reg' ? 'سجّل رقمه: ' + ld.phone : 'طلب حجز: ' + ld.s) : (ld.from === 'team' ? 'انت: ' : '') + ld.text) + '</div></div><div style="text-align:left"><div class="mu sm">' + tm(x.last) + '</div>' + (u ? '<span class="dot">' + u + '</span>' : '') + '</div></div>'; }).join('') + '</div>'
+    : '<div class="empty">لسه مفيش طلبات ولا رسايل.<br>أول ما حد يحجز أو يبعت من الواجهة هيظهر هنا.</div>'));
 }
 function markSeen(x) { const S = seenMap(); S[x.t] = x.rows.reduce((m, r) => (r.data.at || r.at || '') > m ? (r.data.at || r.at) : m, S[x.t] || ''); try { localStorage.setItem('og-seen', JSON.stringify(S)); } catch (e) { /* */ } LAST_UNREAD = inboxCount(); }
 function inboxOpen(t) {
-  const x = threads().find(y => y.t === t); if (!x) return; INBOX_T = t; markSeen(x);
+  const x = threads().find(y => y.t === t) || (/^c_/.test(t) ? clientThread(t.slice(2)) : null); if (!x) return; INBOX_T = t; markSeen(x);
   const wa = waNum(x.phone || ''), leads = x.rows.filter(r => r.coll === 'lead' && r.data.kind !== 'reg');
   sheet(x.name || 'زائر', '<div class="row" style="gap:8px;margin-bottom:10px">' + (wa ? '<button class="btn wa sm1" onclick="openX(\'https://wa.me/' + wa + '\')">' + ico('wa', 18) + ' واتساب</button><button class="btn g sm1" onclick="openX(\'tel:' + esc(x.phone.replace(/[^\d+]/g, '')) + '\')">' + ico('phone', 18) + ' اتصال</button>' : '') + '<button class="btn g sm1" onclick="inboxPage()">' + ico('r', 18) + ' الكل</button></div>' +
     (leads.length ? leads.map(r => '<div class="fld"><label>حالة حجز «' + esc(r.data.s) + '»</label><div class="chips">' + Object.keys(LST).map(k => '<button class="' + ((r.data.status || 'new') === k ? 'on' : '') + '" onclick="leadSt(\'' + r.id + '\',\'' + k + '\')">' + LST[k][0] + '</button>').join('') + '</div></div>').join('') : '') +
@@ -1026,7 +1052,7 @@ function inboxSend() {
 /* ---------- للمدير: تعديل الواجهة والعروض ---------- */
 function pubEdit(tab) { if (!ME || !ME.admin) return; PE = PE || clone(pubData()); PTAB = tab || PTAB; pubEditRender(); }
 function pubEditRender() {
-  const T = [['info', 'البيانات'], ['offers', 'العروض'], ['services', 'الخدمات'], ['on', 'التفعيل']];
+  const T = [['info', 'البيانات'], ['offers', 'العروض'], ['work', 'شغلنا'], ['services', 'الخدمات'], ['on', 'التفعيل']];
   let b = '<div class="segs">' + T.map(t => '<button class="' + (PTAB === t[0] ? 'on' : '') + '" onclick="peKeep();PTAB=\'' + t[0] + '\';pubEditRender()">' + t[1] + '</button>').join('') + '</div>';
   const f = (k, l, ph, cls) => '<div class="fld"><label>' + l + '</label><input id="pe_' + k + '" class="' + (cls || '') + '" value="' + esc(PE[k] || '') + '" placeholder="' + esc(ph || '') + '"></div>';
   if (PTAB === 'info') b += '<div class="fld"><label>الجملة الكبيرة فوق</label><input id="pe_tag" value="' + esc(PE.tag) + '"></div><div class="fld"><label>نبذة عننا</label><textarea id="pe_about" rows="3">' + esc(PE.about) + '</textarea></div>' +
@@ -1034,6 +1060,9 @@ function pubEditRender() {
     f('phone', 'رقم الاتصال العادي', '01xxxxxxxxx', 'en') + '<div class="tog" onclick="this.querySelector(\'.sw\').classList.toggle(\'on\')"><span>زرار «اتصال» العادي يظهر للناس<br><span class="mu sm">مقفول = الناس تكلمك واتساب أو رسايل الأبلكيشن بس</span></span><span class="sw' + (PE.call ? ' on' : '') + '" id="pe_call"></span></div>';
   else if (PTAB === 'offers') b += '<button class="btn" style="width:100%;margin-bottom:12px" onclick="offEdit(-1)">' + ico('plus', 19) + ' عرض جديد</button>' + ((PE.offers || []).length ? '<div class="list">' + PE.offers.map((o, i) => { const live = o.on !== false && (!o.until || o.until >= today());
     return '<div class="it" onclick="offEdit(' + i + ')"><div class="ic" style="font-weight:900;font-size:13px">' + (+o.pct ? fm(o.pct) + '%' : ico('tag')) + '</div><div class="tx"><div class="t1">' + esc(o.t) + '</div><div class="t2">' + esc([offNew(o), o.until ? 'لحد ' + dshort(o.until) : ''].filter(Boolean).join(' · ')) + '</div></div><span class="pill ' + (live ? 'g' : '') + '">' + (live ? 'ظاهر' : 'مخفي') + '</span></div>'; }).join('') + '</div>' : '<div class="card empty">مفيش عروض لسه</div>');
+  else if (PTAB === 'work') b += '<div class="fld"><label>لينك فولدر الدرايف اللي عليه الشغل</label><input id="pe_drive" class="en" value="' + esc(PE.drive || '') + '" placeholder="https://drive.google.com/drive/folders/…" onchange="PE.drive=this.value.trim()"></div><p class="mu sm" style="margin:-4px 2px 12px">اتأكد إن الفولدر «Anyone with the link». الناس هتشوف الفولدر جوه الأبلكيشن وزرار «لينك الدرايف».</p>' +
+    '<div class="ttl" style="margin-top:6px">فيديوهات تتشاف جوه الأبلكيشن</div><p class="mu sm" style="margin:0 2px 10px">من الدرايف: افتح الفيديو ← Share ← Copy link، والصقه هنا.</p>' + (PE.works || []).map((w, i) => '<div class="fe"><input value="' + esc(w.t || '') + '" placeholder="اسم الفيديو" onchange="PE.works[' + i + '].t=this.value.trim()"><input class="en" value="' + esc(w.u || '') + '" placeholder="لينك الفيديو" onchange="PE.works[' + i + '].u=this.value.trim()"><button onclick="PE.works.splice(' + i + ',1);pubEditRender()">' + ico('trash', 17) + '</button></div>').join('') +
+    '<button class="btn g" style="width:100%" onclick="PE.works=PE.works||[];PE.works.push({t:\'\',u:\'\'});pubEditRender()">' + ico('plus', 18) + ' فيديو</button>';
   else if (PTAB === 'services') b += '<button class="btn" style="width:100%;margin-bottom:12px" onclick="svEdit(-1)">' + ico('plus', 19) + ' خدمة جديدة</button><div class="list">' + (PE.services || []).map((s, i) => '<div class="it" onclick="svEdit(' + i + ')"><div class="ic">' + ico(s.i || 'star') + '</div><div class="tx"><div class="t1">' + esc(s.t) + '</div><div class="t2">' + esc(s.d) + '</div></div></div>').join('') + '</div>';
   else b += '<div id="pe_on" class="card">بشوف…</div>';
   b += '<button class="btn g" style="width:100%;margin-top:14px" onclick="peKeep();closeSheet();pubShow(\'app\')">' + ico('globe', 19) + ' شوف الواجهة زي الناس</button>';
