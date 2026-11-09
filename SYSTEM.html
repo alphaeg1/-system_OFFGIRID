@@ -783,7 +783,7 @@ const PUB_DEF = {
   sv: 2, name: 'أوف جريد للدعاية والبرمجة والحلول الذكية', tag: 'حلول دعاية وبرمجيات متكاملة',
   about: 'جيل جديد من الدعاية والتكنولوجيا. بنعمل حلول تسويقية متكاملة بتجمع بين الوجود الميداني، صناعة المحتوى الاحترافي، والبرمجيات الذكية.',
   area: 'متاحين لعملاء جداد في الحوامدية وحواليها',
-  wa: '01031913107', phone: '01150605708', call: false, ig: 'https://instagram.com/ri_25_2', fb: '', tt: '', web: '', map: '', addr: 'الحوامدية — الجيزة', hours: '',
+  wa: '01031913107', phone: '01150605708', call: false, ig: '', fb: '', tt: '', web: '', map: '', addr: 'الحوامدية — الجيزة', hours: '',
   offers: [],
   services: [
     { id: 'sv1', t: 'مونتاج ريلز توكينج هيد', d: 'تصوّر نفسك بتتكلم، واحنا نطلّعه ريل احترافي: كابشن كلمة بكلمة على الصوت، أيقونات وموشن بألوان براندك، وهوك قوي في أول 3 ثواني.', p: '', i: 'film' },
@@ -796,11 +796,10 @@ const PUB_DEF = {
     { id: 'sv8', t: 'أنظمة الكاشير ونقاط البيع (POS)', d: 'سيستم كاشير للمحلات والصيدليات والسوبر ماركت: قراءة الباركود، الفواتير، المخزن، والتقارير، ويشتغل من غير نت على ويندوز.', p: '', i: 'pos' }
   ]
 };
-const PUB_CLIENTS = [['تشيكن ناش', 'مطعم فرايد تشيكن'], ['صيدلية د. هاجر', 'صيدلية'], ['برو بلس', 'محل آيفونات'], ['لامبيكا', 'عطور'], ['دبّابة', 'فرايد تشيكن وبرجر']];
 const PUB_STEPS = [['بتبعتلنا', 'الفيديو اللي صوّرته أو فكرتك، ولو مش عارف تبدأ منين بنكتبلك الاسكريبت.'], ['بنعمل الهوية', 'ألوانك وفونتك وأيقوناتك وشكل القفلة، مرة واحدة وتفضل ثابتة.'], ['معاينة وتعديل', 'بتشوف نسخة وتقولنا رأيك، ونعدّل لحد ما تبقى راضي.'], ['تسليم ونشر', 'فيديو جاهز للفيسبوك والإنستجرام والتيك توك.']];
 let PUB_FROM = '', PUB_MODE = 'home', PUB_OK = null, GROWS = [], GPOLL = 0, PE = null, PTAB = 'info', INBOX_T = null, INBOX_TM = 0, LAST_UNREAD = -1;
 const isTeam = () => ME && !ME.client;
-const pubData = () => { const r = isTeam() && ROWS.get('pub'), x = Object.assign({}, PUB_DEF, (r ? r.data : PUB) || {}); if (!(x.sv >= 2)) { x.services = PUB_DEF.services; x.sv = 2; if (!x.addr) x.addr = PUB_DEF.addr; if (!x.wa) x.wa = PUB_DEF.wa; if (!x.ig) x.ig = PUB_DEF.ig; if (!x.phone) x.phone = PUB_DEF.phone; x.name = x.name || PUB_DEF.name; } return x; };
+const pubData = () => { const r = isTeam() && ROWS.get('pub'), x = Object.assign({}, PUB_DEF, (r ? r.data : PUB) || {}); if (!(x.sv >= 2)) { x.services = PUB_DEF.services; x.sv = 2; if (!x.addr) x.addr = PUB_DEF.addr; if (!x.wa) x.wa = PUB_DEF.wa; if (!x.phone) x.phone = PUB_DEF.phone; x.name = x.name || PUB_DEF.name; } return x; };
 const imgSrc = id => { if (!id) return ''; const r = ROWS.get(id); return (r && r.data && r.data.img) || IMGC.get(id) || ''; };
 const waNum = n => { let d = String(n || '').replace(/\D/g, ''); if (/^0\d{10}$/.test(d)) d = '2' + d; return d; };
 const tm = at => { if (!at) return ''; const d = new Date(at); return dshort(at) + ' ' + pad(d.getHours()) + ':' + pad(d.getMinutes()); };
@@ -862,26 +861,24 @@ function pubRender() {
   const d = pubData(), off = activeOffers(d), sv = d.services || [], un = gUnread(), wa = waNum(d.wa), g = GST();
   let h = instBar() + '<div class="pbar"><span class="wm">OFF<b>GRID</b></span>' + (PUB_FROM ? '<button class="plog" onclick="pubHide()">' + ico('r', 16) + ' رجوع</button>' : '<button class="plog" onclick="pubLogin()">' + ico('user', 16) + ' دخول العملاء</button>') + '</div>';
   h += '<div class="hero rv"><div class="kick">' + ico('spark', 14) + ' ' + esc(d.name) + '</div><h1>' + esc(d.tag) + '</h1><p>' + esc(d.about) + '</p>' + (d.area ? '<div class="area">' + ico('pin', 15) + esc(d.area) + '</div>' : '') +
-    '<div class="row">' + (wa ? '<button class="btn wa" onclick="openX(\'https://wa.me/' + wa + '\')">' + ico('wa', 19) + ' كلمنا واتساب</button>' : '') + (off.length ? '<button class="btn gl" onclick="document.getElementById(\'offs\').scrollIntoView({behavior:\'smooth\'})">' + ico('tag', 18) + ' العروض (' + off.length + ')</button>' : '<button class="btn gl" onclick="document.getElementById(\'svs\').scrollIntoView({behavior:\'smooth\'})">' + ico('box', 18) + ' خدماتنا</button>') + '</div></div>';
+    '<div class="row"><button class="btn" onclick="chatOpen()">' + ico('chat', 19) + ' ابعتلنا رسالة' + (un ? ' <span class="dot">' + un + '</span>' : '') + '</button>' + (off.length ? '<button class="btn gl" onclick="document.getElementById(\'offs\').scrollIntoView({behavior:\'smooth\'})">' + ico('tag', 18) + ' العروض (' + off.length + ')</button>' : '<button class="btn gl" onclick="document.getElementById(\'svs\').scrollIntoView({behavior:\'smooth\'})">' + ico('box', 18) + ' خدماتنا</button>') + '</div></div>';
   if (off.length) h += '<div class="sec" id="offs"><b>' + ico('spark', 20) + ' عروض النهارده</b><span>لفترة محدودة</span></div>' + off.map((o, i) => offerCard(o, i)).join('');
   h += '<div class="sec" id="svs"><b>خدماتنا</b><span>' + sv.length + ' خدمة · دوس للتفاصيل</span></div><div class="svs">' + sv.map((s, i) => '<button class="sv rv" onclick="svOpen(' + i + ')"><span class="ic">' + ico(s.i || 'star', 22) + '</span><b>' + esc(s.t) + '</b><p>' + esc(s.d) + '</p>' + (s.p ? '<em>يبدأ من ' + esc(s.p) + '</em>' : '') + '</button>').join('') + '</div>';
   h += '<div class="sec"><b>إزاي بنشتغل</b><span>4 خطوات وفيديوك جاهز</span></div><div class="steps">' + PUB_STEPS.map((x, i) => '<div class="st rv"><i>' + (i + 1) + '</i><div><b>' + x[0] + '</b><p>' + x[1] + '</p></div></div>').join('') + '</div>';
-  h += '<div class="sec"><b>عملاء اشتغلنا معاهم</b><span>من الحوامدية والبدرشين</span></div><div class="cls">' + PUB_CLIENTS.map(c => '<div class="cl rv"><b>' + esc(c[0]) + '</b><span>' + esc(c[1]) + '</span></div>').join('') + '</div>';
-  const C = [['chat', 'رسايلنا', 'chatOpen()', '#2f7bff', un]];
+  const C = [['chat', 'ابعتلنا هنا', 'chatOpen()', '#2f7bff', un]];
   if (wa) C.push(['wa', 'واتساب', "openX('https://wa.me/" + wa + "')", '#25d366']);
-  if (d.ig) C.push(['ig', 'انستجرام', "openX('" + igLink(d.ig) + "')", '#e1306c']);
   if (d.fb) C.push(['fb', 'فيسبوك', "openX('" + jsq(d.fb) + "')", '#1877f2']);
   if (d.tt) C.push(['tt', 'تيك توك', "openX('" + jsq(d.tt) + "')", '#f3f2ef']);
   if (d.web) C.push(['globe', 'شوف شغلنا', "openX('" + jsq(d.web) + "')", '#8ab4ff']);
   if (d.map) C.push(['pin', 'مكاننا', "openX('" + jsq(d.map) + "')", '#ffb340']);
   if (d.call && d.phone) C.push(['phone', 'اتصال', "openX('tel:" + String(d.phone).replace(/[^\d+]/g, '') + "')", '#36c98a']);
-  h += '<div class="sec"><b>تواصل معانا</b></div><div class="cts">' + C.map(c => '<button class="ct rv" onclick="' + c[2] + '"><span class="ic" style="background:' + c[3] + '22;color:' + c[3] + '">' + ico(c[0], 22) + '</span>' + c[1] + (c[4] ? ' <span class="dot">' + c[4] + '</span>' : '') + '</button>').join('') + '</div>';
+  h += '<div class="sec"><b>تواصل معانا</b><span>الأسرع: رسالة من الأبلكيشن</span></div><div class="cts">' + C.map(c => '<button class="ct rv" onclick="' + c[2] + '"><span class="ic" style="background:' + c[3] + '22;color:' + c[3] + '">' + ico(c[0], 22) + '</span>' + c[1] + (c[4] ? ' <span class="dot">' + c[4] + '</span>' : '') + '</button>').join('') + '</div>';
   if (d.addr || d.hours) h += '<div class="card rv" style="margin-top:12px">' + (d.addr ? '<div class="row" style="margin-bottom:' + (d.hours ? 8 : 0) + 'px">' + ico('pin', 18) + '<span>' + esc(d.addr) + '</span></div>' : '') + (d.hours ? '<div class="row">' + ico('clock', 18) + '<span>' + esc(d.hours) + '</span></div>' : '') + '</div>';
   h += '<div class="reg rv">' + (g.reg ? '<b>' + ico('check', 18) + ' انت متسجل عندنا يا ' + esc(g.name) + '</b><p>هنبعتلك العروض الجديدة أول بأول.</p>' :
     '<b>سجّل رقمك ويوصلك كل عرض جديد</b><p>هنكلمك بنفسنا ونقولك على الباقة المناسبة لنشاطك.</p><div class="row"><input id="rg_n" placeholder="اسمك" value="' + esc(g.name) + '"><input id="rg_p" class="en" inputmode="tel" placeholder="رقمك" value="' + esc(g.phone) + '"></div><button class="btn" style="width:100%;margin-top:8px" onclick="sendReg()">سجّلني</button>') + '</div>';
   if (wa) h += '<p class="mu sm" style="text-align:center;margin:16px 8px 0">عايز تكلمنا صوت؟ ادخل واتساب ودوس على زرار المكالمة</p>';
   h += '<p class="mu sm" style="text-align:center;margin-top:14px">OFFGRID ' + VER + '</p>';
-  h += '<div class="pact"><button class="btn" onclick="bookSheet()">' + ico('cal', 19) + ' احجز</button><button class="btn g" onclick="chatOpen()">' + ico('chat', 19) + ' رسايل' + (un ? ' <span class="dot">' + un + '</span>' : '') + '</button>' + (wa ? '<button class="btn wa" onclick="openX(\'https://wa.me/' + wa + '\')" aria-label="واتساب">' + ico('wa', 21) + '</button>' : '') + '</div>';
+  h += '<div class="pact"><button class="btn" onclick="chatOpen()">' + ico('chat', 19) + ' ابعتلنا رسالة' + (un ? ' <span class="dot">' + un + '</span>' : '') + '</button><button class="btn g" onclick="bookSheet()">' + ico('cal', 19) + ' احجز</button></div>';
   $('pub').innerHTML = h; reveal();
 }
 function reveal() {
@@ -893,8 +890,8 @@ function reveal() {
 async function sendReg() {
   const n = $('rg_n').value.trim(), p = enDigits($('rg_p').value).replace(/[^\d+]/g, ''); if (!n) return toast('اكتب اسمك'); if (p.replace(/\D/g, '').length < 8) return toast('اكتب رقم صح');
   const g = GST(); g.name = n; g.phone = p;
-  if (!(await guestPost('lead', { t: g.t, from: 'guest', kind: 'reg', name: n, phone: p, status: 'new', at: new Date().toISOString() }))) return;
-  g.reg = true; saveG(g); toast('اتسجلت ✓ هنكلمك قريب'); pubRender();
+  const rk = await guestPost('lead', { t: g.t, from: 'guest', kind: 'reg', name: n, phone: p, status: 'new', at: new Date().toISOString() }); if (!rk) return;
+  g.reg = true; saveG(g); if (rk !== 'q') toast('اتسجلت ✓ هنكلمك قريب'); pubRender();
 }
 const jsq = s => esc(String(s || '').replace(/['\\]/g, ''));
 const igLink = h => { const s = String(h || '').trim(); if (/^https?:/i.test(s)) return jsq(s); return 'https://ig.me/m/' + jsq(s.replace(/^@/, '')); };
@@ -930,24 +927,26 @@ async function sendBook() {
   $('shA').disabled = true;
   const ok = await guestPost('lead', data); $('shA').disabled = false;
   if (!ok) return;
-  closeSheet(); toast('وصل طلبك ✓ هنرد عليك في الرسايل'); chatOpen();
+  closeSheet(); if (ok !== 'q') toast('وصل طلبك ✓ هنرد عليك في الرسايل'); chatOpen();
 }
+const GQ = () => { try { return JSON.parse(localStorage.getItem('og-gq') || '[]'); } catch (e) { return []; } };
+const saveGQ = q => { try { localStorage.setItem('og-gq', JSON.stringify(q)); } catch (e) { /* */ } };
+const asClient = () => !!(ME && ME.client && SES);
+const postRow = row => api('/rest/v1/items', { method: 'POST', auth: asClient(), headers: { Prefer: 'return=minimal' }, body: row });
 async function guestPost(coll, data) {
-  if (!navigator.onLine) { toast('محتاج نت عشان يتبعت'); return false; }
-  const id = coll + '_' + nid(), row = { id, coll, data };
-  try { await api('/rest/v1/items', { method: 'POST', auth: false, headers: { Prefer: 'return=minimal' }, body: row }); GROWS.push({ id, coll, data, created_at: new Date().toISOString() }); return true; }
-  catch (e) {
-    const wa = waNum(pubData().wa);
-    if (/row-level|permission|401|403|42501/i.test(String(e.message) + e.status)) sheet('لسه بنجهّز الخدمة دي', '<p>الحجز والرسايل من الأبلكيشن لسه بيتفعّلوا.' + (wa ? ' ابعتلنا واتساب لحد ما يشتغلوا:' : '') + '</p>' + (wa ? '<button class="btn wa" style="width:100%" onclick="openX(\'https://wa.me/' + wa + '?text=' + encodeURIComponent((data.kind === 'book' ? 'حجز: ' + data.s + ' — ' : '') + (data.text || data.x || '') + ' — ' + data.name).replace(/'/g, '') + '\')">' + ico('wa', 19) + ' واتساب</button>' : ''));
-    else toast(errAr(e));
-    return false;
-  }
+  const row = { id: coll + '_' + nid(), coll, data };
+  if (navigator.onLine) try { await postRow(row); GROWS.push(Object.assign({ created_at: new Date().toISOString() }, row)); return true; }
+    catch (e) { if (!/row-level|permission|401|403|42501|fetch|network|Failed/i.test(String(e.message) + e.status)) { toast(errAr(e)); return false; } }
+  const q = GQ(); q.push(row); saveGQ(q); GROWS.push(Object.assign({ created_at: data.at, pend: 1 }, row));
+  toast(navigator.onLine ? 'اتحفظت ✓ وهتوصلنا أول ما الخدمة تتفعّل' : 'اتحفظت ✓ وهتتبعت أول ما يبقى فيه نت'); return 'q';
 }
+async function gFlush() { const q = GQ(); if (!q.length || !navigator.onLine) return; const left = []; for (const r of q) { try { await postRow(r); } catch (e) { left.push(r); } } saveGQ(left); }
 
 /* ---------- الرسايل (للزائر أو العميل) ---------- */
 async function gPull() {
-  if (!navigator.onLine) return; const g = GST();
-  try { GROWS = await api('/rest/v1/rpc/guest_thread', { method: 'POST', auth: false, body: { p_t: g.t } }) || []; } catch (e) { return; }
+  const g = GST();
+  if (navigator.onLine) { await gFlush(); try { GROWS = (asClient() ? await api('/rest/v1/items?select=*&coll=in.(chat,lead)&' + encodeURIComponent('data->>t') + '=eq.' + g.t) : await api('/rest/v1/rpc/guest_thread', { method: 'POST', auth: false, body: { p_t: g.t } })) || []; } catch (e) { /* */ } }
+  const q = GQ(); GROWS = GROWS.filter(r => !r.pend && !q.some(x => x.id === r.id)).concat(q.map(r => Object.assign({ created_at: r.data.at, pend: 1 }, r)));
   if ($('pub').style.display !== 'none') { if (PUB_MODE === 'chat') { chatRender(); } else pubRender(); }
 }
 function chatOpen() { PUB_MODE = 'chat'; closeSheet(); chatRender(); gPull(); clearInterval(GPOLL); GPOLL = setInterval(() => { if (!document.hidden) gPull(); }, 6000); setTimeout(() => window.scrollTo(0, document.body.scrollHeight), 50); }
@@ -958,7 +957,7 @@ function threadHtml(rows, mine) {
     const d = r.data, me = d.from === mine;
     if (r.coll === 'lead' && d.kind === 'reg') return '<div class="bk"><b>' + ico('user', 17) + ' ' + (mine === 'team' ? 'سجّل رقمه عشان توصله العروض' : 'اتسجلت عندنا ✓') + '</b>' + (mine === 'team' ? '<div class="mu sm en">' + esc(d.phone) + '</div>' : '') + '<small class="mu">' + tm(d.at || r.created_at) + '</small></div>';
     if (r.coll === 'lead') { const st = LST[d.status] || LST.new; return '<div class="bk"><div class="row" style="justify-content:space-between"><b>' + ico('cal', 17) + ' طلب حجز</b><span class="pill ' + st[1] + '">' + st[0] + '</span></div><div style="margin-top:4px">' + esc(d.s) + '</div><div class="mu sm">' + [d.day ? dshort(d.day) : '', d.time].filter(Boolean).join(' · ') + (d.x ? ' — ' + esc(d.x) : '') + '</div>' + (mine === 'team' ? '<div class="mu sm en">' + esc(d.phone) + '</div>' : '') + '<small class="mu">' + tm(d.at || r.created_at) + '</small></div>'; }
-    return '<div class="msg ' + (me ? 'me' : 'them') + '">' + esc(d.text) + '<small>' + (!me && mine === 'guest' ? 'OFFGRID · ' : !me ? esc(d.name || '') + ' · ' : '') + tm(d.at || r.created_at) + '</small></div>';
+    return '<div class="msg ' + (me ? 'me' : 'them') + '">' + esc(d.text) + '<small>' + (!me && mine === 'guest' ? 'OFFGRID · ' : !me ? esc(d.name || '') + ' · ' : '') + tm(d.at || r.created_at) + (r.pend ? ' · لسه بتتبعت' : '') + '</small></div>';
   }).join('');
 }
 function chatRender() {
@@ -1031,7 +1030,7 @@ function pubEditRender() {
   let b = '<div class="segs">' + T.map(t => '<button class="' + (PTAB === t[0] ? 'on' : '') + '" onclick="peKeep();PTAB=\'' + t[0] + '\';pubEditRender()">' + t[1] + '</button>').join('') + '</div>';
   const f = (k, l, ph, cls) => '<div class="fld"><label>' + l + '</label><input id="pe_' + k + '" class="' + (cls || '') + '" value="' + esc(PE[k] || '') + '" placeholder="' + esc(ph || '') + '"></div>';
   if (PTAB === 'info') b += '<div class="fld"><label>الجملة الكبيرة فوق</label><input id="pe_tag" value="' + esc(PE.tag) + '"></div><div class="fld"><label>نبذة عننا</label><textarea id="pe_about" rows="3">' + esc(PE.about) + '</textarea></div>' +
-    f('wa', 'رقم الواتساب', '01xxxxxxxxx', 'en') + f('ig', 'انستجرام (اسم الحساب أو اللينك)', '@offgrid', 'en') + f('fb', 'لينك فيسبوك', 'https://facebook.com/…', 'en') + f('tt', 'لينك تيك توك', 'https://tiktok.com/@…', 'en') + f('web', 'لينك الموقع', 'https://…', 'en') + f('map', 'لينك المكان على الخريطة', 'https://maps.app.goo.gl/…', 'en') + f('addr', 'العنوان', 'المدينة — الشارع') + f('hours', 'مواعيد الشغل', 'كل يوم من 12 الضهر لـ 10 بالليل') +
+    f('wa', 'رقم الواتساب', '01xxxxxxxxx', 'en') + f('fb', 'لينك فيسبوك', 'https://facebook.com/…', 'en') + f('tt', 'لينك تيك توك', 'https://tiktok.com/@…', 'en') + f('web', 'لينك الموقع', 'https://…', 'en') + f('map', 'لينك المكان على الخريطة', 'https://maps.app.goo.gl/…', 'en') + f('addr', 'العنوان', 'المدينة — الشارع') + f('hours', 'مواعيد الشغل', 'كل يوم من 12 الضهر لـ 10 بالليل') +
     f('phone', 'رقم الاتصال العادي', '01xxxxxxxxx', 'en') + '<div class="tog" onclick="this.querySelector(\'.sw\').classList.toggle(\'on\')"><span>زرار «اتصال» العادي يظهر للناس<br><span class="mu sm">مقفول = الناس تكلمك واتساب أو رسايل الأبلكيشن بس</span></span><span class="sw' + (PE.call ? ' on' : '') + '" id="pe_call"></span></div>';
   else if (PTAB === 'offers') b += '<button class="btn" style="width:100%;margin-bottom:12px" onclick="offEdit(-1)">' + ico('plus', 19) + ' عرض جديد</button>' + ((PE.offers || []).length ? '<div class="list">' + PE.offers.map((o, i) => { const live = o.on !== false && (!o.until || o.until >= today());
     return '<div class="it" onclick="offEdit(' + i + ')"><div class="ic" style="font-weight:900;font-size:13px">' + (+o.pct ? fm(o.pct) + '%' : ico('tag')) + '</div><div class="tx"><div class="t1">' + esc(o.t) + '</div><div class="t2">' + esc([offNew(o), o.until ? 'لحد ' + dshort(o.until) : ''].filter(Boolean).join(' · ')) + '</div></div><span class="pill ' + (live ? 'g' : '') + '">' + (live ? 'ظاهر' : 'مخفي') + '</span></div>'; }).join('') + '</div>' : '<div class="card empty">مفيش عروض لسه</div>');
