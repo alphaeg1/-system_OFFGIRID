@@ -94,64 +94,94 @@ body.sh #shade{opacity:1;pointer-events:auto}body.sh #sheet{transform:none}
 #portal .ph{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
 #portal .hi{font-size:24px;font-weight:800;margin:6px 2px 2px}
 .ptab{display:flex;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:3px;margin-bottom:6px}.ptab button{flex:1;padding:9px;border-radius:9px;color:var(--mu);font-weight:700}.ptab button.on{background:var(--ac);color:#fff}
-
-/* رسايل العملاء والمكالمات */
-.bdg{position:absolute;top:-2px;left:calc(50% - 22px);min-width:18px;height:18px;border-radius:9px;background:var(--bad);color:#fff;font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;padding:0 5px}
-nav button{position:relative}
-.chat{display:flex;flex-direction:column;padding:4px 0 8px}
-.cday{align-self:center;font-size:12px;color:var(--mu);background:var(--card);border-radius:10px;padding:3px 10px;margin:12px 0 6px}
-.bub{max-width:82%;padding:9px 13px 7px;border-radius:18px;margin:3px 0;font-size:15.5px;line-height:1.5;white-space:pre-wrap;word-break:break-word;-webkit-user-select:text;user-select:text}
-.bub.me{align-self:flex-end;background:var(--ac);color:#fff;border-bottom-left-radius:6px}
-.bub.th{align-self:flex-start;background:var(--card2);border-bottom-right-radius:6px}
-.bub.call{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-.bub small{display:block;width:100%;font-size:11px;opacity:.72;margin-top:2px}
-.bub .tg{display:inline-block;font-size:12px;font-weight:800;border-radius:10px;padding:1px 9px;margin-bottom:4px;background:rgba(255,255,255,.2)}
-.bub.th .tg{background:rgba(255,179,64,.16);color:var(--warn)}
-main.inchat,#portal.inchat{padding-bottom:calc(var(--sb) + 150px)}
-#comp{display:none;position:fixed;left:0;right:0;bottom:0;z-index:12;background:rgba(21,21,25,.96);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-top:1px solid var(--line);padding:8px 12px calc(var(--sb) + 8px)}
-#comp .chips{flex-wrap:nowrap;overflow:auto;margin-bottom:8px}#comp .chips button{padding:6px 12px;font-size:13.5px;white-space:nowrap}
-#comp .row{align-items:flex-end}
-#cin{resize:none;max-height:120px;min-height:46px;border-radius:22px;padding:11px 16px;line-height:1.4}
-#csend{width:46px;height:46px;border-radius:50%;background:var(--ac);color:#fff;display:flex;align-items:center;justify-content:center;flex:none}
-#csend svg{transform:scaleX(-1)}
-.hbtn{width:40px;height:40px;border-radius:50%;background:var(--card);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;flex:none;margin-bottom:4px}
-.hbtn.ok{background:var(--ok);border-color:var(--ok);color:#06261a}
-.chead{display:flex;align-items:center;gap:10px;min-width:0}.chead span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:22px}
-.hello{font-size:15px;color:var(--mu);font-weight:600;display:block}
-.cact{display:flex;gap:8px;margin:0 0 12px}.cact .btn{flex:1;padding:12px;font-size:15px}
-.dot{display:inline-block;min-width:20px;height:20px;border-radius:10px;background:var(--bad);color:#fff;font-size:12px;font-weight:800;text-align:center;line-height:20px;padding:0 6px}
-#callUI{position:fixed;inset:0;z-index:60;display:none;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:calc(var(--st) + 30px) 24px calc(var(--sb) + 40px);background:radial-gradient(120% 70% at 50% 20%,#17305f 0%,#0b0b0d 70%)}
-body.oncall #callUI{display:flex}
-#callUI .av{width:112px;height:112px;border-radius:50%;background:var(--card2);display:flex;align-items:center;justify-content:center;color:var(--ac2);margin-bottom:8px;position:relative}
-#callUI .av svg{width:52px;height:52px}
-#callUI .av.pulse:before,#callUI .av.pulse:after{content:"";position:absolute;inset:0;border-radius:50%;border:2px solid var(--ac);animation:rp 2s infinite}
-#callUI .av.pulse:after{animation-delay:1s}
-@keyframes rp{0%{transform:scale(1);opacity:.9}100%{transform:scale(1.8);opacity:0}}
-#cuN{font-size:26px;font-weight:800;text-align:center}#cuS{color:var(--mu);font-size:16px;text-align:center;min-height:24px}
-#cuB{display:flex;gap:34px;margin-top:40px;justify-content:center;flex-wrap:wrap}
-.cb{display:flex;flex-direction:column;align-items:center;gap:8px;font-size:13px;color:var(--mu)}
-.cb i{width:70px;height:70px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;background:#2b2b33}
-.cb i svg{width:30px;height:30px}.cb.r i{background:var(--bad)}.cb.g i{background:var(--ok)}.cb.on i{background:#fff;color:#111}
-.cb.r i svg.hang{transform:rotate(135deg)}
+/* الواجهة العامة */
+#pub{display:none;min-height:100%;padding:calc(var(--st) + 12px) 16px calc(var(--sb) + 96px);background:radial-gradient(120% 55% at 50% -12%,#1a2f5c 0%,rgba(11,11,13,0) 62%),var(--bg)}
+.pbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}.pbar .wm{font-size:28px}
+.plog{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.06);border:1px solid var(--line);border-radius:20px;padding:7px 13px;font-size:13.5px;font-weight:700;color:var(--tx)}
+.hero{position:relative;overflow:hidden;border-radius:26px;padding:20px 18px 18px;background:linear-gradient(155deg,#1d3f86 0%,#101c39 52%,#0d0f16 100%);border:1px solid #2a4a8a;box-shadow:0 20px 50px rgba(20,50,120,.35)}
+.hero:before{content:"";position:absolute;width:260px;height:260px;border-radius:50%;background:radial-gradient(circle,rgba(80,150,255,.5),rgba(47,123,255,0) 70%);top:-110px;left:-90px}
+.hero>*{position:relative}.hero .kick{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;letter-spacing:1.5px;color:#9fc0ff;background:rgba(47,123,255,.16);border:1px solid rgba(138,180,255,.25);border-radius:20px;padding:4px 10px;margin-bottom:12px}
+.hero h1{margin:0 0 8px;font-size:26px;line-height:1.35;font-weight:800}.hero p{margin:0 0 16px;color:#c3cbe0;font-size:14.5px;line-height:1.6}
+.hero .row{gap:8px}.hero .btn{flex:1;padding:13px 10px;font-size:15.5px}.btn.gl{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.16)}
+.btn.wa{background:#1fae54}.btn.sm1{padding:9px 12px;font-size:14px;flex:1}
+.sec{display:flex;align-items:baseline;justify-content:space-between;margin:24px 2px 11px}.sec b{font-size:20px;font-weight:800}.sec span{color:var(--mu);font-size:12.5px}
+.offs{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;margin:0 -16px;padding:2px 16px 6px;-webkit-overflow-scrolling:touch;scrollbar-width:none}.offs::-webkit-scrollbar{display:none}
+.off{flex:none;width:84%;max-width:360px;scroll-snap-align:center;background:var(--card);border:1px solid var(--line);border-radius:22px;overflow:hidden;box-shadow:0 12px 30px rgba(0,0,0,.35)}
+.off .im{aspect-ratio:4/3;background:linear-gradient(135deg,#1d2b4d,#111827);position:relative;display:flex;align-items:center;justify-content:center;color:#8ab4ff}
+.off .im img{width:100%;height:100%;object-fit:cover;display:block}
+.badge{position:absolute;top:12px;right:12px;background:#ff3b5c;color:#fff;font-size:12px;font-weight:800;border-radius:20px;padding:4px 11px;box-shadow:0 4px 14px rgba(255,59,92,.45)}
+.off .bd{padding:13px 15px 15px}.off .ot{font-size:17px;display:block}.off p{margin:5px 0 0;color:var(--mu);font-size:13.5px;line-height:1.55}
+.price{display:flex;align-items:center;gap:8px;margin:9px 0 12px;flex-wrap:wrap}.price b{font-size:22px;color:#fff}.price s{color:var(--mu);font-size:14px}
+.svs{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.sv{display:block;background:var(--card);border:1px solid var(--line);border-radius:20px;padding:14px;text-align:right;color:var(--tx)}
+.sv .ic{width:42px;height:42px;border-radius:13px;background:rgba(47,123,255,.14);color:var(--ac2);display:flex;align-items:center;justify-content:center;margin-bottom:10px}
+.sv b{display:block;font-size:15px;margin-bottom:4px;line-height:1.35}.sv p{margin:0;color:var(--mu);font-size:12.5px;line-height:1.55;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.sv em{display:block;font-style:normal;color:var(--ac2);font-size:12.5px;font-weight:700;margin-top:8px}.sv.big1{border:0;padding:0;background:none}
+.cts{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.ct{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:14px 4px;display:flex;flex-direction:column;align-items:center;gap:7px;font-size:13px;font-weight:700;color:var(--tx)}
+.ct .ic{width:46px;height:46px;border-radius:50%;display:flex;align-items:center;justify-content:center}
+.pact{position:fixed;left:0;right:0;bottom:0;z-index:12;display:flex;gap:8px;padding:10px 14px calc(var(--sb) + 10px);background:rgba(11,11,13,.86);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border-top:1px solid var(--line)}
+.pact .btn{flex:1;padding:13px 8px;font-size:15.5px}.pact .btn.wa{flex:0 0 56px}
+.dot{display:inline-flex;align-items:center;justify-content:center;min-width:19px;height:19px;border-radius:10px;background:#ff3b5c;color:#fff;font-size:11.5px;font-weight:800;padding:0 5px}
+.chat{display:flex;flex-direction:column;gap:8px;padding-bottom:6px}
+.msg{max-width:82%;padding:9px 13px;border-radius:18px;font-size:15px;line-height:1.5;white-space:pre-wrap;overflow-wrap:anywhere;-webkit-user-select:text;user-select:text}
+.msg.me{align-self:flex-start;background:var(--ac);color:#fff;border-bottom-right-radius:6px}.msg.them{align-self:flex-end;background:var(--card2);border:1px solid var(--line);border-bottom-left-radius:6px}
+.msg small{display:block;font-size:11px;opacity:.7;margin-top:3px}
+.bk{background:var(--card);border:1px solid #2a4a8a;border-radius:16px;padding:10px 12px;font-size:14px}.bk small{display:block;margin-top:4px;font-size:11px}
+.cbar{position:fixed;left:0;right:0;bottom:0;z-index:12;display:flex;gap:8px;align-items:flex-end;padding:10px 12px calc(var(--sb) + 10px);background:rgba(11,11,13,.94);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border-top:1px solid var(--line)}
+.cbar textarea{flex:1;resize:none;min-height:46px;max-height:120px;padding:11px 14px;border-radius:23px}.cbar input{border-radius:23px;padding:11px 12px}
+.cbar button{width:46px;height:46px;border-radius:50%;background:var(--ac);color:#fff;display:flex;align-items:center;justify-content:center;flex:none}
+.chat.ib{max-height:46vh;overflow:auto;background:var(--bg);border:1px solid var(--line);border-radius:16px;padding:10px}
+.ibc{cursor:pointer;background:linear-gradient(135deg,#17305f,#101a31);border-color:#24427a}.ibc .row{gap:12px}.ic2{width:42px;height:42px;border-radius:13px;background:rgba(47,123,255,.2);color:var(--ac2);display:flex;align-items:center;justify-content:center;flex:none}
+.inst2{display:flex;align-items:center;gap:10px;background:linear-gradient(135deg,#132447,#0f1626);border:1px solid #2a4a8a;border-radius:18px;padding:10px 10px 10px 12px;margin-bottom:12px;animation:dn .5s ease}
+.inst2 img{width:44px;height:44px;border-radius:11px;flex:none}.inst2 .tx{flex:1;min-width:0}.inst2 b{display:block;font-size:15px}.inst2 span{display:block;font-size:12px;color:#a9b6d3}
+.inst2 .btn{padding:9px 14px;font-size:14.5px;border-radius:12px;flex:none}.inst2 .x{color:var(--mu);padding:4px;flex:none}
+@keyframes dn{from{opacity:0;transform:translateY(-10px)}}
+.steps2{display:flex;flex-direction:column;gap:10px;margin-bottom:12px}.steps2>div{display:flex;align-items:center;gap:12px;background:var(--card2);border:1px solid var(--line);border-radius:14px;padding:12px;font-size:15px}
+.steps2 b{width:30px;height:30px;border-radius:50%;background:var(--ac);color:#fff;display:flex;align-items:center;justify-content:center;flex:none}
+.hero{animation:hg 9s ease-in-out infinite alternate;background-size:160% 160%}@keyframes hg{to{background-position:100% 100%}}
+.hero .area{display:inline-flex;align-items:center;gap:5px;font-size:13px;color:#7ee2a8;background:rgba(54,201,138,.12);border:1px solid rgba(54,201,138,.25);border-radius:20px;padding:4px 10px;margin:-4px 0 14px}
+.rv{opacity:0;transform:translateY(16px);transition:opacity .55s ease,transform .55s cubic-bezier(.2,.8,.2,1)}.rv.in{opacity:1;transform:none}
+.offer{position:relative;overflow:hidden;border-radius:26px;padding:18px 18px 16px;margin-bottom:14px;color:#fff;box-shadow:0 18px 44px rgba(0,0,0,.4)}
+.offer.hot{background:linear-gradient(140deg,#ff2d55 0%,#ff6b2c 55%,#ffb21e 100%)}.offer.elec{background:linear-gradient(140deg,#5b2dff 0%,#2f7bff 55%,#19c3ff 100%)}.offer.lime{background:linear-gradient(140deg,#00a86b 0%,#22c55e 50%,#c6f432 100%)}
+.offer:after{content:"";position:absolute;inset:0;background:linear-gradient(105deg,transparent 30%,rgba(255,255,255,.28) 45%,transparent 60%);transform:translateX(-120%);animation:sh 3.6s ease-in-out infinite}
+@keyframes sh{60%,100%{transform:translateX(120%)}}
+.offer .wmk{position:absolute;left:-10px;bottom:-26px;font:900 120px/1 OGW,sans-serif;color:rgba(255,255,255,.12);letter-spacing:-4px;pointer-events:none}
+.offer>*{position:relative;z-index:1}.offer .top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:8px}
+.offer .pct{display:flex;flex-direction:column;line-height:1}.offer .pct small{font-size:15px;font-weight:800;opacity:.92;margin-bottom:2px}.offer .pct b{font-size:64px;font-weight:900;letter-spacing:-1px;text-shadow:0 6px 20px rgba(0,0,0,.25);animation:pp 2.4s ease-in-out infinite}
+@keyframes pp{50%{transform:scale(1.05)}}
+.offer .cd{display:inline-flex;align-items:center;gap:4px;background:rgba(0,0,0,.25);border-radius:20px;padding:5px 10px;font-size:12.5px;font-weight:800;white-space:nowrap}
+.offer .ot{display:block;font-size:22px;font-weight:900;line-height:1.3}.offer p{margin:6px 0 0;font-size:14.5px;line-height:1.55;opacity:.95}
+.offer .price{margin:12px 0 14px}.offer .price b{font-size:28px;color:#fff}.offer .price s{color:rgba(255,255,255,.75);font-size:16px}
+.btn.wt{width:100%;background:#fff;color:#111;box-shadow:0 8px 20px rgba(0,0,0,.18)}
+.steps{display:flex;flex-direction:column;gap:10px}.st{display:flex;gap:12px;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:13px 14px}
+.st i{font-style:normal;width:34px;height:34px;border-radius:11px;background:linear-gradient(135deg,#2f7bff,#19c3ff);color:#fff;font-weight:900;display:flex;align-items:center;justify-content:center;flex:none}.st b{display:block}.st p{margin:3px 0 0;color:var(--mu);font-size:13.5px;line-height:1.55}
+.cls{display:flex;gap:10px;overflow-x:auto;margin:0 -16px;padding:0 16px 4px;scrollbar-width:none}.cls::-webkit-scrollbar{display:none}
+.cl{flex:none;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:11px 14px;min-width:130px}.cl b{display:block;font-size:15px}.cl span{color:var(--mu);font-size:12.5px}
+.reg{margin-top:18px;border-radius:22px;padding:16px;background:linear-gradient(135deg,#1a1f33,#121520);border:1px solid #2c3550}.reg b{display:flex;align-items:center;gap:6px;font-size:17px}.reg p{margin:4px 0 10px;color:var(--mu);font-size:13.5px}.reg .row input{flex:1;min-width:0}
+.ibl{margin-top:10px;display:flex;flex-direction:column;gap:6px}.ibl>div{display:flex;align-items:center;gap:8px;background:rgba(0,0,0,.2);border-radius:10px;padding:7px 10px}.ibl b{flex:1;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.upl{display:flex;align-items:center;justify-content:center;aspect-ratio:4/3;border:1.5px dashed #34518c;border-radius:18px;background:var(--card2);overflow:hidden;margin-bottom:12px;color:var(--ac2);text-align:center;position:relative}
+.upl span{display:flex;flex-direction:column;align-items:center;gap:6px}.upl img{width:100%;height:100%;object-fit:cover}.upl input{position:absolute;inset:0;opacity:0}
+#auth{position:fixed}
 </style></head><body>
 
-<div id="auth"><h1><span class="wm" style="font-size:46px">OFF<b>GRID</b></span></h1><p class="mu" style="margin-top:-6px">نظام إدارة الشغل والفلوس</p><p class="mu" id="alead">بحمّل…</p>
+<div id="auth"><button id="aback" class="plog" style="position:absolute;top:calc(var(--st) + 14px);right:16px" onclick="pubShow()"><svg class="i" viewBox="0 0 24 24" style="width:16px;height:16px"><path d="M9 6l6 6-6 6"/></svg> العروض والخدمات</button><h1><span class="wm" style="font-size:46px">OFF<b>GRID</b></span></h1><p class="mu" style="margin-top:-6px">OFFGRID STUDIO</p><p class="mu" id="alead">بحمّل…</p>
  <div id="aform" style="display:none;flex-direction:column;gap:10px"></div><div id="amsg"></div></div>
 
+<div id="pub"></div>
 <div id="portal"></div>
 <div id="app"><header><h2 id="ht"></h2><div id="sync"><i></i><span id="syt"></span></div></header>
  <main id="main"></main>
  <button id="fab" onclick="quickAdd()" aria-label="إضافة"><svg class="i" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button>
  <nav id="nav"></nav></div>
 <div id="shade" onclick="closeSheet()"></div><div id="sheet"><div class="grab"></div><div class="hd"><b id="shT"></b><button id="shA"></button></div><div class="bd" id="shB"></div></div>
-<div id="comp"><div class="chips" id="qtags" data-v=""></div><div class="row"><textarea id="cin" rows="1" placeholder="اكتب رسالتك…"></textarea><button id="csend" aria-label="ابعت" onclick="sendMsg()"></button></div></div>
-<div id="callUI"><div class="av" id="cuA"></div><div id="cuN"></div><div id="cuS"></div><div id="cuB"></div><audio id="raud" autoplay playsinline></audio></div>
 <div id="toast"></div>
 <script>
 'use strict';
 /* OFFGRID — أبلكيشن الآيفون
    كل جهاز بيحفظ عنده الأول (يشتغل من غير نت)، وأول ما يلقط نت بيرفع اللي اتسجل ويجيب اللي الأجهزة التانية ضافته */
-const SB_URL = 'https://inucitipqkixhcxrpufp.supabase.co', SB_KEY = 'sb_publishable_MtF1Nj_93rVB-ouSvuRi5w_dQOUzFIA', DOMAIN = 'offgrid.local', VER = '3.4';
+const SB_URL = 'https://inucitipqkixhcxrpufp.supabase.co', SB_KEY = 'sb_publishable_MtF1Nj_93rVB-ouSvuRi5w_dQOUzFIA', DOMAIN = 'offgrid.local', VER = '4.0';
+let PUB = null; const IMGC = new Map();
 const $ = id => document.getElementById(id);
 const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const pad = n => String(n).padStart(2, '0');
@@ -177,7 +207,7 @@ const IC = { home: 'M3 11l9-8 9 8M5 10v10h14V10M9 20v-6h6v6', users: 'M16 19v-1a
   more: 'M4 6h16M4 12h16M4 18h16', gear: 'M12 15a3 3 0 100-6 3 3 0 000 6M19.4 15a1.6 1.6 0 00.3 1.8l.1.1a2 2 0 11-2.8 2.8l-.1-.1a1.6 1.6 0 00-2.7 1.1V21a2 2 0 11-4 0v-.1a1.6 1.6 0 00-2.7-1.1l-.1.1a2 2 0 11-2.8-2.8l.1-.1a1.6 1.6 0 00-1.1-2.7H3a2 2 0 110-4h.1a1.6 1.6 0 001.1-2.7l-.1-.1a2 2 0 112.8-2.8l.1.1a1.6 1.6 0 002.7-1.1V3a2 2 0 114 0v.1a1.6 1.6 0 002.7 1.1l.1-.1a2 2 0 112.8 2.8l-.1.1a1.6 1.6 0 001.1 2.7H21a2 2 0 110 4h-.1a1.6 1.6 0 00-1.5 1z',
   user: 'M12 12a4 4 0 100-8 4 4 0 000 8M4 21a8 8 0 0116 0', search: 'M11 19a8 8 0 100-16 8 8 0 000 16M21 21l-4.3-4.3', back: 'M9 6l6 6-6 6', l: 'M15 6l-6 6 6 6', r: 'M9 6l6 6-6 6',
   trash: 'M4 7h16M10 11v6M14 11v6M5 7l1 13h12l1-13M9 7V4h6v3', up: 'M12 19V5M5 12l7-7 7 7', down: 'M12 5v14M19 12l-7 7-7-7', x: 'M18 6L6 18M6 6l12 12', plus: 'M12 5v14M5 12h14',
-  sync: 'M21 12a9 9 0 01-15.5 6.2M3 12A9 9 0 0118.5 5.8M21 4v5h-5M3 20v-5h5', phone: 'M5 4h4l2 5-2.5 1.5a11 11 0 005 5L15 13l5 2v4a2 2 0 01-2 2A16 16 0 013 6a2 2 0 012-2', bag: 'M5 8h14l-1 13H6zM9 8V6a3 3 0 016 0v2', chat: 'M21 12a8 8 0 01-11.6 7.1L4 20.5l1.4-4.8A8 8 0 1121 12M8.5 10.5h7M8.5 14h4.5', send: 'M4 12l16-8-6 16-3-7zM11 13l9-9', mic: 'M12 3a3 3 0 00-3 3v6a3 3 0 006 0V6a3 3 0 00-3-3M5 11a7 7 0 0014 0M12 18v3', micoff: 'M3 3l18 18M9 9v3a3 3 0 005.1 2.1M15 9.3V6a3 3 0 00-5.9-.8M5 11a7 7 0 0011.3 5.5M19 11a7 7 0 01-.7 3M12 18v3' };
+  sync: 'M21 12a9 9 0 01-15.5 6.2M3 12A9 9 0 0118.5 5.8M21 4v5h-5M3 20v-5h5', phone: 'M5 4h4l2 5-2.5 1.5a11 11 0 005 5L15 13l5 2v4a2 2 0 01-2 2A16 16 0 013 6a2 2 0 012-2', bag: 'M5 8h14l-1 13H6zM9 8V6a3 3 0 016 0v2' };
 const ico = (k, s) => '<svg class="i" viewBox="0 0 24 24"' + (s ? ' style="width:' + s + 'px;height:' + s + 'px"' : '') + '><path d="' + (IC[k] || IC.box) + '"/></svg>';
 const ICONS = ['users', 'in', 'out', 'film', 'cal', 'check', 'team', 'debt', 'box', 'tag', 'star', 'bag', 'phone', 'user'];
 
@@ -311,13 +341,12 @@ async function pull(full) {
 }
 let LCP = 0;
 async function sync(full) {
-  pullMsgs();
   if (ME && ME.client) { if (!full && Date.now() - LCP < 25000) return; LCP = Date.now(); return clientPull(); }
   if (syncing || !SES || !navigator.onLine) { syncStatus(); return; }
   syncing = true; syncStatus();
   try { await flush(); await pull(full || Date.now() - LASTFULL > 180000); syncErr = ''; }
   catch (e) { console.error(e); syncErr = e.dead ? 'dead' : errAr(e); if (e.dead) { syncing = false; return needLogin(); } }
-  syncing = false; syncStatus(); if (CHANGED) { CHANGED = false; render(); }
+  syncing = false; syncStatus(); if (CHANGED) { CHANGED = false; render(); } inboxTick();
 }
 function later() { clearTimeout(SAVE_T); SAVE_T = setTimeout(() => sync(), 500); syncStatus(); }
 function syncStatus() {
@@ -374,18 +403,16 @@ function toast(t) { const e = $('toast'); e.textContent = t; e.classList.add('on
 let SHEET_ACT = null;
 function sheet(title, body, act, actFn) { $('shT').textContent = title; $('shB').innerHTML = body; $('shA').textContent = act || 'قفل'; SHEET_ACT = actFn || closeSheet; $('shA').onclick = () => SHEET_ACT(); document.body.classList.add('sh'); $('shB').scrollTop = 0; }
 function closeSheet() { document.body.classList.remove('sh'); document.activeElement && document.activeElement.blur && document.activeElement.blur(); }
-const navTabs = () => [{ k: 'home', n: 'الرئيسية', i: 'home' }].concat(CFG().sections.filter(s => s.tab && !s.hidden).slice(0, 3).map(s => ({ k: s.k, n: s.n, i: s.i }))).concat([{ k: 'msgs', n: 'الرسايل', i: 'chat' }, { k: 'more', n: 'المزيد', i: 'more' }]);
-function go(t) { if (t !== 'chat') VIEW.c = ''; VIEW.tab = t; VIEW.q = ''; VIEW.f = 'all'; $('main').scrollTop = 0; render(); $('main').scrollTop = 0; }
+const navTabs = () => [{ k: 'home', n: 'الرئيسية', i: 'home' }].concat(CFG().sections.filter(s => s.tab && !s.hidden).slice(0, 3).map(s => ({ k: s.k, n: s.n, i: s.i }))).concat([{ k: 'more', n: 'المزيد', i: 'more' }]);
+function go(t) { VIEW.tab = t; VIEW.q = ''; VIEW.f = 'all'; $('main').scrollTop = 0; render(); $('main').scrollTop = 0; }
 function render() {
-  if (!ME) return; if (isClient()) return clientRender(); const t = VIEW.tab, s = SEC(t);
-  const chatV = t === 'chat' && VIEW.c; $('nav').style.display = chatV ? 'none' : ''; $('main').classList.toggle('inchat', !!chatV); compShow(!!chatV);
-  if (chatV) return renderChat();
+  if (!ME) return; const t = VIEW.tab, s = SEC(t);
   const tabs = navTabs(), inTabs = tabs.some(y => y.k === t);
-  $('nav').innerHTML = tabs.map(x => '<button class="' + (x.k === t || (!inTabs && x.k === 'more') ? 'on' : '') + '" onclick="go(\'' + x.k + '\')">' + ico(x.i) + '<span>' + esc(x.n) + '</span>' + (x.k === 'msgs' && unread() ? '<b class="bdg">' + unread() + '</b>' : '') + '</button>').join('');
-  $('ht').innerHTML = t === 'home' ? '<span class="wm">OFF<b>GRID</b></span>' : esc(t === 'more' ? 'المزيد' : t === 'msgs' ? 'الرسايل' : s ? s.n : '');
-  $('fab').style.display = t === 'more' || t === 'msgs' ? 'none' : '';
+  $('nav').innerHTML = tabs.map(x => '<button class="' + (x.k === t || (!inTabs && x.k === 'more') ? 'on' : '') + '" onclick="go(\'' + x.k + '\')">' + ico(x.i) + '<span>' + esc(x.n) + '</span></button>').join('');
+  $('ht').innerHTML = t === 'home' ? '<span class="wm">OFF<b>GRID</b></span>' : esc(t === 'more' ? 'المزيد' : s ? s.n : '');
+  $('fab').style.display = t === 'more' ? 'none' : '';
   const mn = $('main'), st = mn.scrollTop, qf = document.activeElement && document.activeElement.id === 'q';
-  mn.innerHTML = t === 'home' ? homeHtml() : t === 'more' ? moreHtml() : t === 'msgs' ? threadsHtml() : s ? listHtml(s) : '';
+  mn.innerHTML = t === 'home' ? homeHtml() : t === 'more' ? moreHtml() : s ? listHtml(s) : '';
   mn.scrollTop = st;
   const q = $('q'); if (q) { q.value = VIEW.q; if (qf) q.focus(); q.oninput = () => { VIEW.q = q.value; const p = q.selectionStart; render(); const n = $('q'); n.focus(); n.setSelectionRange(p, p); }; }
   syncStatus();
@@ -411,12 +438,11 @@ function homeHtml() {
   let pend = 0; cs.forEach(s => { const cf = fOf(s, 'check'), mf = fOf(s, 'money'); if (s.flow === 'in' && cf && mf) pend += sum(recs(s.k).filter(r => !r.data[cf.k]), r => r.data[mf.k]); });
   const recent = [...ROWS.values()].filter(r => SEC(r.coll) && !SEC(r.coll).hidden).sort((a, b) => (b.at || '') < (a.at || '') ? -1 : 1).slice(0, 6);
   const inst = !navigator.standalone && /iphone|ipad/i.test(navigator.userAgent) && !window.matchMedia('(display-mode: standalone)').matches;
-  return (inst ? '<div id="inst" style="display:block"><b>نزّل الأبلكيشن على الشاشة الرئيسية</b>دوس على زرار المشاركة تحت في Safari وبعدين «إضافة إلى الشاشة الرئيسية». بعدها افتحه من الأيقونة.</div>' : '') +
-    pushCard() + '<div class="month"><button onclick="mv(-1)" aria-label="الشهر اللي فات">' + ico('r', 18) + '</button><b>' + mName(m) + '</b><button onclick="mv(1)" aria-label="الشهر الجاي">' + ico('l', 18) + '</button></div>' +
+  return inboxCard() + (inst ? '<div id="inst" style="display:block"><b>نزّل الأبلكيشن على الشاشة الرئيسية</b>دوس على زرار المشاركة تحت في Safari وبعدين «إضافة إلى الشاشة الرئيسية». بعدها افتحه من الأيقونة.</div>' : '') +
+    '<div class="month"><button onclick="mv(-1)" aria-label="الشهر اللي فات">' + ico('r', 18) + '</button><b>' + mName(m) + '</b><button onclick="mv(1)" aria-label="الشهر الجاي">' + ico('l', 18) + '</button></div>' +
     '<div class="big"><div class="k w"><div class="l">الصافي الشهر ده</div><div class="v num ' + (c.net < 0 ? 'bad' : '') + '">' + money(c.net) + '</div></div>' +
     '<div class="k"><div class="l">اللي دخل</div><div class="v num ok">' + money(c.inn) + '</div></div><div class="k"><div class="l">اللي اتصرف</div><div class="v num bad">' + money(c.out) + '</div></div>' +
     (pend ? '<div class="k w" style="background:var(--card);border-color:var(--line)" onclick="go(\'pays\')"><div class="l">فلوس لسه بره</div><div class="v num" style="font-size:22px;color:var(--warn)">' + money(pend) + '</div></div>' : '') + '</div>' +
-    (unread() ? '<div class="card row" style="justify-content:space-between;border-color:#24427a" onclick="go(\'msgs\')"><span class="row">' + ico('chat') + ' رسايل جديدة من العملاء</span><span class="dot">' + unread() + '</span></div>' : '') +
     (alerts.length ? '<div class="ttl">محتاج تتابعه</div><div class="list">' + alerts.slice(0, 8).map(a => itemHtml(a[1], a[2])).join('') + '</div>' : '') +
     '<div class="ttl">آخر حاجات اتضافت</div>' + (recent.length ? '<div class="list">' + recent.map(r => itemHtml(SEC(r.coll), r)).join('') + '</div>' : '<div class="card empty">لسه مفيش حاجة — دوس + عشان تضيف</div>');
 }
@@ -487,7 +513,6 @@ function openRec(id) {
   if (a && linked(s, r).some(x => x.s.flow === 'in')) h += '<div class="big"><div class="k"><div class="l">المتفق عليه' + (a.pct ? ' بعد خصم ' + fm(a.pct) + '%' : '') + '</div><div class="v num" style="font-size:20px">' + money(a.total) + '</div></div><div class="k"><div class="l">اتدفع</div><div class="v num ok" style="font-size:20px">' + money(a.paid) + '</div></div>' + (a.left ? '<div class="k w" style="background:var(--card);border-color:var(--line)"><div class="l">الباقي</div><div class="v num" style="font-size:22px;color:var(--warn)">' + money(a.left) + '</div></div>' : '') + '</div>';
   if (s.goal) { const need = +d[s.goal.field] || 0, got = recs(s.goal.from).filter(x => Object.values(x.data).indexOf(r.id) >= 0).length; if (need) h += '<div class="card"><div class="row" style="justify-content:space-between"><span>' + esc(s.goal.label) + '</span><b class="num">' + got + ' من ' + need + '</b></div><div class="prog"><i style="width:' + Math.min(100, got / need * 100) + '%"></i></div></div>'; }
   if (s.sub) { const e = subEnd(s, r); if (e) h += '<div class="card row" style="justify-content:space-between"><span>الاشتراك بيخلص ' + dshort(e) + '</span><button class="btn g" style="padding:8px 14px;font-size:15px" onclick="renew(\'' + id + '\')">تجديد</button></div>'; }
-  if (r.coll === 'clients') h = '<div class="cact"><button class="btn g" onclick="closeSheet();openChat(\'' + id + '\')">' + ico('chat', 18) + ' الرسايل والتعديلات' + (threadUnread(id) ? ' <span class="dot">' + threadUnread(id) + '</span>' : '') + '</button></div>' + h;
   if (r.coll === 'clients' && ME.admin) h += accCard(r);
   linked(s, r).forEach(x => { if (!x.rs.length && x.s.hidden) return; h += '<div class="ttl">' + esc(x.s.n) + ' <button onclick="addLinked(\'' + x.s.k + '\',\'' + id + '\')">+ إضافة</button></div>' + (x.rs.length ? '<div class="list">' + x.rs.sort((p, q) => recDate(x.s, q) < recDate(x.s, p) ? -1 : 1).slice(0, 30).map(y => itemHtml(x.s, y)).join('') + '</div>' : '<div class="card empty" style="padding:14px">مفيش</div>'); });
   h += '<p class="mu sm" style="text-align:center;margin-top:14px">' + (r.by ? 'ضافه ' + esc(r.by) : '') + (r.at ? ' · ' + dshort(r.at) : '') + (r.ub && r.ub !== r.by ? ' · آخر تعديل ' + esc(r.ub) : '') + '</p>';
@@ -505,8 +530,10 @@ function renew(id) {
 function moreHtml() {
   const cs = CFG().sections.filter(s => !s.hidden);
   return '<div class="grid" style="margin-bottom:14px">' + cs.map(s => '<button class="tile" onclick="go(\'' + s.k + '\')"><span class="ic">' + ico(s.i, 26) + '</span>' + esc(s.n) + '<small>' + recs(s.k).length + '</small></button>').join('') + '</div>' +
+    '<div class="list"><div class="it" onclick="inboxPage()"><div class="ic">' + ico('chat') + '</div><div class="tx"><div class="t1">الطلبات والرسايل</div><div class="t2">الحجوزات ورسايل الناس من الأبلكيشن</div></div>' + (inboxCount() ? '<span class="dot">' + inboxCount() + '</span>' : '') + '</div>' +
+    (ME.admin ? '<div class="it" onclick="PE=null;pubEdit(\'info\')"><div class="ic">' + ico('globe') + '</div><div class="tx"><div class="t1">الواجهة العامة والعروض</div><div class="t2">العروض اليومية وصورها، الخدمات، وطرق التواصل</div></div></div>' : '') +
+    '<div class="it" onclick="pubShow(\'app\')"><div class="ic">' + ico('spark') + '</div><div class="tx"><div class="t1">شوف الواجهة زي الناس</div><div class="t2">اللي بيظهر لأي حد ينزّل الأبلكيشن</div></div></div></div>' +
     '<div class="list">' + (ME.admin ? '<div class="it" onclick="cfgEdit()"><div class="ic">' + ico('gear') + '</div><div class="tx"><div class="t1">شكل السيستم</div><div class="t2">زوّد أو شيل أقسام وخانات</div></div></div><div class="it" onclick="usersPage()"><div class="ic">' + ico('team') + '</div><div class="tx"><div class="t1">الحسابات</div><div class="t2">الفريق والعملاء</div></div></div>' : '') +
-    '<div class="it" onclick="enablePush()"><div class="ic">' + ico('star') + '</div><div class="tx"><div class="t1">الإشعارات</div><div class="t2">' + (PUSH === 'on' ? 'شغّالة ✓ — المكالمات والرسايل بتوصلك والأبلكيشن مقفول' : PUSH === 'denied' ? 'مقفولة من إعدادات الموبايل' : 'دوس عشان تشغّلها') + '</div></div></div>' +
     '<div class="it" onclick="sync(true)"><div class="ic">' + ico('sync') + '</div><div class="tx"><div class="t1">حدّث دلوقتي</div><div class="t2">' + (OUT.size ? OUT.size + ' حاجة مستنية تترفع' : 'كله متزامن') + '</div></div></div>' +
     '<div class="it" onclick="myAcc()"><div class="ic">' + ico('user') + '</div><div class="tx"><div class="t1">' + esc(ME.name) + '</div><div class="t2 en">' + esc(ME.u) + (ME.admin ? ' · admin' : '') + '</div></div></div></div><p class="mu sm" style="text-align:center">OFFGRID ' + VER + '</p>';
 }
@@ -518,7 +545,7 @@ async function chPass() { const p = enDigits($('np').value); if (p.length < 4) r
 function logout() {
   if (OUT.size) return sheet('استنى', '<p>فيه ' + OUT.size + ' حاجة لسه مترفعتش. اتأكد إن فيه نت ودوس «حدّث دلوقتي» الأول عشان متضيعش.</p>');
   try { localStorage.removeItem('og-session'); localStorage.removeItem('og-auth'); } catch (e) { /* */ }
-  MSGS.clear(); rtStop(); Promise.all([IDB.clear('rows'), IDB.clear('kv'), IDB.clear('out')]).then(() => location.reload());
+  Promise.all([IDB.clear('rows'), IDB.clear('kv'), IDB.clear('out')]).then(() => location.reload());
 }
 
 /* ---------- شكل السيستم (للمدير) ---------- */
@@ -528,7 +555,7 @@ function cfgEdit() {
   sheet('شكل السيستم', cfgList(), 'حفظ', cfgSave);
 }
 function cfgList() {
-  return '<div class="fld"><label>رقم المدير اللي العملاء يتصلوا عليه (لو المكالمة من الأبلكيشن موصلتش)</label><input class="en" type="tel" value="' + esc(CE.phone || '') + '" oninput="CE.phone=this.value.trim()" placeholder="01xxxxxxxxx"></div><p class="mu sm">الأقسام اللي بتظهر. الدبوس = يظهر في الشريط اللي تحت (أول 3). شيل القسم يخفيه بس والبيانات بتفضل.</p><div class="list">' + CE.sections.map((s, i) =>
+  return '<p class="mu sm">الأقسام اللي بتظهر. الدبوس = يظهر في الشريط اللي تحت (أول 3). شيل القسم يخفيه بس والبيانات بتفضل.</p><div class="list">' + CE.sections.map((s, i) =>
     '<div class="it" style="opacity:' + (s.hidden ? .45 : 1) + '"><div class="ic">' + ico(s.i) + '</div><div class="tx" onclick="secEdit(' + i + ')"><div class="t1">' + esc(s.n) + '</div><div class="t2">' + s.fields.filter(f => !f.off).length + ' خانة' + (s.flow ? ' · ' + (s.flow === 'in' ? 'فلوس داخلة' : 'فلوس طالعة') : '') + '</div></div>' +
     '<button class="pill' + (s.tab ? ' g' : '') + '" onclick="CE.sections[' + i + '].tab=!CE.sections[' + i + '].tab;$(\'shB\').innerHTML=cfgList()">دبوس</button>' +
     '<button onclick="mvSec(' + i + ',-1)">' + ico('up', 18) + '</button><button onclick="CE.sections[' + i + '].hidden=!CE.sections[' + i + '].hidden;$(\'shB\').innerHTML=cfgList()">' + ico(s.hidden ? 'plus' : 'x', 18) + '</button></div>').join('') + '</div>' +
@@ -615,10 +642,11 @@ function accCard(r) {
 
 /* ---------- الدخول ---------- */
 function authUI(mode, msg) {
-  $('auth').style.display = 'flex'; $('app').style.display = 'none'; $('portal').style.display = 'none'; const f = $('aform'); $('amsg').textContent = msg || '';
+  $('auth').style.display = 'flex'; $('app').style.display = 'none'; $('portal').style.display = 'none'; $('pub').style.display = 'none'; const f = $('aform'); $('amsg').textContent = msg || '';
+  $('aback').style.display = mode === 'setup' ? 'none' : '';
   if (!mode) { f.style.display = 'none'; return; }
   f.style.display = 'flex';
-  if (mode === 'login') { $('alead').textContent = 'سجّل دخولك مرة واحدة بس'; f.innerHTML = '<input id="lu" class="en" placeholder="اسم الدخول" autocapitalize="off" autocorrect="off"><input id="lp" type="password" placeholder="كلمة السر"><button class="btn" id="lb" onclick="doLogin()">دخول</button>'; $('lp').onkeydown = e => { if (e.key === 'Enter') doLogin(); }; }
+  if (mode === 'login') { $('alead').textContent = 'دخول العملاء وفريق OFFGRID — مرة واحدة بس'; f.innerHTML = '<input id="lu" class="en" placeholder="اسم الدخول" autocapitalize="off" autocorrect="off"><input id="lp" type="password" placeholder="كلمة السر"><button class="btn" id="lb" onclick="doLogin()">دخول</button>'; $('lp').onkeydown = e => { if (e.key === 'Enter') doLogin(); }; }
   else { $('alead').textContent = 'أول مرة: اعمل حساب المدير'; f.innerHTML = '<input id="sn" placeholder="اسمك"><input id="su" class="en" placeholder="اسم الدخول (إنجليزي)" autocapitalize="off"><input id="sp" type="password" placeholder="كلمة السر"><button class="btn" id="lb" onclick="doSetup()">ابدأ</button>'; }
 }
 async function doLogin() {
@@ -635,7 +663,7 @@ async function doSetup() {
     const ok = await api('/rest/v1/rpc/claim_admin', { method: 'POST', body: { p_username: u, p_name: n } }); if (ok !== true) throw new Error('فيه مدير متسجل بالفعل'); await enter(true); }
   catch (e) { $('lb').disabled = false; $('amsg').textContent = errAr(e); }
 }
-function needLogin() { SES = null; rtStop(); try { localStorage.removeItem('og-session'); } catch (e) { /* */ } authUI('login', 'محتاج تسجّل دخول تاني — بياناتك اللي على الجهاز محفوظة'); }
+function needLogin() { SES = null; try { localStorage.removeItem('og-session'); } catch (e) { /* */ } authUI('login', 'محتاج تسجّل دخول تاني — بياناتك اللي على الجهاز محفوظة'); }
 async function loadMe() {
   const L = await api('/rest/v1/members?select=*&user_id=eq.' + SES.user.id) || [], m = L[0];
   if (!m) throw Object.assign(new Error('الحساب ده مش متفعّل — كلّم المدير'), { noMember: true });
@@ -646,8 +674,8 @@ async function loadMe() {
 async function enter(fresh) {
   try { if (fresh || !ME) await loadMe(); }
   catch (e) { if (e.noMember) { needLogin(); $('amsg').textContent = e.message; return; } if (!ME) { authUI('login', errAr(e)); return; } }
-  if (ME.client) { showClient(); afterEnter(); return; }
-  $('auth').style.display = 'none'; $('portal').style.display = 'none'; $('app').style.display = 'flex'; render(); sync(true); afterEnter();
+  if (ME.client) return showClient();
+  $('auth').style.display = 'none'; $('portal').style.display = 'none'; $('app').style.display = 'flex'; render(); sync(true);
 }
 
 /* ---------- شاشة العميل (مشاهدة بس — بيتحمّل على تليفونه بياناته هو بس) ---------- */
@@ -669,7 +697,7 @@ async function clientPull() {
   } catch (e) { if (e.dead) { CPULL = false; return needLogin(); } syncErr = errAr(e); }
   CPULL = false; clientRender();
 }
-function clientGone() { rtStop(); MSGS.clear(); try { localStorage.removeItem('og-session'); } catch (e) { /* */ } Promise.all([IDB.clear('rows'), IDB.clear('kv')]).then(() => { SES = null; ME = null; ROWS = new Map(); authUI('login', 'الحساب ده اتقفل — كلّم فريق OFFGRID'); }); }
+function clientGone() { try { localStorage.removeItem('og-session'); } catch (e) { /* */ } Promise.all([IDB.clear('rows'), IDB.clear('kv')]).then(() => { SES = null; ME = null; ROWS = new Map(); authUI('login', 'الحساب ده اتقفل — كلّم فريق OFFGRID'); }); }
 function roItem(s, r) {
   const mf = fOf(s, 'money'), cf = fOf(s, 'check'), df = fOf(s, 'date'), d = r.data, t = s.fields.find(f => !f.off && f.t === 'text'), useM = mf && d[mf.k] != null && d[mf.k] !== '';
   const head = useM ? money(d[mf.k]) : (t ? showVal(t, d[t.k]) : '');
@@ -678,314 +706,20 @@ function roItem(s, r) {
   if (cf) { if (d[cf.k]) pill = '<span class="pill g">' + esc(cf.l) + (d[cf.k + 'At'] ? ' ' + dshort(d[cf.k + 'At']) : '') + '</span>'; else { const n = df && d[df.k] ? daysTo(d[df.k]) : null; pill = '<span class="pill ' + (n != null && n < 0 ? 'r' : 'y') + '">' + (n == null ? 'لسه' : n < 0 ? 'متأخرة ' + (-n) + ' يوم' : n === 0 ? 'النهارده' : 'ميعادها ' + dshort(d[df.k])) + '</span>'; } }
   return '<div class="it">' + (cf ? '<div class="chk' + (d[cf.k] ? ' on' : '') + '"></div>' : '<div class="ic">' + ico(s.i) + '</div>') + '<div class="tx"><div class="t1">' + esc(head || '—') + '</div><div class="t2">' + esc(sub.join(' · ')) + '</div></div>' + pill + '</div>';
 }
-function clientRender0() {
+function clientRender() {
   if (!ME || !ME.client) return; const sh = ME.client.show || {}, r = ROWS.get(ME.client.cid), cs = SEC('clients');
   const head = '<div class="ph"><span class="wm" style="font-size:26px">OFF<b>GRID</b></span><div id="sync" class="' + (!navigator.onLine ? 'off' : syncErr ? 'err' : '') + '"><i></i><span>' + (!navigator.onLine ? 'من غير نت' : 'محدّث') + '</span></div></div>';
   if (!r || !cs) { $('portal').innerHTML = head + '<div class="card empty">' + (navigator.onLine ? 'بحمّل بياناتك…' : 'محتاج نت أول مرة') + '</div><button class="mu sm" style="display:block;margin:14px auto" onclick="logout()">خروج</button>'; return; }
-  const d = r.data, a = acct(cs, r), L = linked(cs, r); let h = head + '<div class="hi">أهلاً ' + esc(d.n || '') + '</div>' + contactHtml();
+  const d = r.data, a = acct(cs, r), L = linked(cs, r); let h = head + '<div class="hi">أهلاً ' + esc(d.n || '') + '</div>';
   const end = subEnd(cs, r); h += '<p class="mu sm" style="margin:0 2px 14px">' + (sh.sub && end ? 'اشتراكك من ' + dshort(d[cs.sub.start]) + ' لحد ' + dshort(end) : '') + '</p>';
   if (sh.videos && cs.goal) { const need = +d[cs.goal.field] || 0, got = recs(cs.goal.from).filter(x => Object.values(x.data).indexOf(r.id) >= 0).length; if (need) h += '<div class="card"><div class="row" style="justify-content:space-between"><b>الفيديوهات اللي استلمتها</b><b class="num" style="font-size:20px">' + got + ' من ' + need + '</b></div><div class="prog"><i style="width:' + Math.min(100, got / need * 100) + '%"></i></div></div>'; }
   if (sh.money && a) h += '<div class="big"><div class="k w"><div class="l">المتفق عليه' + (a.pct ? ' بعد خصم ' + fm(a.pct) + '%' : '') + '</div><div class="v num">' + money(a.total) + '</div></div><div class="k"><div class="l">دفعت</div><div class="v num ok">' + money(a.paid) + '</div></div><div class="k"><div class="l">الباقي</div><div class="v num" style="color:' + (a.left ? 'var(--warn)' : 'var(--ok)') + '">' + money(a.left) + '</div></div></div>';
   L.forEach(x => { if (!sh['sec:' + x.s.k]) return; const rs = x.rs.sort((p, q) => recDate(x.s, q) < recDate(x.s, p) ? -1 : 1); h += '<div class="ttl">' + esc(x.s.n) + '</div>' + (rs.length ? '<div class="list">' + rs.map(y => roItem(x.s, y)).join('') + '</div>' : '<div class="card empty" style="padding:14px">لسه مفيش</div>'); });
   if (sh.sched) { const ss = SEC('sched'), sc = ss ? recs('sched').map(y => ({ y, dt: recDate(ss, y) })).filter(x => x.dt >= today()).sort((p, q) => p.dt < q.dt ? -1 : 1) : []; if (sc.length) h += '<div class="ttl">مواعيد التصوير الجاية</div><div class="list">' + sc.slice(0, 10).map(x => '<div class="it"><div class="ic">' + ico('cal') + '</div><div class="tx"><div class="t1">' + dshort(x.dt) + (x.y.data.t ? ' · ' + esc(x.y.data.t) : '') + '</div></div></div>').join('') + '</div>'; }
-  h += '<p class="mu sm" style="text-align:center;margin-top:18px">أي تعديل أو طلب ابعته من «تعديل أو طلب» فوق، أو كلّم المدير من الأبلكيشن</p><button class="btn g" style="width:100%;margin-top:6px" onclick="clientPull()">' + ico('sync', 18) + ' حدّث</button><button class="mu sm" style="display:block;margin:14px auto 0" onclick="logout()">خروج</button>';
+  h += '<button class="card ibc" style="width:100%;text-align:right;margin-top:14px" onclick="pubShow(\'portal\')"><div class="row"><span class="ic2">' + ico('spark', 22) + '</span><div style="flex:1"><b>العروض والخدمات والرسايل</b><div class="mu sm">احجز أو ابعتلنا من هنا</div></div>' + ico('l', 18) + '</div></button>';
+  h += '<p class="mu sm" style="text-align:center;margin-top:18px">الصفحة دي للمتابعة بس — لأي تعديل كلّم فريق OFFGRID</p><button class="btn g" style="width:100%;margin-top:6px" onclick="clientPull()">' + ico('sync', 18) + ' حدّث</button><button class="mu sm" style="display:block;margin:14px auto 0" onclick="logout()">خروج</button>';
   $('portal').innerHTML = h;
 }
-
-/* ---------- رسايل العملاء ---------- */
-let MSGS = new Map(), MLAST = '', MPULL = false, MSG_OFF = false, PV = 'home';
-const isClient = () => !!(ME && ME.client);
-const MYC = () => ME.client.cid, MGR = () => { const r = ROWS.get('cfg'); return (r && r.data && r.data.phone) || ''; };
-const TAGS = ['عايز تعديل', 'محتاج حاجة', 'عايز أغيّر حاجة', 'ضروري'];
-const hm = s => { const d = new Date(s); if (isNaN(d)) return ''; const h = d.getHours(); return (h % 12 || 12) + ':' + pad(d.getMinutes()) + (h < 12 ? ' ص' : ' م'); };
-const mineM = m => isClient() ? m.from_client : !m.from_client;
-const theirsUnread = m => !m.read_at && !mineM(m) && !String(m.id).startsWith('tmp');
-function cName(cid) {
-  const r = ROWS.get(cid), s = SEC('clients'); if (r && s) { const tf = titleF(s); if (tf && r.data[tf.k]) return r.data[tf.k]; }
-  let n = ''; MSGS.forEach(m => { if (m.client_id === cid && m.from_client && m.sender_name) n = m.sender_name; }); return n || 'عميل';
-}
-function cPhone(cid) { const r = ROWS.get(cid), s = SEC('clients'); if (!r || !s) return ''; const f = fOf(s, 'phone'); return f ? r.data[f.k] || '' : ''; }
-const threadUnread = cid => { let n = 0; MSGS.forEach(m => { if (m.client_id === cid && theirsUnread(m)) n++; }); return n; };
-const unread = () => { let n = 0; MSGS.forEach(m => { if (theirsUnread(m)) n++; }); return n; };
-function saveMsgsLocal() { IDB.put('kv', 'msgs', [...MSGS.values()].filter(m => !String(m.id).startsWith('tmp')).sort((a, b) => a.created_at < b.created_at ? -1 : 1).slice(-3000)); IDB.put('kv', 'mlast', MLAST); }
-async function pullMsgs() {
-  if (MPULL || !SES || !navigator.onLine) return; MPULL = true;
-  try {
-    const since = MLAST ? new Date(new Date(MLAST).getTime() - 3000).toISOString() : '1970-01-01T00:00:00Z'; let ch = false, fresh = 0;
-    const L = await api('/rest/v1/og_msgs?select=*&updated_at=gt.' + encodeURIComponent(since) + '&order=updated_at.asc&limit=1000') || [];
-    L.forEach(m => { const o = MSGS.get(m.id); if (!o || o.updated_at !== m.updated_at) { if (!o && MLAST && theirsUnread(m)) fresh++; MSGS.set(m.id, m); ch = true; } if (!MLAST || m.updated_at > MLAST) MLAST = m.updated_at; });
-    MSG_OFF = false;
-    if (ch) {
-      saveMsgsLocal();
-      const open = (isClient() ? PV === 'chat' : VIEW.tab === 'chat' && VIEW.c) && !document.hidden, ocid = isClient() ? MYC() : VIEW.c;
-      if (fresh) { beep('msg'); if (!open || !isClient()) toast(isClient() ? 'وصلك رد جديد' : 'رسالة جديدة من ' + cName(L.filter(m => m.from_client).slice(-1)[0] ? L.filter(m => m.from_client).slice(-1)[0].client_id : '')); }
-      if (open && threadUnread(ocid)) markRead(ocid);
-      const near = nearEnd(); render(); if (open && near) scrollEnd();
-    }
-  } catch (e) { if (e.status === 404 || /og_msgs|schema cache|does not exist/i.test(e.message || '')) MSG_OFF = true; console.error(e); }
-  MPULL = false;
-}
-async function markRead(cid) {
-  const L = [...MSGS.values()].filter(m => m.client_id === cid && theirsUnread(m)); if (!L.length) return;
-  const now = new Date().toISOString(); L.forEach(m => { m.read_at = now; }); render();
-  try { await api('/rest/v1/rpc/og_mark_read', { method: 'POST', body: { p_client: cid } }); rtPost(isClient() ? 'og-hub' : 'og-c-' + cid, 'msg', { c: cid }); } catch (e) { console.error(e); }
-}
-function scroller() { return isClient() ? document.scrollingElement : $('main'); }
-function nearEnd() { const m = scroller(); return !m || m.scrollHeight - m.scrollTop - m.clientHeight < 160; }
-function scrollEnd() { const m = scroller(); if (m) m.scrollTop = m.scrollHeight; }
-function threadsHtml() {
-  if (MSG_OFF) return '<div class="card"><b>الرسايل لسه مش متفعّلة</b><p class="mu sm" style="margin:6px 0 0">محتاج ملف offgrid_messages.sql يتشغّل مرة واحدة في Supabase.</p></div>';
-  const T = new Map(); MSGS.forEach(m => { let t = T.get(m.client_id); if (!t) T.set(m.client_id, t = { c: m.client_id, last: m }); if (m.created_at > t.last.created_at) t.last = m; });
-  const L = [...T.values()].sort((a, b) => a.last.created_at < b.last.created_at ? 1 : -1);
-  return '<p class="mu sm" style="margin:0 4px 10px">رسايل العملاء وطلبات التعديل والمكالمات. تقدر تفتح محادثة أي عميل من كارت العميل كمان.</p>' +
-    (L.length ? '<div class="list">' + L.map(t => { const u = threadUnread(t.c), m = t.last;
-      return '<div class="it" onclick="openChat(\'' + esc(t.c) + '\')"><div class="ic">' + ico(m.kind === 'call' ? 'phone' : 'chat') + '</div><div class="tx"><div class="t1">' + esc(cName(t.c)) + '</div><div class="t2">' + (mineM(m) ? 'إنت: ' : '') + esc((m.kind === 'req' && m.meta && m.meta.tag && m.body !== m.meta.tag ? m.meta.tag + ' — ' : '') + m.body) + '</div></div><div style="text-align:left"><div class="mu sm">' + (String(m.created_at).slice(0, 10) === today() ? hm(m.created_at) : dshort(m.created_at)) + '</div>' + (u ? '<span class="dot">' + u + '</span>' : '') + '</div></div>'; }).join('') + '</div>'
-      : '<div class="card empty">لسه مفيش رسايل من العملاء.<br>اعمل للعميل حساب من كارت العميل ← «حساب العميل».</div>');
-}
-function chatHtml(cid) {
-  const L = [...MSGS.values()].filter(m => m.client_id === cid).sort((a, b) => a.created_at < b.created_at ? -1 : 1);
-  let h = '<div class="chat">', day = '';
-  if (MSG_OFF && !L.length) return '<div class="card empty">الرسايل لسه مش متفعّلة على السيرفر.</div>';
-  if (!L.length) h += '<div class="card empty" style="margin-top:20px">' + (isClient() ? ico('chat', 34) + '<br><b style="color:var(--tx)">أي تعديل أو طلب أو حاجة عايز تغيّرها؟</b><br>اكتبها هنا وهتوصل للمدير على طول — أو دوس على السماعة فوق وكلّمه.' : 'لسه مفيش رسايل مع العميل ده — اكتب أول رسالة.') + '</div>';
-  L.forEach(m => {
-    const d = String(m.created_at).slice(0, 10); if (d !== day) { day = d; h += '<div class="cday">' + (d === today() ? 'النهارده' : dshort(d)) + '</div>'; }
-    const me = mineM(m), tag = m.kind === 'req' && m.meta && m.meta.tag ? '<span class="tg">' + esc(m.meta.tag) + '</span>' + (m.body !== m.meta.tag ? '<br>' : '') : '';
-    const body = m.kind === 'call' ? ico('phone', 18) + '<span>' + esc(m.body) + '</span>' : (m.kind === 'req' && m.meta && m.body === m.meta.tag ? '' : esc(m.body));
-    h += '<div class="bub ' + (me ? 'me' : 'th') + (m.kind === 'call' ? ' call' : '') + '">' + tag + body + '<small>' + (!isClient() && !m.from_client && m.sender_name && m.sender_name !== ME.name ? esc(m.sender_name) + ' · ' : '') + hm(m.created_at) + (m.pend ? ' · بيتبعت…' : me && m.read_at ? ' · اتقرت ✓✓' : '') + '</small></div>';
-  });
-  return h + '</div>';
-}
-function compShow(on) {
-  const c = $('comp'); c.style.display = on ? 'block' : 'none'; if (!on) return;
-  const tg = $('qtags'); if (!tg.dataset.built || tg.dataset.built !== (isClient() ? 'c' : 's')) {
-    tg.dataset.built = isClient() ? 'c' : 's'; tg.style.display = isClient() ? 'flex' : 'none';
-    tg.innerHTML = TAGS.map(t => '<button type="button" onclick="chip(this)">' + esc(t) + '</button>').join(''); tg.dataset.v = '';
-    $('csend').innerHTML = ico('send', 22);
-    const i = $('cin'); i.oninput = () => { i.style.height = 'auto'; i.style.height = Math.min(120, i.scrollHeight) + 'px'; };
-    i.onkeydown = e => { if (e.key === 'Enter' && !e.shiftKey && !/iphone|ipad|android/i.test(navigator.userAgent)) { e.preventDefault(); sendMsg(); } };
-  }
-}
-function renderChat() {
-  const cid = VIEW.c, ph = cPhone(cid);
-  $('ht').innerHTML = '<div class="chead"><button class="hbtn" onclick="go(\'msgs\')" aria-label="رجوع">' + ico('back', 20) + '</button><span>' + esc(cName(cid)) + '</span></div>';
-  $('fab').style.display = 'none';
-  $('main').innerHTML = (ph ? '<div class="cact"><a class="btn g" href="tel:' + esc(ph) + '" style="text-decoration:none">' + ico('phone', 18) + ' اتصل بيه <span class="en">' + esc(ph) + '</span></a></div>' : '') + chatHtml(cid);
-  syncStatus();
-}
-function contactHtml() {
-  const u = unread();
-  return '<div class="cact" style="margin-top:12px"><button class="btn" onclick="openClientChat()">' + ico('chat', 18) + ' تعديل أو طلب' + (u ? ' <span class="dot">' + u + '</span>' : '') + '</button><button class="btn" style="background:var(--ok);color:#06261a" onclick="callMenu()">' + ico('phone', 18) + ' كلّم المدير</button></div>' + pushCard();
-}
-function openClientChat() { PV = 'chat'; clientRender(); scrollEnd(); setTimeout(scrollEnd, 60); if (threadUnread(MYC())) markRead(MYC()); }
-function clientRender() {
-  if (!ME || !ME.client) return; const P = $('portal');
-  if (PV !== 'chat') { compShow(false); P.classList.remove('inchat'); return clientRender0(); }
-  compShow(true); P.classList.add('inchat');
-  P.innerHTML = '<div class="ph" style="position:sticky;top:0;z-index:5;background:var(--bg);padding:6px 0 8px"><div class="chead"><button class="hbtn" onclick="PV=\'home\';clientRender();window.scrollTo(0,0)" aria-label="رجوع">' + ico('back', 20) + '</button><span>تعديلات وطلبات</span></div><button class="hbtn ok" onclick="callMenu()" aria-label="اتصال">' + ico('phone', 20) + '</button></div>' + pushCard() + chatHtml(MYC());
-}
-function openChat(cid) { VIEW.tab = 'chat'; VIEW.c = cid; render(); scrollEnd(); setTimeout(scrollEnd, 50); if (threadUnread(cid)) markRead(cid); }
-async function sendMsg() {
-  const i = $('cin'), tg = $('qtags'), t = i.value.trim(), tag = isClient() ? tg.dataset.v || '' : '';
-  if (!t && !tag) return i.focus();
-  const cid = isClient() ? MYC() : VIEW.c; if (!cid) return;
-  const body = { client_id: cid, from_client: isClient(), sender_name: ME.name, kind: tag ? 'req' : 'msg', body: t || tag, meta: tag ? { tag } : {} };
-  const tmp = Object.assign({}, body, { id: 'tmp' + nid(), created_at: new Date().toISOString(), updated_at: '', pend: 1 });
-  MSGS.set(tmp.id, tmp); i.value = ''; i.style.height = ''; tg.dataset.v = ''; tg.querySelectorAll('button').forEach(b => b.classList.remove('on'));
-  render(); scrollEnd();
-  try {
-    const r = await api('/rest/v1/og_msgs', { method: 'POST', headers: { Prefer: 'return=representation' }, body }) || [];
-    MSGS.delete(tmp.id); r.forEach(m => MSGS.set(m.id, m)); saveMsgsLocal(); if (r[0]) fn({ t: 'msg', id: r[0].id });
-    rtPost(isClient() ? 'og-hub' : 'og-c-' + cid, 'msg', { c: cid }); render(); scrollEnd();
-  } catch (e) {
-    MSGS.delete(tmp.id); if (!i.value) i.value = t; render();
-    toast(MSG_OFF || e.status === 404 ? 'الرسايل لسه مش متفعّلة على السيرفر' : errAr(e) + ' — الرسالة متبعتتش، جرّب تاني');
-  }
-}
-/* ---------- الاتصال اللحظي (Supabase Realtime) ---------- */
-const RT = { ws: null, ref: 0, hb: 0, pj: {}, joined: {}, h: {}, q: [], stop: false };
-function rtOpen() {
-  if (RT.stop || (RT.ws && RT.ws.readyState < 2)) return;
-  let ws; try { ws = new WebSocket(SB_URL.replace(/^http/, 'ws') + '/realtime/v1/websocket?apikey=' + encodeURIComponent(SB_KEY) + '&vsn=1.0.0'); } catch (e) { return; }
-  RT.ws = ws; RT.joined = {}; RT.pj = {};
-  ws.onopen = () => { clearInterval(RT.hb); RT.hb = setInterval(() => rtRaw('phoenix', 'heartbeat', {}), 25000); Object.keys(RT.h).forEach(rtJoin); };
-  ws.onmessage = e => {
-    let m; try { m = JSON.parse(e.data); } catch (x) { return; }
-    if (m.event === 'phx_reply' && RT.pj[m.ref]) { const ch = RT.pj[m.ref]; delete RT.pj[m.ref]; if (m.payload && m.payload.status === 'ok') { RT.joined[ch] = 1; RT.q = RT.q.filter(x => { if (x[0] !== ch) return true; rtRaw('realtime:' + ch, 'broadcast', { type: 'broadcast', event: x[1], payload: x[2] }); return false; }); } }
-    else if (m.event === 'broadcast' && m.payload) { const f = RT.h[String(m.topic).replace(/^realtime:/, '')]; if (f) f(m.payload.event, m.payload.payload || {}); }
-    else if ((m.event === 'phx_error' || m.event === 'phx_close') && m.topic) { const ch = String(m.topic).replace(/^realtime:/, ''); delete RT.joined[ch]; if (RT.h[ch]) setTimeout(() => RT.h[ch] && rtJoin(ch), 2000); }
-  };
-  ws.onclose = () => { clearInterval(RT.hb); RT.ws = null; RT.joined = {}; if (!RT.stop && Object.keys(RT.h).length) setTimeout(rtOpen, 2500); };
-}
-function rtRaw(topic, event, payload) { if (!RT.ws || RT.ws.readyState !== 1) return ''; const ref = String(++RT.ref); RT.ws.send(JSON.stringify({ topic, event, payload, ref })); return ref; }
-function rtJoin(ch) { const ref = rtRaw('realtime:' + ch, 'phx_join', { config: { broadcast: { self: false, ack: false }, presence: { key: '' }, postgres_changes: [], private: false } }); if (ref) RT.pj[ref] = ch; }
-function rtSub(ch, fn) { RT.stop = false; RT.h[ch] = fn; if (RT.ws && RT.ws.readyState === 1) rtJoin(ch); else rtOpen(); }
-function rtUnsub(ch) { delete RT.h[ch]; if (RT.joined[ch]) rtRaw('realtime:' + ch, 'phx_leave', {}); delete RT.joined[ch]; RT.q = RT.q.filter(x => x[0] !== ch); }
-function rtSend(ch, ev, p) { if (RT.joined[ch]) rtRaw('realtime:' + ch, 'broadcast', { type: 'broadcast', event: ev, payload: p }); else RT.q.push([ch, ev, p]); }
-function rtPost(topic, event, payload) {
-  return fetch(SB_URL + '/realtime/v1/api/broadcast', { method: 'POST', headers: { apikey: SB_KEY, Authorization: 'Bearer ' + (SES ? SES.access_token : SB_KEY), 'Content-Type': 'application/json' }, body: JSON.stringify({ messages: [{ topic, event, payload, private: false }] }) }).catch(() => { /* */ });
-}
-function rtStart() { if (!SES || !ME) return; if (isClient()) rtSub('og-c-' + MYC(), ev => { if (ev === 'msg') pullMsgs(); }); else rtSub('og-hub', hubEv); }
-function rtStop() { RT.stop = true; RT.h = {}; RT.q = []; if (RT.ws) try { RT.ws.close(); } catch (e) { /* */ } }
-
-/* ---------- المكالمات (WebRTC) ---------- */
-const ICE = [{ urls: ['stun:stun.l.google.com:19302', 'stun:stun1.l.google.com:19302', 'stun:stun.cloudflare.com:3478'] }];
-let CALL = null; const SEEN = new Set();
-function callMenu() {
-  const ph = MGR();
-  sheet('كلّم المدير', '<button class="btn" style="width:100%;margin-bottom:10px" onclick="startCall()">' + ico('phone', 20) + ' مكالمة من الأبلكيشن (ببلاش على النت)</button>' +
-    (ph ? '<a class="btn g" style="width:100%;text-decoration:none" href="tel:' + esc(ph) + '">' + ico('phone', 20) + ' اتصال عادي <span class="en">' + esc(ph) + '</span></a>' : '') +
-    '<p class="mu sm" style="margin-top:12px">لو المدير مش فاتح دلوقتي، طلب المكالمة بيوصله كرسالة وهيكلمك أول ما يشوفها.</p>');
-}
-function hubEv(ev, p) {
-  if (ev === 'msg') { pullMsgs(); return; }
-  if (ev === 'ring') { if (!ME || !ME.admin || !p.id || SEEN.has(p.id) || CALL) return; SEEN.add(p.id); incoming(p); return; }
-  if ((ev === 'cancel' || ev === 'taken') && CALL && CALL.id === p.id && CALL.st === 'incoming' && !(ev === 'taken' && p.by === ME.id)) endCall(ev === 'cancel' ? 'العميل قفل قبل ما ترد' : 'حد تاني من الإدارة رد');
-}
-async function getMic() { return navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true }, video: false }); }
-async function startCall() {
-  closeSheet(); if (CALL) return;
-  if (!navigator.mediaDevices || !window.RTCPeerConnection) return toast('الموبايل ده مش بيدعم المكالمة من الأبلكيشن — استخدم الاتصال العادي');
-  let stream; try { stream = await getMic(); } catch (e) { return toast('لازم تسمح للأبلكيشن بالمايك عشان المكالمة'); }
-  const id = nid() + nid(); CALL = { id, role: 'caller', stream, ch: 'og-call-' + id, st: 'ring', cid: MYC(), name: 'المدير', ice: [] };
-  rtSub(CALL.ch, callSig); callUI(); tone('back');
-  const ring = () => rtPost('og-hub', 'ring', { id, c: MYC(), n: cName(MYC()) }); ring(); fn({ t: 'call', id }); CALL.rr = setInterval(() => { if (CALL && CALL.id === id && CALL.st === 'ring') ring(); }, 4000);
-  CALL.to = setTimeout(() => { if (CALL && CALL.id === id && CALL.st === 'ring') { rtPost('og-hub', 'cancel', { id }); fn({ t: 'missed', id }); endCall('المدير مش فاضي دلوقتي — طلبك وصله وهيكلمك', true); } }, 60000);
-  api('/rest/v1/og_msgs', { method: 'POST', headers: { Prefer: 'return=representation' }, body: { client_id: MYC(), from_client: true, sender_name: ME.name, kind: 'call', body: 'طلب مكالمة' } })
-    .then(r => { (r || []).forEach(m => MSGS.set(m.id, m)); rtPost('og-hub', 'msg', { c: MYC() }); render(); }).catch(() => { /* */ });
-}
-function incoming(p) {
-  CALL = { id: p.id, role: 'callee', st: 'incoming', ch: 'og-call-' + p.id, cid: p.c, name: p.n || cName(p.c), ice: [] };
-  rtSub(CALL.ch, callSig); callUI(); tone('ring');
-  CALL.to = setTimeout(() => { if (CALL && CALL.id === p.id && CALL.st === 'incoming') endCall('فاتتك المكالمة'); }, 50000);
-  try { if (document.hidden && 'Notification' in window && Notification.permission === 'granted') new Notification('مكالمة من ' + CALL.name, { body: 'افتح OFFGRID عشان ترد' }); } catch (e) { /* */ }
-}
-async function acceptCall() {
-  if (!CALL || CALL.st !== 'incoming') return; const c = CALL;
-  try { c.stream = await getMic(); } catch (e) { toast('لازم تسمح بالمايك'); return declineCall(); }
-  if (CALL !== c) { c.stream.getTracks().forEach(t => t.stop()); return; }
-  c.st = 'connecting'; clearTimeout(c.to); tone(''); callUI(); unlockAudio();
-  rtPost('og-hub', 'taken', { id: c.id, by: ME.id }); mkPC(c); rtSend(c.ch, 'accept', { by: ME.name });
-  c.to = setTimeout(() => { if (CALL === c && c.st !== 'live') failCall(); }, 20000);
-}
-function declineCall() { if (!CALL) return; rtSend(CALL.ch, 'decline', {}); const c = CALL; setTimeout(() => { if (CALL === c) endCall('اتقفلت'); }, 300); }
-function hangup() { if (!CALL) return; if (CALL.role === 'caller' && CALL.st === 'ring') { rtPost('og-hub', 'cancel', { id: CALL.id }); fn({ t: 'missed', id: CALL.id }); } rtSend(CALL.ch, 'bye', {}); const c = CALL; setTimeout(() => { if (CALL === c) endCall('المكالمة خلصت'); }, 250); }
-function mkPC(c) {
-  const pc = c.pc = new RTCPeerConnection({ iceServers: ICE });
-  c.stream.getTracks().forEach(t => pc.addTrack(t, c.stream));
-  pc.onicecandidate = e => { if (e.candidate && CALL === c) rtSend(c.ch, 'ice', { c: e.candidate.toJSON ? e.candidate.toJSON() : e.candidate }); };
-  pc.ontrack = e => { const a = $('raud'); a.srcObject = e.streams[0] || new MediaStream([e.track]); a.play().catch(() => { /* */ }); };
-  pc.onconnectionstatechange = () => {
-    if (CALL !== c) return; const s = pc.connectionState;
-    if (s === 'connected' && c.st !== 'live') { c.st = 'live'; c.t0 = Date.now(); clearTimeout(c.to); tone(''); callUI(); c.tk = setInterval(() => CALL === c && callUI(), 1000); }
-    else if (s === 'failed') failCall();
-    else if (s === 'disconnected' && c.st === 'live') { $('cuS').textContent = 'النت بيقطع… استنى'; setTimeout(() => { if (CALL === c && pc.connectionState === 'disconnected') failCall(); }, 8000); }
-  };
-  return pc;
-}
-async function addIce(c, cand) { try { if (c.pc && c.pc.remoteDescription) await c.pc.addIceCandidate(cand); else c.ice.push(cand); } catch (e) { console.error(e); } }
-async function callSig(ev, p) {
-  const c = CALL; if (!c) return;
-  try {
-    if (ev === 'accept' && c.role === 'caller' && c.st === 'ring') {
-      c.st = 'connecting'; c.name = p.by || 'المدير'; clearTimeout(c.to); clearInterval(c.rr); tone(''); callUI(); mkPC(c);
-      const o = await c.pc.createOffer(); await c.pc.setLocalDescription(o); rtSend(c.ch, 'sdp', { d: { type: c.pc.localDescription.type, sdp: c.pc.localDescription.sdp } });
-      c.to = setTimeout(() => { if (CALL === c && c.st !== 'live') failCall(); }, 20000);
-    } else if (ev === 'sdp' && c.pc) {
-      await c.pc.setRemoteDescription(p.d); const q = c.ice.splice(0); for (const x of q) await c.pc.addIceCandidate(x).catch(() => { /* */ });
-      if (p.d.type === 'offer') { const a = await c.pc.createAnswer(); await c.pc.setLocalDescription(a); rtSend(c.ch, 'sdp', { d: { type: c.pc.localDescription.type, sdp: c.pc.localDescription.sdp } }); }
-    } else if (ev === 'ice') addIce(c, p.c);
-    else if (ev === 'decline' && c.role === 'caller') endCall('المدير مش فاضي دلوقتي — طلبك وصله وهيكلمك', true);
-    else if (ev === 'bye') endCall('المكالمة خلصت');
-  } catch (e) { console.error(e); failCall(); }
-}
-function failCall() { if (!CALL) return; rtSend(CALL.ch, 'bye', {}); endCall('الاتصال من الأبلكيشن مش راضي يوصل على النت ده' + (isClient() && MGR() ? ' — جرّب الاتصال العادي' : ''), true); }
-function endCall(msg, fallback) {
-  const c = CALL; if (!c) return; CALL = null;
-  [c.to, c.rr].forEach(clearTimeout); clearInterval(c.rr); clearInterval(c.tk); tone('');
-  try { c.pc && c.pc.close(); } catch (e) { /* */ } if (c.stream) c.stream.getTracks().forEach(t => t.stop());
-  const a = $('raud'); a.srcObject = null; setTimeout(() => rtUnsub(c.ch), 400);
-  const dur = c.t0 ? Math.round((Date.now() - c.t0) / 1000) : 0;
-  $('cuA').className = 'av'; $('cuS').textContent = msg + (dur ? ' · ' + Math.floor(dur / 60) + ':' + pad(dur % 60) : '');
-  const ph = isClient() && fallback && MGR();
-  $('cuB').innerHTML = (ph ? '<a class="cb g" href="tel:' + esc(MGR()) + '" style="text-decoration:none"><i>' + ico('phone') + '</i>اتصال عادي</a>' : '') + '<button class="cb" onclick="document.body.classList.remove(\'oncall\')"><i>' + ico('x') + '</i>قفل</button>';
-  if (!ph) setTimeout(() => { if (!CALL) document.body.classList.remove('oncall'); }, fallback ? 4000 : 1800);
-}
-function toggleMute() { if (!CALL || !CALL.stream) return; CALL.mute = !CALL.mute; CALL.stream.getAudioTracks().forEach(t => t.enabled = !CALL.mute); callUI(); }
-function callUI() {
-  const c = CALL; if (!c) return; document.body.classList.add('oncall');
-  $('cuA').className = 'av' + (c.st === 'ring' || c.st === 'incoming' ? ' pulse' : ''); $('cuA').innerHTML = ico(c.role === 'callee' ? 'user' : 'phone');
-  $('cuN').textContent = c.role === 'callee' ? c.name : 'المدير';
-  const sec = c.t0 ? Math.round((Date.now() - c.t0) / 1000) : 0;
-  $('cuS').textContent = c.st === 'ring' ? 'بيرن…' : c.st === 'incoming' ? 'مكالمة من عميل' : c.st === 'connecting' ? 'بيوصل…' : Math.floor(sec / 60) + ':' + pad(sec % 60);
-  const hang = '<button class="cb r" onclick="hangup()"><i>' + ico('phone').replace('class="i"', 'class="i hang"') + '</i>' + (c.st === 'ring' ? 'إلغاء' : 'قفل') + '</button>';
-  $('cuB').innerHTML = c.st === 'incoming' ? '<button class="cb r" onclick="declineCall()"><i>' + ico('phone').replace('class="i"', 'class="i hang"') + '</i>رفض</button><button class="cb g" onclick="acceptCall()"><i>' + ico('phone') + '</i>رد</button>'
-    : '<button class="cb' + (c.mute ? ' on' : '') + '" onclick="toggleMute()"><i>' + ico(c.mute ? 'micoff' : 'mic') + '</i>' + (c.mute ? 'المايك مقفول' : 'كتم') + '</button>' + hang;
-}
-/* نغمات بسيطة (رنّة / انتظار / رسالة) */
-let AC = null, TONE = 0;
-function unlockAudio() { try { AC = AC || new (window.AudioContext || window.webkitAudioContext)(); if (AC.state === 'suspended') AC.resume(); } catch (e) { /* */ } }
-function blip(f, d, v, at) { if (!AC) return; const o = AC.createOscillator(), g = AC.createGain(), t = AC.currentTime + (at || 0); o.frequency.value = f; o.type = 'sine'; g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(v, t + 0.02); g.gain.setValueAtTime(v, t + d - 0.05); g.gain.linearRampToValueAtTime(0, t + d); o.connect(g); g.connect(AC.destination); o.start(t); o.stop(t + d + 0.02); }
-function tone(k) {
-  clearInterval(TONE); TONE = 0; if (!k) return; unlockAudio(); if (!AC) return;
-  const play = k === 'ring' ? () => { [0, 0.25, 0.5, 0.75].forEach(t => blip(t % 0.5 ? 1100 : 880, 0.2, 0.18, t)); } : () => { blip(425, 1, 0.08); };
-  play(); TONE = setInterval(play, k === 'ring' ? 2200 : 3000);
-}
-function beep() { unlockAudio(); blip(880, 0.12, 0.12); blip(1320, 0.16, 0.1, 0.13); }
-document.addEventListener('touchstart', unlockAudio, { once: true, passive: true }); document.addEventListener('click', unlockAudio, { once: true });
-
-/* ---------- إشعارات والأبلكيشن مقفول (Web Push) ---------- */
-let PUSH = 'off';
-const FN_URL = SB_URL + '/functions/v1/og-push';
-const isIOS = /iphone|ipad/i.test(navigator.userAgent), standalone = () => navigator.standalone || window.matchMedia('(display-mode: standalone)').matches;
-const pushOK = () => 'serviceWorker' in navigator && 'PushManager' in window && 'Notification' in window && location.protocol === 'https:';
-const u8 = s => { s = String(s).replace(/-/g, '+').replace(/_/g, '/'); while (s.length % 4) s += '='; return Uint8Array.from(atob(s), c => c.charCodeAt(0)); };
-const b64 = buf => { const a = new Uint8Array(buf); let x = ''; for (let i = 0; i < a.length; i++) x += String.fromCharCode(a[i]); return btoa(x).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, ''); };
-async function fn(body) {
-  try {
-    if (!SES || !navigator.onLine) return null; if (SES.expires_at * 1000 - Date.now() < 90000) await refreshTok();
-    const r = await fetch(FN_URL, { method: 'POST', headers: { apikey: SB_KEY, Authorization: 'Bearer ' + SES.access_token, 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
-    return r.ok ? await r.json() : null;
-  } catch (e) { console.error(e); return null; }
-}
-async function subscribePush(reg) {
-  const k = await fn({ t: 'key' }); if (!k || !k.key) throw new Error('key');
-  let s = await reg.pushManager.getSubscription();
-  if (s && s.options && s.options.applicationServerKey && b64(s.options.applicationServerKey) !== k.key) { await s.unsubscribe(); s = null; }
-  if (!s) s = await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: u8(k.key) });
-  await api('/rest/v1/rpc/og_push_save', { method: 'POST', body: { p_sub: s.toJSON(), p_ua: navigator.userAgent.slice(0, 200) } });
-  return s;
-}
-async function enablePush() {
-  if (isIOS && !standalone()) return sheet('الإشعارات', '<p>على الآيفون الإشعارات بتشتغل بس لما الأبلكيشن يكون متنزّل على الشاشة الرئيسية:</p><p>١- افتح الرابط من <b>Safari</b><br>٢- دوس زرار المشاركة تحت ⬆️<br>٣- «إضافة إلى الشاشة الرئيسية»<br>٤- افتح الأبلكيشن من الأيقونة ودوس «فعّل الإشعارات»</p>');
-  if (!pushOK()) return toast('الموبايل ده مش بيدعم الإشعارات');
-  let p = Notification.permission; if (p !== 'granted') p = await Notification.requestPermission();
-  if (p !== 'granted') { PUSH = p === 'denied' ? 'denied' : 'off'; render(); return sheet('الإشعارات مقفولة', '<p>اتقفلت قبل كده من إعدادات الموبايل. افتح <b>الإعدادات ← الإشعارات ← OFFGRID</b> وشغّلها، وبعدين ارجع دوس «فعّل الإشعارات» تاني.</p>'); }
-  try { await subscribePush(await navigator.serviceWorker.ready); PUSH = 'on'; toast('الإشعارات اشتغلت ✓'); } catch (e) { console.error(e); toast('مقدرتش أفعّل الإشعارات — اتأكد من النت وجرّب تاني'); }
-  render();
-}
-async function pushRefresh() {
-  if (!pushOK()) { PUSH = 'na'; return; }
-  if (Notification.permission === 'denied') { PUSH = 'denied'; render(); return; }
-  if (Notification.permission !== 'granted') { PUSH = 'off'; render(); return; }
-  try { await subscribePush(await navigator.serviceWorker.ready); PUSH = 'on'; } catch (e) { console.error(e); PUSH = 'off'; }
-  render();
-}
-function pushCard() {
-  if (PUSH === 'on' || (PUSH === 'na' && !(isIOS && !standalone()))) return '';
-  const t = isClient() ? 'فعّل الإشعارات عشان ردودنا توصلك حتى والأبلكيشن مقفول' : 'فعّل الإشعارات عشان مكالمات ورسايل العملاء توصلك حتى والأبلكيشن مقفول';
-  return '<div class="card row" style="justify-content:space-between;gap:12px;border-color:#24427a;background:linear-gradient(135deg,#17305f,#0f1b33)"><span class="sm">' + t + '</span><button class="btn" style="padding:9px 14px;font-size:14px;white-space:nowrap" onclick="enablePush()">فعّل</button></div>';
-}
-function handleUrl(href) {
-  let u; try { u = new URL(href || location.href); } catch (e) { return; }
-  const call = u.searchParams.get('call'), c = u.searchParams.get('c'), ts = +u.searchParams.get('ts') || 0;
-  if (call || c) try { history.replaceState(null, '', location.pathname); } catch (e) { /* */ }
-  if (!ME) return; if (isClient()) { if (c) openClientChat(); return; }
-  if (call && ME.admin && !CALL && !SEEN.has(call) && (!ts || Date.now() - ts < 55000)) { SEEN.add(call); incoming({ id: call, c, n: cName(c) }); return; }
-  if (c) openChat(c);
-}
-if ('serviceWorker' in navigator) navigator.serviceWorker.addEventListener('message', e => { if (e.data && e.data.t === 'nav') handleUrl(new URL(e.data.url, location.href).href); });
-
-function afterEnter() { rtStart(); pushRefresh(); setTimeout(() => handleUrl(), 300); }
 
 /* ---------- التشغيل ---------- */
 async function importOld() {
@@ -1002,18 +736,368 @@ async function importOld() {
   if ('serviceWorker' in navigator && location.protocol !== 'file:') navigator.serviceWorker.register('sw.js').then(r => { r.update(); }).catch(() => { /* */ });
   try { await IDB.open(); } catch (e) { authUI('', ''); $('alead').textContent = 'التليفون مش مسامح بالتخزين — افتحه من Safari العادي مش الخاص'; return; }
   (await IDB.all('rows')).forEach(([k, v]) => ROWS.set(k, v)); (await IDB.all('out')).forEach(([k, v]) => OUT.set(k, v));
-  (await IDB.all('kv')).forEach(([k, v]) => { if (k === 'me') ME = v; if (k === 'last') LAST = v; if (k === 'mlast') MLAST = v; if (k === 'msgs' && Array.isArray(v)) v.forEach(m => MSGS.set(m.id, m)); });
+  (await IDB.all('kv')).forEach(([k, v]) => { if (k === 'me') ME = v; if (k === 'last') LAST = v; if (k === 'pub') PUB = v; if (k.indexOf('img:') === 0) IMGC.set(k.slice(4), v); });
   await importOld();
   try { SES = JSON.parse(localStorage.getItem('og-session') || 'null'); if (!SES) { const o = JSON.parse(localStorage.getItem('og-auth') || 'null'); if (o && o.refresh_token) setSes(o); } } catch (e) { SES = null; }
   if (SES && ME && ME.id === SES.user.id) { enter(false); }
   else if (SES) { if (navigator.onLine) enter(true); else authUI('', 'محتاج نت أول مرة بس عشان يجيب حسابك'); }
-  else if (!navigator.onLine) { authUI('', ''); $('alead').textContent = 'أول دخول محتاج نت — وبعد كده يشتغل من غيره'; }
-  else { authUI(''); try { const need = await api('/rest/v1/rpc/setup_needed', { method: 'POST', auth: false, body: {} }); authUI(need === true ? 'setup' : 'login'); } catch (e) { authUI('login'); } }
+  else { pubShow(); if (navigator.onLine) try { const need = await api('/rest/v1/rpc/setup_needed', { method: 'POST', auth: false, body: {} }); if (need === true) { $('pub').style.display = 'none'; authUI('setup'); } } catch (e) { /* */ } }
   window.addEventListener('online', () => { syncStatus(); sync(true); });
   window.addEventListener('offline', syncStatus);
   document.addEventListener('visibilitychange', () => { if (!document.hidden) sync(); });
   POLL = setInterval(() => { if (!document.hidden && ME) sync(); }, 8000);
 })();
+
+/* ====================== الواجهة العامة: لأي حد ينزّل الأبلكيشن ======================
+   العروض اليومية، الخدمات، الحجز، والرسايل جوه الأبلكيشن (زي الشات)، والتواصل واتساب/انستجرام.
+   الزوار مش بيشوفوا أي بيانات للشغل: بيقروا الواجهة بس، وبيبعتوا طلبات ورسايل، وبيشوفوا ردودنا عليهم هم بس. */
+const PUB_SQL = `-- OFFGRID: الواجهة العامة + الحجز + الرسايل (مرة واحدة بس)
+grant usage on schema public to anon;
+grant select, insert on public.items to anon;
+drop policy if exists items_pub_read on public.items;
+create policy items_pub_read on public.items for select to anon, authenticated using (coll = 'pub');
+drop policy if exists items_guest_ins on public.items;
+create policy items_guest_ins on public.items for insert to anon
+  with check (coll in ('lead','chat') and data->>'from' = 'guest' and length(data::text) < 4000);
+create or replace function public.guest_thread(p_t text) returns setof public.items
+language sql stable security definer set search_path = public as $$
+  select * from public.items where coll in ('chat','lead') and length(p_t) >= 20 and data->>'t' = p_t order by created_at limit 300;
+$$;
+revoke all on function public.guest_thread(text) from public;
+grant execute on function public.guest_thread(text) to anon, authenticated;`;
+const SQL_LINK = 'https://supabase.com/dashboard/project/inucitipqkixhcxrpufp/sql/new';
+Object.assign(IC, {
+  chat: 'M21 12a8 8 0 01-11.6 7.1L4 20l1.1-4.4A8 8 0 1121 12z', send: 'M4 12l16-8-5 16-3-6.5zM12 13.5L20 4',
+  wa: 'M4 20l1.3-4A8.5 8.5 0 1112 20.5a8.6 8.6 0 01-4-1zM9.2 8.3c-.4 2.9 3.4 6.8 6.5 6.4l.9-1.6-2.1-1-1 .9c-1-.5-1.8-1.3-2.3-2.3l.9-1-1-2.1z',
+  ig: 'M7 3h10a4 4 0 014 4v10a4 4 0 01-4 4H7a4 4 0 01-4-4V7a4 4 0 014-4zM12 16a4 4 0 100-8 4 4 0 000 8M17.3 6.7v.01',
+  fb: 'M14 21v-7.5h2.6l.4-3H14V8.6c0-.9.3-1.6 1.6-1.6H17V4.3a20 20 0 00-2.3-.1c-2.3 0-3.8 1.4-3.8 3.9v2.4H8.3v3H11V21',
+  tt: 'M13.5 3v12a3.5 3.5 0 11-3.5-3.5M13.5 3c.4 2.6 2.4 4.6 5 4.8',
+  pin: 'M12 21s-7-6.1-7-11.4a7 7 0 0114 0C19 14.9 12 21 12 21zM12 12a2.4 2.4 0 100-4.8 2.4 2.4 0 000 4.8',
+  globe: 'M12 21a9 9 0 100-18 9 9 0 000 18M3 12h18M12 3c2.4 2.5 3.6 5.5 3.6 9s-1.2 6.5-3.6 9c-2.4-2.5-3.6-5.5-3.6-9S9.6 5.5 12 3',
+  clock: 'M12 21a9 9 0 100-18 9 9 0 000 18M12 7v5l3.2 2', img: 'M4 5h16v14H4zM4 16l5-5 4 4 2.5-2.5L20 17M15.5 9.5v.01',
+  cam: 'M4 8h3.2L9 5.5h6L16.8 8H20v11H4zM12 16.5a3.5 3.5 0 100-7 3.5 3.5 0 000 7', mega: 'M3 10v4h3.5l7.5 4.5v-13L6.5 10zM17.5 9a4 4 0 010 6M19.5 6.5a7.5 7.5 0 010 11',
+  pen: 'M4 20l4-1L19.5 7.5l-3-3L5 16zM14 7l3 3', pos: 'M3 4h18v11H3zM8 20h8M12 15v5M7 8v3M10 8v3M13 8v3M16 8v3', spark: 'M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8zM19 16l.8 2.2L22 19l-2.2.8L19 22l-.8-2.2L16 19l2.2-.8z'
+});
+const SV_ICONS = ['film', 'cam', 'mega', 'pen', 'pos', 'spark', 'star', 'globe', 'bag', 'users'];
+const PUB_DEF = {
+  sv: 2, name: 'أوف جريد للدعاية والبرمجة والحلول الذكية', tag: 'حلول دعاية وبرمجيات متكاملة',
+  about: 'جيل جديد من الدعاية والتكنولوجيا. بنعمل حلول تسويقية متكاملة بتجمع بين الوجود الميداني، صناعة المحتوى الاحترافي، والبرمجيات الذكية.',
+  area: 'متاحين لعملاء جداد في الحوامدية وحواليها',
+  wa: '01031913107', phone: '01150605708', call: false, ig: 'https://instagram.com/ri_25_2', fb: '', tt: '', web: '', map: '', addr: 'الحوامدية — الجيزة', hours: '',
+  offers: [],
+  services: [
+    { id: 'sv1', t: 'مونتاج ريلز توكينج هيد', d: 'تصوّر نفسك بتتكلم، واحنا نطلّعه ريل احترافي: كابشن كلمة بكلمة على الصوت، أيقونات وموشن بألوان براندك، وهوك قوي في أول 3 ثواني.', p: '', i: 'film' },
+    { id: 'sv2', t: 'فيديوهات وإعلانات AI', d: 'مشاهد سينمائية مكانش ينفع تتصوّر، زي فرخة في خزنة دهب أو شرح بيحصل جوه جسم الإنسان.', p: '', i: 'spark' },
+    { id: 'sv3', t: 'تسويق السوشيال ميديا', d: 'اشتراك شهري: إدارة صفحتك، ريلز وبوسترات يومية، ومتابعة النتايج.', p: '', i: 'mega' },
+    { id: 'sv4', t: 'موشن جرافيك وبوسترات', d: 'عناوين متحركة، بوسترات منتجات وعروض، و Brand Kit ثابت (ألوان وفونتات وأيقونات) لكل عميل.', p: '', i: 'pen' },
+    { id: 'sv5', t: 'الدعاية الميدانية', d: 'انتشار إبداعي في الشوارع والأسواق يلفت النظر للمحل في الزحمة.', p: '', i: 'users' },
+    { id: 'sv6', t: 'البرمجة وتقنيات NFC', d: 'تطوير مواقع ويب حديثة لنشاطك، وكروت NFC ذكية مخصصة لشركتك: تقرّب الكارت من الموبايل يفتح صفحتك ورقمك على طول.', p: '', i: 'globe' },
+    { id: 'sv7', t: 'محتوى للصيدليات والعيادات', d: 'فيديوهات AI بتشرح المرض والدوا جوه الجسم مع كلام الدكتور، ريلز للدكتور أو الصيدلي بيرد على أسئلة الناس، بوسترات منتجات وعروض بهوية الصيدلية، وفيديو التوصيل والعروض الشهرية.', p: '', i: 'star' },
+    { id: 'sv8', t: 'أنظمة الكاشير ونقاط البيع (POS)', d: 'سيستم كاشير للمحلات والصيدليات والسوبر ماركت: قراءة الباركود، الفواتير، المخزن، والتقارير، ويشتغل من غير نت على ويندوز.', p: '', i: 'pos' }
+  ]
+};
+const PUB_CLIENTS = [['تشيكن ناش', 'مطعم فرايد تشيكن'], ['صيدلية د. هاجر', 'صيدلية'], ['برو بلس', 'محل آيفونات'], ['لامبيكا', 'عطور'], ['دبّابة', 'فرايد تشيكن وبرجر']];
+const PUB_STEPS = [['بتبعتلنا', 'الفيديو اللي صوّرته أو فكرتك، ولو مش عارف تبدأ منين بنكتبلك الاسكريبت.'], ['بنعمل الهوية', 'ألوانك وفونتك وأيقوناتك وشكل القفلة، مرة واحدة وتفضل ثابتة.'], ['معاينة وتعديل', 'بتشوف نسخة وتقولنا رأيك، ونعدّل لحد ما تبقى راضي.'], ['تسليم ونشر', 'فيديو جاهز للفيسبوك والإنستجرام والتيك توك.']];
+let PUB_FROM = '', PUB_MODE = 'home', PUB_OK = null, GROWS = [], GPOLL = 0, PE = null, PTAB = 'info', INBOX_T = null, INBOX_TM = 0, LAST_UNREAD = -1;
+const isTeam = () => ME && !ME.client;
+const pubData = () => { const r = isTeam() && ROWS.get('pub'), x = Object.assign({}, PUB_DEF, (r ? r.data : PUB) || {}); if (!(x.sv >= 2)) { x.services = PUB_DEF.services; x.sv = 2; if (!x.addr) x.addr = PUB_DEF.addr; if (!x.wa) x.wa = PUB_DEF.wa; if (!x.ig) x.ig = PUB_DEF.ig; if (!x.phone) x.phone = PUB_DEF.phone; x.name = x.name || PUB_DEF.name; } return x; };
+const imgSrc = id => { if (!id) return ''; const r = ROWS.get(id); return (r && r.data && r.data.img) || IMGC.get(id) || ''; };
+const waNum = n => { let d = String(n || '').replace(/\D/g, ''); if (/^0\d{10}$/.test(d)) d = '2' + d; return d; };
+const tm = at => { if (!at) return ''; const d = new Date(at); return dshort(at) + ' ' + pad(d.getHours()) + ':' + pad(d.getMinutes()); };
+const LST = { new: ['جديد', 'y'], ok: ['اتأكد', 'g'], done: ['خلص', ''], no: ['اتلغى', 'r'] };
+function GST() {
+  let g = null; try { g = JSON.parse(localStorage.getItem('og-guest') || 'null'); } catch (e) { /* */ }
+  if (!g || !g.t) { const a = new Uint8Array(16); crypto.getRandomValues(a); g = { t: 'g' + Array.from(a, x => pad(x.toString(16))).join(''), name: '', phone: '' }; saveG(g); }
+  if (ME && ME.client && !g.name) { const c = ROWS.get(ME.client.cid); if (c) { g.name = c.data.n || ''; g.phone = c.data.p || ''; } }
+  return g;
+}
+function saveG(g) { try { localStorage.setItem('og-guest', JSON.stringify(g)); } catch (e) { /* */ } }
+const gSeen = () => { try { return localStorage.getItem('og-gseen') || ''; } catch (e) { return ''; } };
+const gUnread = () => { const s = gSeen(); return GROWS.filter(r => r.coll === 'chat' && r.data.from === 'team' && (r.created_at || '') > s).length; };
+function activeOffers(d) { return (d.offers || []).filter(o => o.on !== false && (!o.until || o.until >= today())); }
+
+/* ---------- العرض للزوار ---------- */
+function pubShow(from) {
+  PUB_FROM = from || ''; PUB_MODE = 'home';
+  ['auth', 'app', 'portal'].forEach(id => { $(id).style.display = 'none'; }); closeSheet();
+  $('pub').style.display = 'block'; window.scrollTo(0, 0); pubRender(); pubFetch(); gPull();
+  clearInterval(GPOLL); GPOLL = setInterval(() => { if (!document.hidden && $('pub').style.display !== 'none') gPull(); }, 30000);
+}
+function pubHide() {
+  clearInterval(GPOLL); $('pub').style.display = 'none';
+  if (PUB_FROM === 'portal') return showClient();
+  if (PUB_FROM === 'app') { $('app').style.display = 'flex'; return render(); }
+  authUI('login');
+}
+function pubLogin() { clearInterval(GPOLL); $('pub').style.display = 'none'; authUI('login'); }
+async function pubFetch() {
+  if (isTeam() || !navigator.onLine) return;
+  try { const L = await api('/rest/v1/items?select=id,data,updated_at&id=eq.pub', { auth: !!(ME && ME.client) }) || []; PUB_OK = L.length > 0; if (L[0]) { PUB = L[0].data; IDB.put('kv', 'pub', PUB); } }
+  catch (e) { /* بيفضل على النسخة المحفوظة */ }
+  if (PUB_MODE === 'home' && $('pub').style.display !== 'none') pubRender();
+}
+/* ---------- تحميل التطبيق من غير قايمة المتصفح ---------- */
+let BIP = null, INST_X = false;
+window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); BIP = e; if ($('pub') && $('pub').style.display !== 'none' && PUB_MODE === 'home') pubRender(); });
+window.addEventListener('appinstalled', () => { BIP = null; toast('التطبيق اتنزّل ✓ افتحه من الشاشة الرئيسية'); if (PUB_MODE === 'home') pubRender(); });
+const standalone = () => window.matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
+const isIOS = () => /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+const isAndroid = () => /android/i.test(navigator.userAgent);
+let APK = null;
+async function apkCheck() { if (APK !== null) return APK; try { const r = await fetch('OFFGRID.apk', { method: 'HEAD', cache: 'no-store' }); APK = r.ok ? 'OFFGRID.apk' : ''; } catch (e) { APK = ''; } return APK; }
+async function installApp() {
+  if (isAndroid() && await apkCheck()) { toast('بيتحمّل… افتح الملف بعد ما يخلص ودوس «تثبيت»'); return openX(APK); }
+  if (BIP) { BIP.prompt(); BIP.userChoice.then(() => { BIP = null; pubRender(); }).catch(() => { /* */ }); return; }
+  const shr = '<svg class="i" viewBox="0 0 24 24" style="width:20px;height:20px;vertical-align:-4px"><path d="M12 15V3M8 7l4-4 4 4M5 11v9h14v-9"/></svg>';
+  sheet('حمّل تطبيق OFFGRID', isIOS() ? '<div class="steps2"><div><b>1</b>دوس على زرار المشاركة ' + shr + ' تحت في Safari</div><div><b>2</b>انزل شوية واختار «إضافة إلى الشاشة الرئيسية»</div><div><b>3</b>دوس «إضافة»، وهتلاقي أيقونة OFFGRID على الشاشة</div></div><p class="mu sm">لو فاتح من كروم على الآيفون: زرار المشاركة فوق جنب اللينك.</p>'
+    : '<div class="steps2"><div><b>1</b>دوس على النقط التلاتة فوق في المتصفح</div><div><b>2</b>اختار «تثبيت التطبيق» أو «إضافة للشاشة الرئيسية»</div><div><b>3</b>هتلاقي أيقونة OFFGRID على الشاشة</div></div><p class="mu sm">لو زرار «تحميل» بيطلع على طول يبقى المتصفح مش مستعد لسه، استنى ثانيتين وجرب تاني.</p>');
+}
+function instBar() {
+  if (standalone() || INST_X) return '';
+  const ic = (document.querySelector('link[rel=apple-touch-icon]') || {}).href || 'icon-192.png';
+  return '<div class="inst2"><img src="' + ic + '" alt=""><div class="tx"><b>حمّل تطبيق OFFGRID</b><span>العروض والطلبات والرسايل على موبايلك</span></div><button class="btn" onclick="installApp()">' + ico('down', 17) + ' تحميل</button><button class="x" onclick="INST_X=true;pubRender()" aria-label="قفل">' + ico('x', 16) + '</button></div>';
+}
+function pubRender() {
+  if (PUB_MODE === 'chat') return chatRender();
+  const d = pubData(), off = activeOffers(d), sv = d.services || [], un = gUnread(), wa = waNum(d.wa), g = GST();
+  let h = instBar() + '<div class="pbar"><span class="wm">OFF<b>GRID</b></span>' + (PUB_FROM ? '<button class="plog" onclick="pubHide()">' + ico('r', 16) + ' رجوع</button>' : '<button class="plog" onclick="pubLogin()">' + ico('user', 16) + ' دخول العملاء</button>') + '</div>';
+  h += '<div class="hero rv"><div class="kick">' + ico('spark', 14) + ' ' + esc(d.name) + '</div><h1>' + esc(d.tag) + '</h1><p>' + esc(d.about) + '</p>' + (d.area ? '<div class="area">' + ico('pin', 15) + esc(d.area) + '</div>' : '') +
+    '<div class="row">' + (wa ? '<button class="btn wa" onclick="openX(\'https://wa.me/' + wa + '\')">' + ico('wa', 19) + ' كلمنا واتساب</button>' : '') + (off.length ? '<button class="btn gl" onclick="document.getElementById(\'offs\').scrollIntoView({behavior:\'smooth\'})">' + ico('tag', 18) + ' العروض (' + off.length + ')</button>' : '<button class="btn gl" onclick="document.getElementById(\'svs\').scrollIntoView({behavior:\'smooth\'})">' + ico('box', 18) + ' خدماتنا</button>') + '</div></div>';
+  if (off.length) h += '<div class="sec" id="offs"><b>' + ico('spark', 20) + ' عروض النهارده</b><span>لفترة محدودة</span></div>' + off.map((o, i) => offerCard(o, i)).join('');
+  h += '<div class="sec" id="svs"><b>خدماتنا</b><span>' + sv.length + ' خدمة · دوس للتفاصيل</span></div><div class="svs">' + sv.map((s, i) => '<button class="sv rv" onclick="svOpen(' + i + ')"><span class="ic">' + ico(s.i || 'star', 22) + '</span><b>' + esc(s.t) + '</b><p>' + esc(s.d) + '</p>' + (s.p ? '<em>يبدأ من ' + esc(s.p) + '</em>' : '') + '</button>').join('') + '</div>';
+  h += '<div class="sec"><b>إزاي بنشتغل</b><span>4 خطوات وفيديوك جاهز</span></div><div class="steps">' + PUB_STEPS.map((x, i) => '<div class="st rv"><i>' + (i + 1) + '</i><div><b>' + x[0] + '</b><p>' + x[1] + '</p></div></div>').join('') + '</div>';
+  h += '<div class="sec"><b>عملاء اشتغلنا معاهم</b><span>من الحوامدية والبدرشين</span></div><div class="cls">' + PUB_CLIENTS.map(c => '<div class="cl rv"><b>' + esc(c[0]) + '</b><span>' + esc(c[1]) + '</span></div>').join('') + '</div>';
+  const C = [['chat', 'رسايلنا', 'chatOpen()', '#2f7bff', un]];
+  if (wa) C.push(['wa', 'واتساب', "openX('https://wa.me/" + wa + "')", '#25d366']);
+  if (d.ig) C.push(['ig', 'انستجرام', "openX('" + igLink(d.ig) + "')", '#e1306c']);
+  if (d.fb) C.push(['fb', 'فيسبوك', "openX('" + jsq(d.fb) + "')", '#1877f2']);
+  if (d.tt) C.push(['tt', 'تيك توك', "openX('" + jsq(d.tt) + "')", '#f3f2ef']);
+  if (d.web) C.push(['globe', 'شوف شغلنا', "openX('" + jsq(d.web) + "')", '#8ab4ff']);
+  if (d.map) C.push(['pin', 'مكاننا', "openX('" + jsq(d.map) + "')", '#ffb340']);
+  if (d.call && d.phone) C.push(['phone', 'اتصال', "openX('tel:" + String(d.phone).replace(/[^\d+]/g, '') + "')", '#36c98a']);
+  h += '<div class="sec"><b>تواصل معانا</b></div><div class="cts">' + C.map(c => '<button class="ct rv" onclick="' + c[2] + '"><span class="ic" style="background:' + c[3] + '22;color:' + c[3] + '">' + ico(c[0], 22) + '</span>' + c[1] + (c[4] ? ' <span class="dot">' + c[4] + '</span>' : '') + '</button>').join('') + '</div>';
+  if (d.addr || d.hours) h += '<div class="card rv" style="margin-top:12px">' + (d.addr ? '<div class="row" style="margin-bottom:' + (d.hours ? 8 : 0) + 'px">' + ico('pin', 18) + '<span>' + esc(d.addr) + '</span></div>' : '') + (d.hours ? '<div class="row">' + ico('clock', 18) + '<span>' + esc(d.hours) + '</span></div>' : '') + '</div>';
+  h += '<div class="reg rv">' + (g.reg ? '<b>' + ico('check', 18) + ' انت متسجل عندنا يا ' + esc(g.name) + '</b><p>هنبعتلك العروض الجديدة أول بأول.</p>' :
+    '<b>سجّل رقمك ويوصلك كل عرض جديد</b><p>هنكلمك بنفسنا ونقولك على الباقة المناسبة لنشاطك.</p><div class="row"><input id="rg_n" placeholder="اسمك" value="' + esc(g.name) + '"><input id="rg_p" class="en" inputmode="tel" placeholder="رقمك" value="' + esc(g.phone) + '"></div><button class="btn" style="width:100%;margin-top:8px" onclick="sendReg()">سجّلني</button>') + '</div>';
+  if (wa) h += '<p class="mu sm" style="text-align:center;margin:16px 8px 0">عايز تكلمنا صوت؟ ادخل واتساب ودوس على زرار المكالمة</p>';
+  h += '<p class="mu sm" style="text-align:center;margin-top:14px">OFFGRID ' + VER + '</p>';
+  h += '<div class="pact"><button class="btn" onclick="bookSheet()">' + ico('cal', 19) + ' احجز</button><button class="btn g" onclick="chatOpen()">' + ico('chat', 19) + ' رسايل' + (un ? ' <span class="dot">' + un + '</span>' : '') + '</button>' + (wa ? '<button class="btn wa" onclick="openX(\'https://wa.me/' + wa + '\')" aria-label="واتساب">' + ico('wa', 21) + '</button>' : '') + '</div>';
+  $('pub').innerHTML = h; reveal();
+}
+function reveal() {
+  const els = $('pub').querySelectorAll('.rv');
+  if (!('IntersectionObserver' in window)) { els.forEach(e => e.classList.add('in')); return; }
+  const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } }), { rootMargin: '0px 0px -30px 0px' });
+  els.forEach((e, i) => { e.style.transitionDelay = Math.min(i % 4, 3) * 60 + 'ms'; io.observe(e); });
+}
+async function sendReg() {
+  const n = $('rg_n').value.trim(), p = enDigits($('rg_p').value).replace(/[^\d+]/g, ''); if (!n) return toast('اكتب اسمك'); if (p.replace(/\D/g, '').length < 8) return toast('اكتب رقم صح');
+  const g = GST(); g.name = n; g.phone = p;
+  if (!(await guestPost('lead', { t: g.t, from: 'guest', kind: 'reg', name: n, phone: p, status: 'new', at: new Date().toISOString() }))) return;
+  g.reg = true; saveG(g); toast('اتسجلت ✓ هنكلمك قريب'); pubRender();
+}
+const jsq = s => esc(String(s || '').replace(/['\\]/g, ''));
+const igLink = h => { const s = String(h || '').trim(); if (/^https?:/i.test(s)) return jsq(s); return 'https://ig.me/m/' + jsq(s.replace(/^@/, '')); };
+function openX(u) { const a = document.createElement('a'); a.href = u; a.target = '_blank'; a.rel = 'noopener'; document.body.appendChild(a); a.click(); a.remove(); }
+const offNew = o => { if (o.p) return o.p; const op = parseFloat(enDigits(String(o.op || '')).replace(/[^\d.]/g, '')); return op && +o.pct ? fm(Math.round(op * (100 - o.pct) / 100)) + ' ج' : ''; };
+function offerCard(o, i) {
+  const left = o.until ? daysTo(o.until) : null, pal = ['hot', 'elec', 'lime'][i % 3];
+  return '<div class="offer ' + pal + ' rv"><span class="wmk">OFF</span><div class="top">' + (+o.pct ? '<div class="pct"><small>خصم</small><b>' + fm(o.pct) + '%</b></div>' : '<div class="pct"><b style="font-size:30px">عرض</b></div>') +
+    (left != null ? '<span class="cd">' + ico('clock', 14) + (left <= 0 ? ' آخر يوم النهارده' : left === 1 ? ' فاضل يوم' : ' فاضل ' + left + ' أيام') + '</span>' : '') + '</div>' +
+    '<b class="ot">' + esc(o.t) + '</b>' + (o.d ? '<p>' + esc(o.d) + '</p>' : '') + '<div class="price">' + (offNew(o) ? '<b>' + esc(offNew(o)) + '</b>' : '') + (o.op ? '<s>' + esc(o.op) + '</s>' : '') + '</div>' +
+    '<button class="btn wt" onclick="bookSheet(\'عرض: ' + jsq(o.t) + '\')">اطلب العرض ' + ico('l', 16) + '</button></div>';
+}
+function svOpen(i) {
+  const s = (pubData().services || [])[i]; if (!s) return;
+  sheet(s.t, '<div class="sv big1"><span class="ic">' + ico(s.i || 'star', 26) + '</span><p style="-webkit-line-clamp:unset;font-size:15.5px;color:var(--tx)">' + esc(s.d) + '</p>' + (s.p ? '<em>يبدأ من ' + esc(s.p) + '</em>' : '') + '</div>' +
+    '<button class="btn" style="width:100%;margin-top:12px" onclick="bookSheet(\'' + jsq(s.t) + '\')">' + ico('cal', 19) + ' اطلب الخدمة دي</button><button class="btn g" style="width:100%;margin-top:8px" onclick="closeSheet();chatOpen()">' + ico('chat', 19) + ' اسأل عنها</button>');
+}
+
+/* ---------- الحجز ---------- */
+function bookSheet(pre) {
+  const d = pubData(), g = GST(), opts = (d.services || []).map(s => s.t).concat(activeOffers(d).map(o => 'عرض: ' + o.t));
+  if (pre && opts.indexOf(pre) < 0) opts.unshift(pre);
+  sheet('احجز ميعاد', '<div class="fld"><label>اسمك</label><input id="bk_n" value="' + esc(g.name) + '"></div><div class="fld"><label>رقم تليفونك</label><input id="bk_p" class="en" inputmode="tel" value="' + esc(g.phone) + '"></div>' +
+    '<div class="fld"><label>الخدمة</label><select id="bk_s">' + opts.map(o => '<option' + (o === pre ? ' selected' : '') + '>' + esc(o) + '</option>').join('') + '<option>حاجة تانية</option></select></div>' +
+    '<div class="fld"><label>اليوم اللي يناسبك</label><input id="bk_d" type="date" min="' + today() + '"></div><div class="fld"><label>الوقت</label><div class="chips" id="bk_t">' + ['الصبح', 'بعد الضهر', 'بالليل', 'أي وقت'].map((x, i) => '<button class="' + (i === 3 ? 'on' : '') + '" onclick="pick(this)">' + x + '</button>').join('') + '</div></div>' +
+    '<div class="fld"><label>تفاصيل (اختياري)</label><textarea id="bk_x" rows="3" placeholder="اسم المكان، نوع الشغل، أي حاجة تحب تقولها"></textarea></div>', 'ابعت', sendBook);
+}
+async function sendBook() {
+  const n = $('bk_n').value.trim(), p = enDigits($('bk_p').value).replace(/[^\d+]/g, '');
+  if (!n) return toast('اكتب اسمك'); if (p.replace(/\D/g, '').length < 8) return toast('اكتب رقم تليفون صح');
+  const on = $('bk_t').querySelector('.on'), g = GST(); g.name = n; g.phone = p; saveG(g);
+  const data = { t: g.t, from: 'guest', kind: 'book', name: n, phone: p, s: $('bk_s').value, day: $('bk_d').value, time: on ? on.textContent : '', x: $('bk_x').value.trim().slice(0, 800), status: 'new', at: new Date().toISOString() };
+  $('shA').disabled = true;
+  const ok = await guestPost('lead', data); $('shA').disabled = false;
+  if (!ok) return;
+  closeSheet(); toast('وصل طلبك ✓ هنرد عليك في الرسايل'); chatOpen();
+}
+async function guestPost(coll, data) {
+  if (!navigator.onLine) { toast('محتاج نت عشان يتبعت'); return false; }
+  const id = coll + '_' + nid(), row = { id, coll, data };
+  try { await api('/rest/v1/items', { method: 'POST', auth: false, headers: { Prefer: 'return=minimal' }, body: row }); GROWS.push({ id, coll, data, created_at: new Date().toISOString() }); return true; }
+  catch (e) {
+    const wa = waNum(pubData().wa);
+    if (/row-level|permission|401|403|42501/i.test(String(e.message) + e.status)) sheet('لسه بنجهّز الخدمة دي', '<p>الحجز والرسايل من الأبلكيشن لسه بيتفعّلوا.' + (wa ? ' ابعتلنا واتساب لحد ما يشتغلوا:' : '') + '</p>' + (wa ? '<button class="btn wa" style="width:100%" onclick="openX(\'https://wa.me/' + wa + '?text=' + encodeURIComponent((data.kind === 'book' ? 'حجز: ' + data.s + ' — ' : '') + (data.text || data.x || '') + ' — ' + data.name).replace(/'/g, '') + '\')">' + ico('wa', 19) + ' واتساب</button>' : ''));
+    else toast(errAr(e));
+    return false;
+  }
+}
+
+/* ---------- الرسايل (للزائر أو العميل) ---------- */
+async function gPull() {
+  if (!navigator.onLine) return; const g = GST();
+  try { GROWS = await api('/rest/v1/rpc/guest_thread', { method: 'POST', auth: false, body: { p_t: g.t } }) || []; } catch (e) { return; }
+  if ($('pub').style.display !== 'none') { if (PUB_MODE === 'chat') { chatRender(); } else pubRender(); }
+}
+function chatOpen() { PUB_MODE = 'chat'; closeSheet(); chatRender(); gPull(); clearInterval(GPOLL); GPOLL = setInterval(() => { if (!document.hidden) gPull(); }, 6000); setTimeout(() => window.scrollTo(0, document.body.scrollHeight), 50); }
+function chatBack() { PUB_MODE = 'home'; clearInterval(GPOLL); GPOLL = setInterval(() => { if (!document.hidden && $('pub').style.display !== 'none') gPull(); }, 30000); pubRender(); window.scrollTo(0, 0); }
+function threadHtml(rows, mine) {
+  const L = rows.slice().sort((a, b) => ((a.data.at || a.created_at || '') < (b.data.at || b.created_at || '') ? -1 : 1));
+  return L.map(r => {
+    const d = r.data, me = d.from === mine;
+    if (r.coll === 'lead' && d.kind === 'reg') return '<div class="bk"><b>' + ico('user', 17) + ' ' + (mine === 'team' ? 'سجّل رقمه عشان توصله العروض' : 'اتسجلت عندنا ✓') + '</b>' + (mine === 'team' ? '<div class="mu sm en">' + esc(d.phone) + '</div>' : '') + '<small class="mu">' + tm(d.at || r.created_at) + '</small></div>';
+    if (r.coll === 'lead') { const st = LST[d.status] || LST.new; return '<div class="bk"><div class="row" style="justify-content:space-between"><b>' + ico('cal', 17) + ' طلب حجز</b><span class="pill ' + st[1] + '">' + st[0] + '</span></div><div style="margin-top:4px">' + esc(d.s) + '</div><div class="mu sm">' + [d.day ? dshort(d.day) : '', d.time].filter(Boolean).join(' · ') + (d.x ? ' — ' + esc(d.x) : '') + '</div>' + (mine === 'team' ? '<div class="mu sm en">' + esc(d.phone) + '</div>' : '') + '<small class="mu">' + tm(d.at || r.created_at) + '</small></div>'; }
+    return '<div class="msg ' + (me ? 'me' : 'them') + '">' + esc(d.text) + '<small>' + (!me && mine === 'guest' ? 'OFFGRID · ' : !me ? esc(d.name || '') + ' · ' : '') + tm(d.at || r.created_at) + '</small></div>';
+  }).join('');
+}
+function chatRender() {
+  const g = GST(), un = GROWS.length;
+  let h = '<div class="pbar"><button class="plog" onclick="chatBack()">' + ico('r', 16) + ' رجوع</button><span class="wm" style="font-size:22px">OFF<b>GRID</b></span></div>';
+  h += '<div class="chat">' + (un ? threadHtml(GROWS, 'guest') : '<div class="card empty">ابعتلنا أي سؤال أو اطلب عرض سعر، وهنرد عليك هنا.<br><span class="sm">الرد بيوصلك هنا في الأبلكيشن</span></div>') + '</div>';
+  h += '<div class="cbar">' + (g.name ? '' : '<input id="cg_n" placeholder="اسمك" style="flex:0 0 32%">') + '<textarea id="cg_m" rows="1" placeholder="اكتب رسالتك…"></textarea><button onclick="sendChat()" aria-label="ابعت">' + ico('send', 21) + '</button></div>';
+  const keep = $('cg_m') ? $('cg_m').value : '', kn = $('cg_n') ? $('cg_n').value : '', atEnd = window.innerHeight + window.scrollY >= document.body.scrollHeight - 80;
+  $('pub').innerHTML = h; if ($('cg_m')) $('cg_m').value = keep; if ($('cg_n')) $('cg_n').value = kn;
+  if (atEnd) window.scrollTo(0, document.body.scrollHeight);
+  const last = GROWS.reduce((m, r) => (r.created_at || '') > m ? r.created_at : m, ''); if (last) try { localStorage.setItem('og-gseen', last); } catch (e) { /* */ }
+}
+async function sendChat() {
+  const m = $('cg_m'), t = m.value.trim(), g = GST(); if (!t) return;
+  if (!g.name) { const n = $('cg_n') && $('cg_n').value.trim(); if (!n) { toast('اكتب اسمك الأول'); $('cg_n').focus(); return; } g.name = n; saveG(g); }
+  m.value = '';
+  const ok = await guestPost('chat', { t: g.t, from: 'guest', name: g.name, phone: g.phone || '', text: t.slice(0, 1500), at: new Date().toISOString() });
+  if (!ok) { m.value = t; return; } chatRender(); window.scrollTo(0, document.body.scrollHeight); setTimeout(gPull, 800);
+}
+
+/* ---------- للمدير والفريق: الطلبات والرسايل ---------- */
+function threads() {
+  const T = new Map();
+  recs('chat').concat(recs('lead')).forEach(r => { const d = r.data; if (!d.t) return; const k = d.t, x = T.get(k) || { t: k, rows: [], last: '', name: '', phone: '', lead: 0 }; x.rows.push(r); const at = d.at || r.at || ''; if (at > x.last) x.last = at;
+    if (d.from === 'guest') { if (d.name) x.name = d.name; if (d.phone) x.phone = d.phone; } if (r.coll === 'lead' && d.kind !== 'reg' && (d.status || 'new') === 'new') x.lead++; if (r.coll === 'lead' && d.kind === 'reg') x.reg = 1; T.set(k, x); });
+  return [...T.values()].sort((a, b) => a.last < b.last ? 1 : -1);
+}
+const seenMap = () => { try { return JSON.parse(localStorage.getItem('og-seen') || '{}'); } catch (e) { return {}; } };
+function unreadOf(x, S) { const s = (S || seenMap())[x.t] || ''; return x.rows.filter(r => r.data.from === 'guest' && (r.data.at || r.at || '') > s).length; }
+function inboxCount() { const S = seenMap(); return threads().reduce((n, x) => n + unreadOf(x, S), 0); }
+function inboxTick() {
+  if (!isTeam()) return; const n = inboxCount();
+  if (LAST_UNREAD >= 0 && n > LAST_UNREAD) { const x = threads()[0]; toast('رسالة جديدة' + (x && x.name ? ' من ' + x.name : '')); }
+  LAST_UNREAD = n; try { if (navigator.setAppBadge) n ? navigator.setAppBadge(n) : navigator.clearAppBadge(); } catch (e) { /* */ }
+  if (INBOX_T && document.body.classList.contains('sh') && $('ib_th')) { const x = threads().find(y => y.t === INBOX_T); if (x) { const box = $('ib_th'), end = box.scrollHeight - box.scrollTop - box.clientHeight < 60; box.innerHTML = threadHtml(x.rows, 'team'); markSeen(x); if (end) box.scrollTop = box.scrollHeight; } }
+}
+function inboxCard() {
+  const L = threads(), S = seenMap(); if (!L.length) return '';
+  const n = L.reduce((a, x) => a + unreadOf(x, S), 0), nl = L.reduce((a, x) => a + x.lead, 0), nr = L.filter(x => x.reg).length;
+  const kind = x => x.lead ? 'حجز' : x.reg && x.rows.length === 1 ? 'تسجيل' : 'رسالة';
+  return '<div class="card ibc" onclick="inboxPage()"><div class="row"><span class="ic2">' + ico('chat', 22) + '</span><div style="flex:1"><b>الطلبات والرسايل والتسجيلات</b><div class="mu sm">' + (n ? n + ' جديد' : 'مفيش جديد') + (nl ? ' · ' + nl + ' حجز مستني رد' : '') + (nr ? ' · ' + nr + ' متسجل' : '') + '</div></div>' + (n ? '<span class="dot">' + n + '</span>' : '') + ico('l', 18) + '</div>' +
+    '<div class="ibl">' + L.slice(0, 3).map(x => '<div><span class="pill' + (unreadOf(x, S) ? ' y' : '') + '">' + kind(x) + '</span><b>' + esc(x.name || 'زائر') + '</b><span class="mu sm">' + tm(x.last) + '</span></div>').join('') + '</div></div>';
+}
+function inboxPage() {
+  INBOX_T = null; const L = threads(), S = seenMap();
+  sheet('الطلبات والرسايل', L.length ? '<div class="list">' + L.map(x => { const u = unreadOf(x, S), lr = x.rows.slice().sort((a, b) => (a.data.at || '') < (b.data.at || '') ? 1 : -1)[0], ld = lr.data;
+    return '<div class="it" onclick="inboxOpen(\'' + esc(x.t) + '\')"><div class="ic">' + ico(x.lead ? 'cal' : 'chat') + '</div><div class="tx"><div class="t1">' + esc(x.name || 'زائر') + (x.lead ? ' <span class="pill y">حجز جديد</span>' : '') + (x.reg ? ' <span class="pill g">متسجل</span>' : '') + '</div><div class="t2">' + esc(lr.coll === 'lead' ? (ld.kind === 'reg' ? 'سجّل رقمه: ' + ld.phone : 'طلب حجز: ' + ld.s) : (ld.from === 'team' ? 'انت: ' : '') + ld.text) + '</div></div><div style="text-align:left"><div class="mu sm">' + tm(x.last) + '</div>' + (u ? '<span class="dot">' + u + '</span>' : '') + '</div></div>'; }).join('') + '</div>'
+    : '<div class="empty">لسه مفيش طلبات ولا رسايل.<br>أول ما حد يحجز أو يبعت من الواجهة هيظهر هنا.</div>');
+}
+function markSeen(x) { const S = seenMap(); S[x.t] = x.rows.reduce((m, r) => (r.data.at || r.at || '') > m ? (r.data.at || r.at) : m, S[x.t] || ''); try { localStorage.setItem('og-seen', JSON.stringify(S)); } catch (e) { /* */ } LAST_UNREAD = inboxCount(); }
+function inboxOpen(t) {
+  const x = threads().find(y => y.t === t); if (!x) return; INBOX_T = t; markSeen(x);
+  const wa = waNum(x.phone || ''), leads = x.rows.filter(r => r.coll === 'lead' && r.data.kind !== 'reg');
+  sheet(x.name || 'زائر', '<div class="row" style="gap:8px;margin-bottom:10px">' + (wa ? '<button class="btn wa sm1" onclick="openX(\'https://wa.me/' + wa + '\')">' + ico('wa', 18) + ' واتساب</button><button class="btn g sm1" onclick="openX(\'tel:' + esc(x.phone.replace(/[^\d+]/g, '')) + '\')">' + ico('phone', 18) + ' اتصال</button>' : '') + '<button class="btn g sm1" onclick="inboxPage()">' + ico('r', 18) + ' الكل</button></div>' +
+    (leads.length ? leads.map(r => '<div class="fld"><label>حالة حجز «' + esc(r.data.s) + '»</label><div class="chips">' + Object.keys(LST).map(k => '<button class="' + ((r.data.status || 'new') === k ? 'on' : '') + '" onclick="leadSt(\'' + r.id + '\',\'' + k + '\')">' + LST[k][0] + '</button>').join('') + '</div></div>').join('') : '') +
+    '<div class="chat ib" id="ib_th">' + threadHtml(x.rows, 'team') + '</div><div class="row" style="gap:8px;margin-top:10px"><textarea id="ib_m" rows="2" placeholder="اكتب ردك… هيوصله في الأبلكيشن"></textarea><button class="btn" style="padding:12px 14px" onclick="inboxSend()">' + ico('send', 20) + '</button></div>', 'قفل', () => { INBOX_T = null; closeSheet(); render(); });
+  const b = $('ib_th'); b.scrollTop = b.scrollHeight;
+}
+function leadSt(id, st) { const r = ROWS.get(id); if (!r) return; saveRec('lead', id, Object.assign({}, r.data, { status: st })); toast('اتسجل: ' + LST[st][0]); inboxOpen(r.data.t); }
+function inboxSend() {
+  const m = $('ib_m'), t = m.value.trim(); if (!t || !INBOX_T) return; m.value = '';
+  saveRec('chat', 'chat_' + nid(), { t: INBOX_T, from: 'team', name: ME.name, text: t.slice(0, 1500), at: new Date().toISOString() });
+  inboxOpen(INBOX_T); sync();
+}
+
+/* ---------- للمدير: تعديل الواجهة والعروض ---------- */
+function pubEdit(tab) { if (!ME || !ME.admin) return; PE = PE || clone(pubData()); PTAB = tab || PTAB; pubEditRender(); }
+function pubEditRender() {
+  const T = [['info', 'البيانات'], ['offers', 'العروض'], ['services', 'الخدمات'], ['on', 'التفعيل']];
+  let b = '<div class="segs">' + T.map(t => '<button class="' + (PTAB === t[0] ? 'on' : '') + '" onclick="peKeep();PTAB=\'' + t[0] + '\';pubEditRender()">' + t[1] + '</button>').join('') + '</div>';
+  const f = (k, l, ph, cls) => '<div class="fld"><label>' + l + '</label><input id="pe_' + k + '" class="' + (cls || '') + '" value="' + esc(PE[k] || '') + '" placeholder="' + esc(ph || '') + '"></div>';
+  if (PTAB === 'info') b += '<div class="fld"><label>الجملة الكبيرة فوق</label><input id="pe_tag" value="' + esc(PE.tag) + '"></div><div class="fld"><label>نبذة عننا</label><textarea id="pe_about" rows="3">' + esc(PE.about) + '</textarea></div>' +
+    f('wa', 'رقم الواتساب', '01xxxxxxxxx', 'en') + f('ig', 'انستجرام (اسم الحساب أو اللينك)', '@offgrid', 'en') + f('fb', 'لينك فيسبوك', 'https://facebook.com/…', 'en') + f('tt', 'لينك تيك توك', 'https://tiktok.com/@…', 'en') + f('web', 'لينك الموقع', 'https://…', 'en') + f('map', 'لينك المكان على الخريطة', 'https://maps.app.goo.gl/…', 'en') + f('addr', 'العنوان', 'المدينة — الشارع') + f('hours', 'مواعيد الشغل', 'كل يوم من 12 الضهر لـ 10 بالليل') +
+    f('phone', 'رقم الاتصال العادي', '01xxxxxxxxx', 'en') + '<div class="tog" onclick="this.querySelector(\'.sw\').classList.toggle(\'on\')"><span>زرار «اتصال» العادي يظهر للناس<br><span class="mu sm">مقفول = الناس تكلمك واتساب أو رسايل الأبلكيشن بس</span></span><span class="sw' + (PE.call ? ' on' : '') + '" id="pe_call"></span></div>';
+  else if (PTAB === 'offers') b += '<button class="btn" style="width:100%;margin-bottom:12px" onclick="offEdit(-1)">' + ico('plus', 19) + ' عرض جديد</button>' + ((PE.offers || []).length ? '<div class="list">' + PE.offers.map((o, i) => { const live = o.on !== false && (!o.until || o.until >= today());
+    return '<div class="it" onclick="offEdit(' + i + ')"><div class="ic" style="font-weight:900;font-size:13px">' + (+o.pct ? fm(o.pct) + '%' : ico('tag')) + '</div><div class="tx"><div class="t1">' + esc(o.t) + '</div><div class="t2">' + esc([offNew(o), o.until ? 'لحد ' + dshort(o.until) : ''].filter(Boolean).join(' · ')) + '</div></div><span class="pill ' + (live ? 'g' : '') + '">' + (live ? 'ظاهر' : 'مخفي') + '</span></div>'; }).join('') + '</div>' : '<div class="card empty">مفيش عروض لسه</div>');
+  else if (PTAB === 'services') b += '<button class="btn" style="width:100%;margin-bottom:12px" onclick="svEdit(-1)">' + ico('plus', 19) + ' خدمة جديدة</button><div class="list">' + (PE.services || []).map((s, i) => '<div class="it" onclick="svEdit(' + i + ')"><div class="ic">' + ico(s.i || 'star') + '</div><div class="tx"><div class="t1">' + esc(s.t) + '</div><div class="t2">' + esc(s.d) + '</div></div></div>').join('') + '</div>';
+  else b += '<div id="pe_on" class="card">بشوف…</div>';
+  b += '<button class="btn g" style="width:100%;margin-top:14px" onclick="peKeep();closeSheet();pubShow(\'app\')">' + ico('globe', 19) + ' شوف الواجهة زي الناس</button>';
+  sheet('الواجهة العامة', b, 'حفظ', pubSave);
+  if (PTAB === 'on') pubCheck();
+}
+function peKeep() {
+  if (PTAB !== 'info' || !$('pe_tag')) return;
+  ['tag', 'about', 'wa', 'ig', 'fb', 'tt', 'web', 'map', 'addr', 'hours', 'phone'].forEach(k => { const e = $('pe_' + k); if (e) PE[k] = e.value.trim(); });
+  PE.wa = enDigits(PE.wa); PE.phone = enDigits(PE.phone); PE.call = $('pe_call').classList.contains('on');
+}
+function pubSave() {
+  peKeep(); const old = ROWS.get('pub'), used = new Set((PE.offers || []).map(o => o.img).filter(Boolean));
+  saveRec('pub', 'pub', PE); if (old) (old.data.offers || []).forEach(o => { if (o.img && !used.has(o.img) && ROWS.get(o.img)) delRec(o.img); });
+  PE = null; closeSheet(); toast('اتحفظ ✓ — بيظهر للناس أول ما يترفع'); sync();
+}
+function offEdit(i) {
+  const o = i >= 0 ? PE.offers[i] : { id: 'of' + nid(), t: '', pct: '', d: '', op: '', p: '', until: today(), on: true }, sv = (PE.services || []).map(x => x.t);
+  sheet(i >= 0 ? 'تعديل عرض' : 'عرض جديد', '<div class="fld"><label>على أنهي خدمة؟</label><select id="of_s" onchange="if(this.value){$(\'of_t\').value=this.value;offCalc()}"><option value="">اختار خدمة أو اكتب تحت</option>' + sv.map(t => '<option' + (t === o.t ? ' selected' : '') + '>' + esc(t) + '</option>').join('') + '</select></div>' +
+    '<div class="fld"><label>اسم العرض</label><input id="of_t" value="' + esc(o.t) + '" placeholder="مثلاً: باقة 4 ريلز"></div>' +
+    '<div class="row"><div class="fld" style="flex:1"><label>نسبة الخصم %</label><input id="of_pct" type="number" inputmode="decimal" min="0" max="100" value="' + esc(o.pct || '') + '" placeholder="30"></div><div class="fld" style="flex:1"><label>السعر قبل الخصم</label><input id="of_op" inputmode="decimal" value="' + esc(o.op) + '" placeholder="5000 ج"></div></div>' +
+    '<div class="fld"><label>السعر بعد الخصم (بيتحسب لوحده)</label><input id="of_p" value="' + esc(o.p) + '" placeholder="بيتحسب من الخصم"></div>' +
+    '<div class="fld"><label>التفاصيل</label><textarea id="of_d" rows="3" placeholder="إيه اللي في العرض بالظبط">' + esc(o.d) + '</textarea></div>' +
+    '<div class="fld"><label>العرض شغال لحد</label><input id="of_u" type="date" value="' + esc(o.until || '') + '"></div>' +
+    '<div class="tog" onclick="this.querySelector(\'.sw\').classList.toggle(\'on\')"><span>ظاهر للناس</span><span class="sw' + (o.on !== false ? ' on' : '') + '" id="of_on"></span></div>' +
+    '<div class="mu sm" style="margin:12px 2px 6px">شكله عند الناس:</div><div id="of_pv"></div>' +
+    (i >= 0 ? '<button class="btn r" style="width:100%;margin-top:12px" onclick="PE.offers.splice(' + i + ',1);PTAB=\'offers\';pubEditRender()">' + ico('trash', 18) + ' امسح العرض</button>' : '') +
+    '<button class="btn g" style="width:100%;margin-top:8px" onclick="PTAB=\'offers\';pubEditRender()">رجوع</button>', 'تم', () => {
+    const f = offForm(); if (!f.t) return toast('اكتب اسم العرض');
+    Object.assign(o, f); delete o.img;
+    PE.offers = PE.offers || []; if (i < 0) PE.offers.unshift(o); PTAB = 'offers'; pubEditRender(); toast('دوس «حفظ» عشان يظهر للناس');
+  });
+  ['of_t', 'of_pct', 'of_op', 'of_d', 'of_u', 'of_p'].forEach(id => $(id).addEventListener('input', offCalc)); $('of_p').dataset.auto = o.p ? '' : '1'; offCalc();
+}
+function offForm() { return { t: $('of_t').value.trim(), pct: Math.max(0, Math.min(100, +enDigits($('of_pct').value) || 0)) || '', op: $('of_op').value.trim(), p: $('of_p').dataset.auto === '1' ? '' : $('of_p').value.trim(), d: $('of_d').value.trim(), until: $('of_u').value, on: $('of_on').classList.contains('on') }; }
+function offCalc(e) {
+  const pe = $('of_p'); if (e && e.target === pe) pe.dataset.auto = pe.value.trim() ? '' : '1';
+  const f = offForm(); if (pe.dataset.auto === '1') pe.value = offNew(Object.assign({}, f, { p: '' }));
+  $('of_pv').innerHTML = offerCard(Object.assign({}, f, { t: f.t || 'اسم العرض' }), 0).replace(' rv"', '"').replace(/onclick="[^"]*"/, '');
+}
+function svEdit(i) {
+  const s = i >= 0 ? PE.services[i] : { id: 'sv' + nid(), t: '', d: '', p: '', i: 'star' };
+  sheet(i >= 0 ? 'تعديل خدمة' : 'خدمة جديدة', '<div class="fld"><label>اسم الخدمة</label><input id="sv_t" value="' + esc(s.t) + '"></div><div class="fld"><label>التفاصيل</label><textarea id="sv_d" rows="4">' + esc(s.d) + '</textarea></div>' +
+    '<div class="fld"><label>يبدأ من (اختياري)</label><input id="sv_p" value="' + esc(s.p) + '" placeholder="مثلاً 1000 ج"></div><div class="fld"><label>الأيقونة</label><div class="chips" id="sv_i">' + SV_ICONS.map(k => '<button class="' + (s.i === k ? 'on' : '') + '" data-k="' + k + '" onclick="pick(this)">' + ico(k, 20) + '</button>').join('') + '</div></div>' +
+    (i >= 0 ? '<button class="btn r" style="width:100%;margin-top:4px" onclick="PE.services.splice(' + i + ',1);PTAB=\'services\';pubEditRender()">' + ico('trash', 18) + ' امسح الخدمة</button>' : '') +
+    '<button class="btn g" style="width:100%;margin-top:8px" onclick="PTAB=\'services\';pubEditRender()">رجوع</button>', 'تم', () => {
+    const t = $('sv_t').value.trim(); if (!t) return toast('اكتب اسم الخدمة'); const on = $('sv_i').querySelector('.on');
+    Object.assign(s, { t, d: $('sv_d').value.trim(), p: $('sv_p').value.trim(), i: on ? on.dataset.k : 'star' });
+    PE.services = PE.services || []; if (i < 0) PE.services.push(s); PTAB = 'services'; pubEditRender();
+  });
+}
+async function pubCheck() {
+  const box = $('pe_on'); if (!box) return; let pubOk = false, thr = false;
+  try { pubOk = ((await api('/rest/v1/items?select=id&id=eq.pub', { auth: false })) || []).length > 0; } catch (e) { /* */ }
+  try { await api('/rest/v1/rpc/guest_thread', { method: 'POST', auth: false, body: { p_t: 'x'.repeat(24) } }); thr = true; } catch (e) { /* */ }
+  if (!$('pe_on')) return;
+  if (thr && pubOk) { box.innerHTML = '<b style="color:var(--ok)">' + ico('check', 18) + ' الواجهة شغالة لكل الناس</b><p class="mu sm" style="margin:6px 0 0">العروض والخدمات بتظهر لأي حد ينزّل الأبلكيشن، والحجز والرسايل بيوصلوك هنا.</p>'; return; }
+  box.innerHTML = '<b>' + (thr ? 'فاضل تدوس «حفظ» مرة' : 'خطوة واحدة عشان الواجهة تشتغل لكل الناس') + '</b>' + (thr ? '<p class="mu sm">احفظ الواجهة مرة وهتظهر للناس.</p>' :
+    '<p class="mu sm" style="margin:6px 0 10px">دي بتسمح للناس تشوف العروض والخدمات بس، وتبعتلك حجز ورسايل، من غير ما تشوف أي حاجة من بيانات الشغل.</p><ol class="sm" style="margin:0 0 10px;padding-right:18px;line-height:1.9"><li>دوس «انسخ الكود»</li><li>دوس «افتح Supabase» وسجّل دخول لو طلب</li><li>الصق الكود ودوس Run</li><li>ارجع هنا ودوس «اتأكد»</li></ol>' +
+    '<textarea readonly rows="4" class="en" style="font-size:11px" id="pe_sql">' + esc(PUB_SQL) + '</textarea><div class="row" style="margin-top:8px"><button class="btn" style="flex:1" onclick="copySql()">انسخ الكود</button><button class="btn g" style="flex:1" onclick="openX(\'' + SQL_LINK + '\')">افتح Supabase</button></div>') +
+    '<button class="btn g" style="width:100%;margin-top:8px" onclick="pubCheck()">' + ico('sync', 18) + ' اتأكد</button>';
+}
+function copySql() { const t = $('pe_sql'); const done = () => toast('الكود اتنسخ ✓'); if (navigator.clipboard) navigator.clipboard.writeText(PUB_SQL).then(done, () => { t.select(); document.execCommand('copy'); done(); }); else { t.select(); document.execCommand('copy'); done(); } }
 
 </script>
 </body></html>
