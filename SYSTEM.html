@@ -163,6 +163,18 @@ body.sh #shade{opacity:1;pointer-events:auto}body.sh #sheet{transform:none}
 .wks{display:flex;gap:12px;overflow-x:auto;margin:0 -16px;padding:0 16px 4px;scrollbar-width:none}.wks::-webkit-scrollbar{display:none}
 .wk{flex:none;width:62%;max-width:260px}.wk .fr{aspect-ratio:9/16;border-radius:18px;overflow:hidden;background:#000;border:1px solid var(--line)}.wk iframe,.dfr iframe{width:100%;height:100%;border:0;display:block}.wk b{display:block;font-size:14px;margin-top:6px}
 .dfr{height:430px;border-radius:18px;overflow:hidden;background:#fff;border:1px solid var(--line)}
+#call{position:fixed;inset:0;z-index:60;display:none;flex-direction:column;justify-content:space-between;align-items:center;padding:calc(var(--st) + 70px) 24px calc(var(--sb) + 50px);background:radial-gradient(120% 70% at 50% 0%,#1d3f86 0%,#0b0b0d 70%);color:#fff}
+#call.on{display:flex}.cl1{display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center}.cl1 b{font-size:28px}.cl1 span{color:#b9c6e4;font-size:16px}
+.cl1 .av{width:110px;height:110px;border-radius:50%;background:linear-gradient(135deg,#2f7bff,#19c3ff);display:flex;align-items:center;justify-content:center;font-size:46px;font-weight:900;margin-bottom:8px}
+.cl1 .av.pl{animation:cpl 1.6s ease-out infinite}@keyframes cpl{0%{box-shadow:0 0 0 0 rgba(47,123,255,.6)}100%{box-shadow:0 0 0 34px rgba(47,123,255,0)}}
+.cl2{display:flex;gap:60px;align-items:center}.cb{width:74px;height:74px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;color:#fff}
+.cb.g{background:#22c55e;animation:pp 1.4s ease-in-out infinite}.cb.r{background:#ff3b30}.cb.r svg{transform:rotate(135deg)}.cb.m{background:rgba(255,255,255,.14)}.cb.m.on{background:#fff;color:#111}.cb small{font-size:11px}
+.cmsg{align-self:center;display:flex;align-items:center;gap:6px;background:var(--card2);border:1px solid var(--line);border-radius:20px;padding:6px 12px;font-size:13.5px}.cmsg.miss{color:var(--bad);border-color:rgba(255,91,91,.35)}.cmsg small{color:var(--mu);font-size:11px}
+.plog.cbtn{background:rgba(34,197,94,.16);border-color:rgba(34,197,94,.4);color:#7ee2a8}
+.wsum{display:flex;flex-direction:column;gap:2px}.wday{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:4px 0;margin-bottom:10px;overflow:hidden}.wday.td{border-color:var(--ac);box-shadow:0 0 0 1px var(--ac) inset}.wday.past{opacity:.6}
+.wh{display:flex;align-items:center;gap:8px;padding:8px 14px}.wh b{font-size:16px}.wh span{color:var(--mu);font-size:13px}.wh button{margin-right:auto;width:32px;height:32px;border-radius:10px;background:var(--card2);display:flex;align-items:center;justify-content:center;color:var(--ac2)}
+.wit{display:flex;align-items:center;gap:10px;padding:9px 14px;border-top:1px solid var(--line)}.wit .wt{font-size:12.5px;font-weight:800;color:var(--ac2);min-width:44px}.wit .ic{color:var(--ac2);display:flex}.wit .tx{flex:1;min-width:0}.wit .t1{font-weight:700;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.wit .t2{font-size:12.5px;color:var(--mu)}
+.wit.k_pay .ic{color:var(--ok)}.wit.k_renew .ic{color:var(--warn)}.wit.ok .t1{text-decoration:line-through;color:var(--mu)}.wemp{padding:6px 14px 10px;color:var(--mu);font-size:13px}
 .upl{display:flex;align-items:center;justify-content:center;aspect-ratio:4/3;border:1.5px dashed #34518c;border-radius:18px;background:var(--card2);overflow:hidden;margin-bottom:12px;color:var(--ac2);text-align:center;position:relative}
 .upl span{display:flex;flex-direction:column;align-items:center;gap:6px}.upl img{width:100%;height:100%;object-fit:cover}.upl input{position:absolute;inset:0;opacity:0}
 #auth{position:fixed}
@@ -178,6 +190,7 @@ body.sh #shade{opacity:1;pointer-events:auto}body.sh #sheet{transform:none}
  <button id="fab" onclick="quickAdd()" aria-label="إضافة"><svg class="i" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button>
  <nav id="nav"></nav></div>
 <div id="shade" onclick="closeSheet()"></div><div id="sheet"><div class="grab"></div><div class="hd"><b id="shT"></b><button id="shA"></button></div><div class="bd" id="shB"></div></div>
+<div id="call"></div>
 <div id="toast"></div>
 <script>
 'use strict';
@@ -395,10 +408,25 @@ function acct(s, r) {
   L.filter(x => x.s.flow === 'in' && fOf(x.s, 'money')).forEach(x => { paid += sum(x.rs.filter(y => counted(x.s, y)), y => y.data[fOf(x.s, 'money').k]); });
   return { total, paid, left: Math.max(0, total - paid), pct };
 }
+const monDiff = (a, b) => (+b.slice(0, 4) - +a.slice(0, 4)) * 12 + (+b.slice(5, 7) - +a.slice(5, 7));
+function spreadN(ss, c, v) {
+  const plan = Math.max(1, Math.round(+c.data[ss.sub.months] || 1)); if (plan < 2) return 1;
+  const a = acct(ss, c), per = a && a.total ? a.total / plan : 0; return per ? Math.max(1, Math.min(plan, Math.round(v / per))) : plan;
+}
 function monthCalc(m) {
-  let inn = 0, out = 0; const by = {};
-  CFG().sections.forEach(s => { if (!s.flow) return; const mf = fOf(s, 'money'); if (!mf) return; recs(s.k).forEach(r => { if (!counted(s, r) || moneyDate(s, r).slice(0, 7) !== m) return; const v = +r.data[mf.k] || 0; if (s.flow === 'in') inn += v; else out += v; by[s.k] = (by[s.k] || 0) + v; }); });
-  return { inn, out, net: inn - out, by };
+  let inn = 0, out = 0, cash = 0; const by = {}, ss = CFG().sections.find(x => x.sub && SEC(x.k));
+  CFG().sections.forEach(s => {
+    if (!s.flow) return; const mf = fOf(s, 'money'); if (!mf) return;
+    const lf = ss && s.flow === 'in' ? s.fields.find(f => f.t === 'link' && f.to === ss.k && !f.off) : null;
+    recs(s.k).forEach(r => {
+      if (!counted(s, r)) return; const md = moneyDate(s, r).slice(0, 7), v = +r.data[mf.k] || 0; if (!md) return;
+      if (s.flow === 'in' && md === m) cash += v;
+      let share = md === m ? v : 0;
+      if (lf) { const c = ROWS.get(r.data[lf.k]), n = c ? spreadN(ss, c, v) : 1; if (n > 1) { const k = monDiff(md, m); share = k >= 0 && k < n ? v / n : 0; } }
+      if (!share) return; if (s.flow === 'in') inn += share; else out += share; by[s.k] = (by[s.k] || 0) + share;
+    });
+  });
+  return { inn, out, net: inn - out, by, cash };
 }
 
 /* ---------- واجهة: أدوات ---------- */
@@ -406,16 +434,16 @@ function toast(t) { const e = $('toast'); e.textContent = t; e.classList.add('on
 let SHEET_ACT = null;
 function sheet(title, body, act, actFn) { $('shT').textContent = title; $('shB').innerHTML = body; $('shA').textContent = act || 'قفل'; SHEET_ACT = actFn || closeSheet; $('shA').onclick = () => SHEET_ACT(); document.body.classList.add('sh'); $('shB').scrollTop = 0; }
 function closeSheet() { document.body.classList.remove('sh'); document.activeElement && document.activeElement.blur && document.activeElement.blur(); }
-const navTabs = () => [{ k: 'home', n: 'الرئيسية', i: 'home' }].concat(CFG().sections.filter(s => s.tab && !s.hidden).slice(0, 3).map(s => ({ k: s.k, n: s.n, i: s.i }))).concat([{ k: 'more', n: 'المزيد', i: 'more' }]);
+const navTabs = () => [{ k: 'home', n: 'الرئيسية', i: 'home' }, { k: 'week', n: 'الأسبوع', i: 'cal' }].concat(CFG().sections.filter(s => s.tab && !s.hidden).slice(0, 3).map(s => ({ k: s.k, n: s.n, i: s.i }))).concat([{ k: 'more', n: 'المزيد', i: 'more' }]);
 function go(t) { VIEW.tab = t; VIEW.q = ''; VIEW.f = 'all'; $('main').scrollTop = 0; render(); $('main').scrollTop = 0; }
 function render() {
   if (!ME) return; const t = VIEW.tab, s = SEC(t);
   const tabs = navTabs(), inTabs = tabs.some(y => y.k === t);
   $('nav').innerHTML = tabs.map(x => '<button class="' + (x.k === t || (!inTabs && x.k === 'more') ? 'on' : '') + '" onclick="go(\'' + x.k + '\')">' + ico(x.i) + '<span>' + esc(x.n) + '</span></button>').join('');
-  $('ht').innerHTML = t === 'home' ? '<span class="wm">OFF<b>GRID</b></span>' : esc(t === 'more' ? 'المزيد' : s ? s.n : '');
+  $('ht').innerHTML = t === 'home' ? '<span class="wm">OFF<b>GRID</b></span>' : esc(t === 'more' ? 'المزيد' : t === 'week' ? 'جدول الأسبوع' : s ? s.n : '');
   $('fab').style.display = t === 'more' ? 'none' : '';
   const mn = $('main'), st = mn.scrollTop, qf = document.activeElement && document.activeElement.id === 'q';
-  mn.innerHTML = t === 'home' ? homeHtml() : t === 'more' ? moreHtml() : s ? listHtml(s) : '';
+  mn.innerHTML = t === 'home' ? homeHtml() : t === 'week' ? weekHtml() : t === 'more' ? moreHtml() : s ? listHtml(s) : '';
   mn.scrollTop = st;
   const q = $('q'); if (q) { q.value = VIEW.q; if (qf) q.focus(); q.oninput = () => { VIEW.q = q.value; const p = q.selectionStart; render(); const n = $('q'); n.focus(); n.setSelectionRange(p, p); }; }
   syncStatus();
@@ -443,8 +471,8 @@ function homeHtml() {
   const inst = !navigator.standalone && /iphone|ipad/i.test(navigator.userAgent) && !window.matchMedia('(display-mode: standalone)').matches;
   return inboxCard() + (inst ? '<div id="inst" style="display:block"><b>نزّل الأبلكيشن على الشاشة الرئيسية</b>دوس على زرار المشاركة تحت في Safari وبعدين «إضافة إلى الشاشة الرئيسية». بعدها افتحه من الأيقونة.</div>' : '') +
     '<div class="month"><button onclick="mv(-1)" aria-label="الشهر اللي فات">' + ico('r', 18) + '</button><b>' + mName(m) + '</b><button onclick="mv(1)" aria-label="الشهر الجاي">' + ico('l', 18) + '</button></div>' +
-    '<div class="big"><div class="k w"><div class="l">الصافي الشهر ده</div><div class="v num ' + (c.net < 0 ? 'bad' : '') + '">' + money(c.net) + '</div></div>' +
-    '<div class="k"><div class="l">اللي دخل</div><div class="v num ok">' + money(c.inn) + '</div></div><div class="k"><div class="l">اللي اتصرف</div><div class="v num bad">' + money(c.out) + '</div></div>' +
+    '<div class="big"><div class="k w"><div class="l">الصافي الشهر ده <span style="opacity:.7;font-size:11.5px">· الاشتراك اللي أكتر من شهر متقسم على شهوره</span></div><div class="v num ' + (c.net < 0 ? 'bad' : '') + '">' + money(c.net) + '</div></div>' +
+    '<div class="k"><div class="l">دخل الشهر</div><div class="v num ok">' + money(c.inn) + '</div>' + (Math.round(c.cash) !== Math.round(c.inn) ? '<div class="mu sm">اتحصل فعلاً ' + money(c.cash) + '</div>' : '') + '</div><div class="k"><div class="l">اللي اتصرف</div><div class="v num bad">' + money(c.out) + '</div></div>' +
     (pend ? '<div class="k w" style="background:var(--card);border-color:var(--line)" onclick="go(\'pays\')"><div class="l">فلوس لسه بره</div><div class="v num" style="font-size:22px;color:var(--warn)">' + money(pend) + '</div></div>' : '') + '</div>' +
     (alerts.length ? '<div class="ttl">محتاج تتابعه</div><div class="list">' + alerts.slice(0, 8).map(a => itemHtml(a[1], a[2])).join('') + '</div>' : '') +
     '<div class="ttl">آخر حاجات اتضافت</div>' + (recent.length ? '<div class="list">' + recent.map(r => itemHtml(SEC(r.coll), r)).join('') + '</div>' : '<div class="card empty">لسه مفيش حاجة — دوس + عشان تضيف</div>');
@@ -472,6 +500,7 @@ function togCheck(id) {
 
 /* ---------- إضافة وتعديل ---------- */
 function quickAdd() {
+  if (VIEW.tab === 'week') return wkAdd(today() < (VIEW.w || '') ? VIEW.w : today());
   const s = SEC(VIEW.tab); if (s) return editRec(s.k);
   const cs = CFG().sections.filter(x => !x.hidden);
   sheet('تضيف إيه؟', '<div class="grid">' + cs.map(x => '<button class="tile" onclick="editRec(\'' + x.k + '\')"><span class="ic">' + ico(x.i, 26) + '</span>' + esc(x.n) + '</button>').join('') + '</div>');
@@ -717,7 +746,7 @@ function clientRender() {
   if (!r || !cs) { $('portal').innerHTML = head + '<div class="card empty">' + (navigator.onLine ? 'بحمّل بياناتك…' : 'محتاج نت أول مرة') + '</div><button class="mu sm" style="display:block;margin:14px auto" onclick="logout()">خروج</button>'; return; }
   const d = r.data, a = acct(cs, r), L = linked(cs, r); let h = head + '<div class="hi">أهلاً ' + esc(d.n || '') + '</div>';
   const end = subEnd(cs, r); h += '<p class="mu sm" style="margin:0 2px 14px">' + (sh.sub && end ? 'اشتراكك من ' + dshort(d[cs.sub.start]) + ' لحد ' + dshort(end) : '') + '</p>';
-  { const M = recs('chat').filter(x => x.data.t === 'c_' + ME.client.cid).sort((p, q) => (p.data.at || '') < (q.data.at || '') ? 1 : -1), seen = (() => { try { return localStorage.getItem('og-gseen') || ''; } catch (e) { return ''; } })(), un = M.filter(x => x.data.from === 'team' && (x.at || x.data.at || '') > seen).length;
+  { const M = recs('chat').filter(x => x.data.t === 'c_' + ME.client.cid && x.data.kind !== 'call').sort((p, q) => (p.data.at || '') < (q.data.at || '') ? 1 : -1), seen = (() => { try { return localStorage.getItem('og-gseen') || ''; } catch (e) { return ''; } })(), un = M.filter(x => x.data.from === 'team' && (x.at || x.data.at || '') > seen).length;
     h += '<button class="card ibc" style="width:100%;text-align:right" onclick="clientChat()"><div class="row"><span class="ic2">' + ico('chat', 22) + '</span><div style="flex:1;min-width:0"><b>رسايلك مع OFFGRID</b><div class="mu sm" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + (M[0] ? (M[0].data.from === 'team' ? 'OFFGRID: ' : 'انت: ') + esc(M[0].data.text) : 'ابعتلنا أي حاجة وهنرد عليك هنا') + '</div></div>' + (un ? '<span class="dot">' + un + '</span>' : '') + ico('l', 18) + '</div></button>'; }
   if (sh.videos && cs.goal) { const need = +d[cs.goal.field] || 0, got = recs(cs.goal.from).filter(x => Object.values(x.data).indexOf(r.id) >= 0).length; if (need) h += '<div class="card"><div class="row" style="justify-content:space-between"><b>الفيديوهات اللي استلمتها</b><b class="num" style="font-size:20px">' + got + ' من ' + need + '</b></div><div class="prog"><i style="width:' + Math.min(100, got / need * 100) + '%"></i></div></div>'; }
   if (sh.money && a) h += '<div class="big"><div class="k w"><div class="l">المتفق عليه' + (a.pct ? ' بعد خصم ' + fm(a.pct) + '%' : '') + '</div><div class="v num">' + money(a.total) + '</div></div><div class="k"><div class="l">دفعت</div><div class="v num ok">' + money(a.paid) + '</div></div><div class="k"><div class="l">الباقي</div><div class="v num" style="color:' + (a.left ? 'var(--warn)' : 'var(--ok)') + '">' + money(a.left) + '</div></div></div>';
@@ -752,7 +781,7 @@ async function importOld() {
   window.addEventListener('online', () => { syncStatus(); sync(true); });
   window.addEventListener('offline', syncStatus);
   document.addEventListener('visibilitychange', () => { if (!document.hidden) sync(); });
-  POLL = setInterval(() => { if (!document.hidden && ME) sync(); }, 8000);
+  POLL = setInterval(() => { if (!document.hidden && ME) sync(); }, 5000);
 })();
 
 /* ====================== الواجهة العامة: لأي حد ينزّل الأبلكيشن ======================
@@ -819,15 +848,15 @@ function GST() {
 }
 function saveG(g) { try { let o = g; if (g.cl) { o = JSON.parse(localStorage.getItem('og-guest') || '{}'); o.reg = o.reg || g.reg; } localStorage.setItem('og-guest', JSON.stringify(o)); } catch (e) { /* */ } }
 const gSeen = () => { try { return localStorage.getItem('og-gseen') || ''; } catch (e) { return ''; } };
-const gUnread = () => { const s = gSeen(); return GROWS.filter(r => r.coll === 'chat' && r.data.from === 'team' && (r.created_at || '') > s).length; };
+const gUnread = () => { const s = gSeen(); return GROWS.filter(r => r.coll === 'chat' && r.data.from === 'team' && (r.data.kind !== 'call' || r.data.ph === 'offer') && (r.created_at || '') > s).length; };
 function activeOffers(d) { return (d.offers || []).filter(o => o.on !== false && (!o.until || o.until >= today())); }
 
 /* ---------- العرض للزوار ---------- */
 function pubShow(from) {
-  PUB_FROM = from || ''; PUB_CHAT_ONLY = false; PUB_MODE = 'home';
+  PUB_FROM = from || ''; PUB_CHAT_ONLY = false; PUB_LAST = ''; PUB_MODE = 'home';
   ['auth', 'app', 'portal'].forEach(id => { $(id).style.display = 'none'; }); closeSheet();
   $('pub').style.display = 'block'; window.scrollTo(0, 0); pubRender(); pubFetch(); gPull();
-  clearInterval(GPOLL); GPOLL = setInterval(() => { if (!document.hidden && $('pub').style.display !== 'none') gPull(); }, 30000);
+  clearInterval(GPOLL); GPOLL = setInterval(() => { if (!document.hidden && $('pub').style.display !== 'none') gPull(); }, 7000);
 }
 function pubHide() {
   clearInterval(GPOLL); $('pub').style.display = 'none';
@@ -871,9 +900,10 @@ function pubRender() {
     '<div class="row"><button class="btn" onclick="chatOpen()">' + ico('chat', 19) + ' ابعتلنا رسالة' + (un ? ' <span class="dot">' + un + '</span>' : '') + '</button>' + (off.length ? '<button class="btn gl" onclick="document.getElementById(\'offs\').scrollIntoView({behavior:\'smooth\'})">' + ico('tag', 18) + ' العروض (' + off.length + ')</button>' : '<button class="btn gl" onclick="document.getElementById(\'svs\').scrollIntoView({behavior:\'smooth\'})">' + ico('box', 18) + ' خدماتنا</button>') + '</div></div>';
   if (off.length) h += '<div class="sec" id="offs"><b>' + ico('spark', 20) + ' عروض النهارده</b><span>لفترة محدودة</span></div>' + off.map((o, i) => offerCard(o, i)).join('');
   h += '<div class="sec" id="svs"><b>خدماتنا</b><span>' + sv.length + ' خدمة · دوس للتفاصيل</span></div><div class="svs">' + sv.map((s, i) => '<button class="sv rv" onclick="svOpen(' + i + ')"><span class="ic">' + ico(s.i || 'star', 22) + '</span><b>' + esc(s.t) + '</b><p>' + esc(s.d) + '</p>' + (s.p ? '<em>يبدأ من ' + esc(s.p) + '</em>' : '') + '</button>').join('') + '</div>';
-  h += workHtml(d);
+  { const w = workHtml(d); h += w ? '<div id="wbx" data-h="' + esc(String(w.length) + ':' + (d.works || []).map(x => x.u).join('|') + (d.drive || '')) + '">' + w + '</div>' : ''; }
   h += '<div class="sec"><b>إزاي بنشتغل</b><span>4 خطوات وفيديوك جاهز</span></div><div class="steps">' + PUB_STEPS.map((x, i) => '<div class="st rv"><i>' + (i + 1) + '</i><div><b>' + x[0] + '</b><p>' + x[1] + '</p></div></div>').join('') + '</div>';
   const C = [['chat', 'ابعتلنا هنا', 'chatOpen()', '#2f7bff', un]];
+  C.push(['phone', 'مكالمة من الأبلكيشن', 'callStart(GST().t,\'OFFGRID\')', '#36c98a']);
   if (wa) C.push(['wa', 'واتساب', "openX('https://wa.me/" + wa + "')", '#25d366']);
   if (d.fb) C.push(['fb', 'فيسبوك', "openX('" + jsq(d.fb) + "')", '#1877f2']);
   if (d.tt) C.push(['tt', 'تيك توك', "openX('" + jsq(d.tt) + "')", '#f3f2ef']);
@@ -887,10 +917,12 @@ function pubRender() {
   if (wa) h += '<p class="mu sm" style="text-align:center;margin:16px 8px 0">عايز تكلمنا صوت؟ ادخل واتساب ودوس على زرار المكالمة</p>';
   h += '<p class="mu sm" style="text-align:center;margin-top:14px">OFFGRID ' + VER + '</p>';
   h += '<div class="pact"><button class="btn" onclick="chatOpen()">' + ico('chat', 19) + ' ابعتلنا رسالة' + (un ? ' <span class="dot">' + un + '</span>' : '') + '</button><button class="btn g" onclick="bookSheet()">' + ico('cal', 19) + ' احجز</button></div>';
-  $('pub').innerHTML = h; reveal();
+  if (h === PUB_LAST && $('pub').firstChild) return; PUB_LAST = h;
+  const oldW = $('wbx'); $('pub').innerHTML = h; const nw = $('wbx'); if (oldW && nw && oldW.dataset.h === nw.dataset.h) nw.replaceWith(oldW); reveal();
 }
+let PUB_LAST = '', PUB_SHOWN = false;
 function reveal() {
-  const els = $('pub').querySelectorAll('.rv');
+  const els = $('pub').querySelectorAll('.rv:not(.in)'); if (PUB_SHOWN) { els.forEach(e => e.classList.add('in')); return; } setTimeout(() => { PUB_SHOWN = true; }, 2500);
   if (!('IntersectionObserver' in window)) { els.forEach(e => e.classList.add('in')); return; }
   const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } }), { rootMargin: '0px 0px -30px 0px' });
   els.forEach((e, i) => { e.style.transitionDelay = Math.min(i % 4, 3) * 60 + 'ms'; io.observe(e); });
@@ -967,14 +999,16 @@ async function gPull() {
   if (navigator.onLine) { await gFlush(); try { GROWS = (asClient() ? await api('/rest/v1/items?select=*&coll=in.(chat,lead)&' + encodeURIComponent('data->>t') + '=eq.' + g.t) : await api('/rest/v1/rpc/guest_thread', { method: 'POST', auth: false, body: { p_t: g.t } })) || []; } catch (e) { /* */ } }
   const q = GQ(); GROWS = GROWS.filter(r => !r.pend && !q.some(x => x.id === r.id)).concat(q.map(r => Object.assign({ created_at: r.data.at, pend: 1 }, r)));
   if ($('pub').style.display !== 'none') { if (PUB_MODE === 'chat') { chatRender(); } else pubRender(); }
+  callScan();
 }
-function chatOpen() { PUB_MODE = 'chat'; closeSheet(); chatRender(); gPull(); clearInterval(GPOLL); GPOLL = setInterval(() => { if (!document.hidden) gPull(); }, 6000); setTimeout(() => window.scrollTo(0, document.body.scrollHeight), 50); }
+function chatOpen() { PUB_MODE = 'chat'; closeSheet(); chatRender(); gPull(); clearInterval(GPOLL); GPOLL = setInterval(() => { if (!document.hidden) gPull(); }, 5000); setTimeout(() => window.scrollTo(0, document.body.scrollHeight), 50); }
 function clientChat() { pubShow('portal'); PUB_CHAT_ONLY = true; chatOpen(); }
-function chatBack() { PUB_CHAT_ONLY = false; PUB_MODE = 'home'; clearInterval(GPOLL); GPOLL = setInterval(() => { if (!document.hidden && $('pub').style.display !== 'none') gPull(); }, 30000); pubRender(); window.scrollTo(0, 0); }
+function chatBack() { PUB_CHAT_ONLY = false; PUB_LAST = ''; PUB_MODE = 'home'; clearInterval(GPOLL); GPOLL = setInterval(() => { if (!document.hidden && $('pub').style.display !== 'none') gPull(); }, 7000); pubRender(); window.scrollTo(0, 0); }
 function threadHtml(rows, mine) {
   const L = rows.slice().sort((a, b) => ((a.data.at || a.created_at || '') < (b.data.at || b.created_at || '') ? -1 : 1));
   return L.map(r => {
     const d = r.data, me = d.from === mine;
+    if (d.kind === 'call') return d.ph === 'offer' ? callSummary(L, r, mine) : '';
     if (r.coll === 'lead' && d.kind === 'reg') return '<div class="bk"><b>' + ico('user', 17) + ' ' + (mine === 'team' ? 'سجّل رقمه عشان توصله العروض' : 'اتسجلت عندنا ✓') + '</b>' + (mine === 'team' ? '<div class="mu sm en">' + esc(d.phone) + '</div>' : '') + '<small class="mu">' + tm(d.at || r.created_at) + '</small></div>';
     if (r.coll === 'lead') { const st = LST[d.status] || LST.new; return '<div class="bk"><div class="row" style="justify-content:space-between"><b>' + ico('cal', 17) + ' طلب حجز</b><span class="pill ' + st[1] + '">' + st[0] + '</span></div><div style="margin-top:4px">' + esc(d.s) + '</div><div class="mu sm">' + [d.day ? dshort(d.day) : '', d.time].filter(Boolean).join(' · ') + (d.x ? ' — ' + esc(d.x) : '') + '</div>' + (mine === 'team' ? '<div class="mu sm en">' + esc(d.phone) + '</div>' : '') + '<small class="mu">' + tm(d.at || r.created_at) + '</small></div>'; }
     return '<div class="msg ' + (me ? 'me' : 'them') + '">' + esc(d.text) + '<small>' + (!me && mine === 'guest' ? 'OFFGRID · ' : !me ? esc(d.name || '') + ' · ' : '') + tm(d.at || r.created_at) + (r.pend ? ' · لسه بتتبعت' : '') + '</small></div>';
@@ -983,11 +1017,11 @@ function threadHtml(rows, mine) {
 function chatRender() {
   const g = GST(), un = GROWS.length;
   const wa = waNum(pubData().wa);
-  let h = '<div class="pbar"><button class="plog" onclick="' + (PUB_FROM === 'portal' && PUB_CHAT_ONLY ? 'pubHide()' : 'chatBack()') + '">' + ico('r', 16) + ' رجوع</button><span class="wm" style="font-size:22px">OFF<b>GRID</b></span>' + (wa ? '<button class="plog" onclick="openX(\'https://wa.me/' + wa + '\')" title="مكالمة واتساب">' + ico('phone', 16) + ' كلمنا</button>' : '') + '</div>';
-  h += '<div class="chat">' + (un ? threadHtml(GROWS, 'guest') : '<div class="card empty">ابعتلنا أي سؤال أو اطلب عرض سعر، وهنرد عليك هنا.<br><span class="sm">الرد بيوصلك هنا في الأبلكيشن</span></div>') + '</div>';
+  let h = '<div class="pbar"><button class="plog" onclick="' + (PUB_FROM === 'portal' && PUB_CHAT_ONLY ? 'pubHide()' : 'chatBack()') + '">' + ico('r', 16) + ' رجوع</button><span class="wm" style="font-size:22px">OFF<b>GRID</b></span>' + '<button class="plog cbtn" onclick="callStart(GST().t,\'OFFGRID\')">' + ico('phone', 16) + ' مكالمة</button>' + '</div>';
+  h += '<div class="chat" id="chatl">' + (un ? threadHtml(GROWS, 'guest') : '<div class="card empty">ابعتلنا أي سؤال أو اطلب عرض سعر، وهنرد عليك هنا.<br><span class="sm">الرد بيوصلك هنا في الأبلكيشن</span></div>') + '</div>';
   h += '<div class="cbar">' + (g.name ? '' : '<input id="cg_n" placeholder="اسمك" style="flex:0 0 32%">') + '<textarea id="cg_m" rows="1" placeholder="اكتب رسالتك…"></textarea><button onclick="sendChat()" aria-label="ابعت">' + ico('send', 21) + '</button></div>';
-  const keep = $('cg_m') ? $('cg_m').value : '', kn = $('cg_n') ? $('cg_n').value : '', atEnd = window.innerHeight + window.scrollY >= document.body.scrollHeight - 80;
-  $('pub').innerHTML = h; if ($('cg_m')) $('cg_m').value = keep; if ($('cg_n')) $('cg_n').value = kn;
+  const atEnd = window.innerHeight + window.scrollY >= document.body.scrollHeight - 80, lst = un ? threadHtml(GROWS, 'guest') : '', box = $('chatl');
+  if (box && $('cg_m')) { if (box.dataset.h !== lst) { box.innerHTML = lst || box.innerHTML; box.dataset.h = lst; } } else { $('pub').innerHTML = h; if ($('chatl')) $('chatl').dataset.h = lst; }
   if (atEnd) window.scrollTo(0, document.body.scrollHeight);
   const last = GROWS.reduce((m, r) => (r.created_at || '') > m ? r.created_at : m, ''); if (last) try { localStorage.setItem('og-gseen', last); } catch (e) { /* */ }
 }
@@ -1014,12 +1048,12 @@ function newMsgPage() {
   sheet('رسالة لعميل', cs.length ? '<p class="mu sm" style="margin:0 2px 10px">الرسالة بتوصل للعميل في الأبلكيشن لما يدخل بحسابه.</p><div class="list">' + cs.map(r => '<div class="it" onclick="msgClient(\'' + r.id + '\')"><div class="ic">' + ico('users') + '</div><div class="tx"><div class="t1">' + esc(r.data.n || '—') + '</div><div class="t2">' + (hasAcc.has(r.id) ? 'عنده حساب ✓' : 'لسه معندوش حساب — اعمله من صفحة العميل') + '</div></div></div>').join('') + '</div>' : '<div class="empty">مفيش عملاء لسه</div>');
 }
 const seenMap = () => { try { return JSON.parse(localStorage.getItem('og-seen') || '{}'); } catch (e) { return {}; } };
-function unreadOf(x, S) { const s = (S || seenMap())[x.t] || ''; return x.rows.filter(r => r.data.from === 'guest' && (r.data.at || r.at || '') > s).length; }
+function unreadOf(x, S) { const s = (S || seenMap())[x.t] || ''; return x.rows.filter(r => r.data.from === 'guest' && (r.data.kind !== 'call' || r.data.ph === 'offer') && (r.data.at || r.at || '') > s).length; }
 function inboxCount() { const S = seenMap(); return threads().reduce((n, x) => n + unreadOf(x, S), 0); }
 function inboxTick() {
   if (!isTeam()) return; const n = inboxCount();
   if (LAST_UNREAD >= 0 && n > LAST_UNREAD) { const x = threads()[0]; toast('رسالة جديدة' + (x && x.name ? ' من ' + x.name : '')); }
-  LAST_UNREAD = n; try { if (navigator.setAppBadge) n ? navigator.setAppBadge(n) : navigator.clearAppBadge(); } catch (e) { /* */ }
+  callScan(); LAST_UNREAD = n; try { if (navigator.setAppBadge) n ? navigator.setAppBadge(n) : navigator.clearAppBadge(); } catch (e) { /* */ }
   if (INBOX_T && document.body.classList.contains('sh') && $('ib_th')) { const x = threads().find(y => y.t === INBOX_T); if (x) { const box = $('ib_th'), end = box.scrollHeight - box.scrollTop - box.clientHeight < 60; box.innerHTML = threadHtml(x.rows, 'team'); markSeen(x); if (end) box.scrollTop = box.scrollHeight; } }
 }
 function inboxCard() {
@@ -1032,14 +1066,14 @@ function inboxCard() {
 function inboxPage() {
   INBOX_T = null; const L = threads(), S = seenMap();
   sheet('الطلبات والرسايل', '<button class="btn g" style="width:100%;margin-bottom:12px" onclick="newMsgPage()">' + ico('plus', 18) + ' ابعت رسالة لعميل</button>' + (L.length ? '<div class="list">' + L.map(x => { const u = unreadOf(x, S), lr = x.rows.slice().sort((a, b) => (a.data.at || '') < (b.data.at || '') ? 1 : -1)[0], ld = lr.data;
-    return '<div class="it" onclick="inboxOpen(\'' + esc(x.t) + '\')"><div class="ic">' + ico(x.lead ? 'cal' : 'chat') + '</div><div class="tx"><div class="t1">' + esc(x.name || 'زائر') + (x.lead ? ' <span class="pill y">حجز جديد</span>' : '') + (x.reg ? ' <span class="pill g">متسجل</span>' : '') + (x.cl ? ' <span class="pill">عميل</span>' : '') + '</div><div class="t2">' + esc(lr.coll === 'lead' ? (ld.kind === 'reg' ? 'سجّل رقمه: ' + ld.phone : 'طلب حجز: ' + ld.s) : (ld.from === 'team' ? 'انت: ' : '') + ld.text) + '</div></div><div style="text-align:left"><div class="mu sm">' + tm(x.last) + '</div>' + (u ? '<span class="dot">' + u + '</span>' : '') + '</div></div>'; }).join('') + '</div>'
+    return '<div class="it" onclick="inboxOpen(\'' + esc(x.t) + '\')"><div class="ic">' + ico(x.lead ? 'cal' : 'chat') + '</div><div class="tx"><div class="t1">' + esc(x.name || 'زائر') + (x.lead ? ' <span class="pill y">حجز جديد</span>' : '') + (x.reg ? ' <span class="pill g">متسجل</span>' : '') + (x.cl ? ' <span class="pill">عميل</span>' : '') + '</div><div class="t2">' + esc(ld.kind === 'call' ? 'مكالمة' : lr.coll === 'lead' ? (ld.kind === 'reg' ? 'سجّل رقمه: ' + ld.phone : 'طلب حجز: ' + ld.s) : (ld.from === 'team' ? 'انت: ' : '') + ld.text) + '</div></div><div style="text-align:left"><div class="mu sm">' + tm(x.last) + '</div>' + (u ? '<span class="dot">' + u + '</span>' : '') + '</div></div>'; }).join('') + '</div>'
     : '<div class="empty">لسه مفيش طلبات ولا رسايل.<br>أول ما حد يحجز أو يبعت من الواجهة هيظهر هنا.</div>'));
 }
 function markSeen(x) { const S = seenMap(); S[x.t] = x.rows.reduce((m, r) => (r.data.at || r.at || '') > m ? (r.data.at || r.at) : m, S[x.t] || ''); try { localStorage.setItem('og-seen', JSON.stringify(S)); } catch (e) { /* */ } LAST_UNREAD = inboxCount(); }
 function inboxOpen(t) {
   const x = threads().find(y => y.t === t) || (/^c_/.test(t) ? clientThread(t.slice(2)) : null); if (!x) return; INBOX_T = t; markSeen(x);
   const wa = waNum(x.phone || ''), leads = x.rows.filter(r => r.coll === 'lead' && r.data.kind !== 'reg');
-  sheet(x.name || 'زائر', '<div class="row" style="gap:8px;margin-bottom:10px">' + (wa ? '<button class="btn wa sm1" onclick="openX(\'https://wa.me/' + wa + '\')">' + ico('wa', 18) + ' واتساب</button><button class="btn g sm1" onclick="openX(\'tel:' + esc(x.phone.replace(/[^\d+]/g, '')) + '\')">' + ico('phone', 18) + ' اتصال</button>' : '') + '<button class="btn g sm1" onclick="inboxPage()">' + ico('r', 18) + ' الكل</button></div>' +
+  sheet(x.name || 'زائر', '<div class="row" style="gap:8px;margin-bottom:10px"><button class="btn sm1" onclick="callStart(\'' + esc(x.t) + '\',\'' + jsq(x.name || 'زائر') + '\')">' + ico('phone', 18) + ' مكالمة</button>' + (wa ? '<button class="btn wa sm1" onclick="openX(\'https://wa.me/' + wa + '\')">' + ico('wa', 18) + ' واتساب</button>' : '') + '<button class="btn g sm1" onclick="inboxPage()">' + ico('r', 18) + ' الكل</button></div>' +
     (leads.length ? leads.map(r => '<div class="fld"><label>حالة حجز «' + esc(r.data.s) + '»</label><div class="chips">' + Object.keys(LST).map(k => '<button class="' + ((r.data.status || 'new') === k ? 'on' : '') + '" onclick="leadSt(\'' + r.id + '\',\'' + k + '\')">' + LST[k][0] + '</button>').join('') + '</div></div>').join('') : '') +
     '<div class="chat ib" id="ib_th">' + threadHtml(x.rows, 'team') + '</div><div class="row" style="gap:8px;margin-top:10px"><textarea id="ib_m" rows="2" placeholder="اكتب ردك… هيوصله في الأبلكيشن"></textarea><button class="btn" style="padding:12px 14px" onclick="inboxSend()">' + ico('send', 20) + '</button></div>', 'قفل', () => { INBOX_T = null; closeSheet(); render(); });
   const b = $('ib_th'); b.scrollTop = b.scrollHeight;
@@ -1062,8 +1096,8 @@ function pubEditRender() {
     f('phone', 'رقم الاتصال العادي', '01xxxxxxxxx', 'en') + '<div class="tog" onclick="this.querySelector(\'.sw\').classList.toggle(\'on\')"><span>زرار «اتصال» العادي يظهر للناس<br><span class="mu sm">مقفول = الناس تكلمك واتساب أو رسايل الأبلكيشن بس</span></span><span class="sw' + (PE.call ? ' on' : '') + '" id="pe_call"></span></div>';
   else if (PTAB === 'offers') b += '<button class="btn" style="width:100%;margin-bottom:12px" onclick="offEdit(-1)">' + ico('plus', 19) + ' عرض جديد</button>' + ((PE.offers || []).length ? '<div class="list">' + PE.offers.map((o, i) => { const live = o.on !== false && (!o.until || o.until >= today());
     return '<div class="it" onclick="offEdit(' + i + ')"><div class="ic" style="font-weight:900;font-size:13px">' + (+o.pct ? fm(o.pct) + '%' : ico('tag')) + '</div><div class="tx"><div class="t1">' + esc(o.t) + '</div><div class="t2">' + esc([offNew(o), o.until ? 'لحد ' + dshort(o.until) : ''].filter(Boolean).join(' · ')) + '</div></div><span class="pill ' + (live ? 'g' : '') + '">' + (live ? 'ظاهر' : 'مخفي') + '</span></div>'; }).join('') + '</div>' : '<div class="card empty">مفيش عروض لسه</div>');
-  else if (PTAB === 'work') b += '<div class="fld"><label>لينك فولدر الدرايف اللي عليه الشغل</label><input id="pe_drive" class="en" value="' + esc(PE.drive || '') + '" placeholder="https://drive.google.com/drive/folders/…" onchange="PE.drive=this.value.trim()"></div><p class="mu sm" style="margin:-4px 2px 12px">اتأكد إن الفولدر «Anyone with the link». الناس هتشوف الفولدر جوه الأبلكيشن وزرار «لينك الدرايف».</p>' +
-    '<div class="ttl" style="margin-top:6px">فيديوهات تتشاف جوه الأبلكيشن</div><p class="mu sm" style="margin:0 2px 10px">الأحسن يوتيوب «غير مدرج» (Unlisted): ارفعه ← انسخ اللينك والصقه هنا. أو لينك فيديو من الدرايف.</p>' + (PE.works || []).map((w, i) => '<div class="fe"><input value="' + esc(w.t || '') + '" placeholder="اسم الفيديو" onchange="PE.works[' + i + '].t=this.value.trim()"><input class="en" value="' + esc(w.u || '') + '" placeholder="لينك الفيديو" onchange="PE.works[' + i + '].u=this.value.trim()"><button onclick="PE.works.splice(' + i + ',1);pubEditRender()">' + ico('trash', 17) + '</button></div>').join('') +
+  else if (PTAB === 'work') b += '<div class="fld"><label>لينك فولدر الدرايف اللي عليه الشغل</label><input id="pe_drive" class="en" value="' + esc(PE.drive || '') + '" placeholder="https://drive.google.com/drive/folders/…" onchange="if(PE)PE.drive=this.value.trim()"></div><p class="mu sm" style="margin:-4px 2px 12px">اتأكد إن الفولدر «Anyone with the link». الناس هتشوف الفولدر جوه الأبلكيشن وزرار «لينك الدرايف».</p>' +
+    '<div class="ttl" style="margin-top:6px">فيديوهات تتشاف جوه الأبلكيشن</div><p class="mu sm" style="margin:0 2px 10px">الأحسن يوتيوب «غير مدرج» (Unlisted): ارفعه ← انسخ اللينك والصقه هنا. أو لينك فيديو من الدرايف.</p>' + (PE.works || []).map((w, i) => '<div class="fe"><input value="' + esc(w.t || '') + '" placeholder="اسم الفيديو" onchange="if(PE)PE.works[' + i + '].t=this.value.trim()"><input class="en" value="' + esc(w.u || '') + '" placeholder="لينك الفيديو" onchange="if(PE)PE.works[' + i + '].u=this.value.trim()"><button onclick="PE.works.splice(' + i + ',1);pubEditRender()">' + ico('trash', 17) + '</button></div>').join('') +
     '<button class="btn g" style="width:100%" onclick="PE.works=PE.works||[];PE.works.push({t:\'\',u:\'\'});pubEditRender()">' + ico('plus', 18) + ' فيديو</button>';
   else if (PTAB === 'services') b += '<button class="btn" style="width:100%;margin-bottom:12px" onclick="svEdit(-1)">' + ico('plus', 19) + ' خدمة جديدة</button><div class="list">' + (PE.services || []).map((s, i) => '<div class="it" onclick="svEdit(' + i + ')"><div class="ic">' + ico(s.i || 'star') + '</div><div class="tx"><div class="t1">' + esc(s.t) + '</div><div class="t2">' + esc(s.d) + '</div></div></div>').join('') + '</div>';
   else b += '<div id="pe_on" class="card">بشوف…</div>';
@@ -1072,6 +1106,7 @@ function pubEditRender() {
   if (PTAB === 'on') pubCheck();
 }
 function peKeep() {
+  if (PE && $('pe_drive')) PE.drive = $('pe_drive').value.trim();
   if (PTAB !== 'info' || !$('pe_tag')) return;
   ['tag', 'about', 'wa', 'ig', 'fb', 'tt', 'web', 'map', 'addr', 'hours', 'phone'].forEach(k => { const e = $('pe_' + k); if (e) PE[k] = e.value.trim(); });
   PE.wa = enDigits(PE.wa); PE.phone = enDigits(PE.phone); PE.call = $('pe_call').classList.contains('on');
@@ -1128,6 +1163,188 @@ async function pubCheck() {
     '<button class="btn g" style="width:100%;margin-top:8px" onclick="pubCheck()">' + ico('sync', 18) + ' اتأكد</button>';
 }
 function copySql() { const t = $('pe_sql'); const done = () => toast('الكود اتنسخ ✓'); if (navigator.clipboard) navigator.clipboard.writeText(PUB_SQL).then(done, () => { t.select(); document.execCommand('copy'); done(); }); else { t.select(); document.execCommand('copy'); done(); } }
+
+/* العميل وهو في حسابه: بيشوف الرسايل والمكالمات الجاية كل كام ثانية */
+setInterval(() => { if (!document.hidden && ME && ME.client && SES && $('portal').style.display !== 'none') gPull().then(() => { if ($('portal').style.display !== 'none' && typeof clientRender === 'function') { const c = gUnread(); if (c !== LAST_CU) { LAST_CU = c; clientPull(); } } }); }, 7000);
+let LAST_CU = -1;
+
+/* ====================== مكالمات صوت جوه الأبلكيشن ======================
+   المكالمة بتروح من موبايل لموبايل مباشرة (WebRTC)، والسيرفر بيوصّل بس طلب المكالمة والرد عليها جوه نفس المحادثة.
+   الطرف التاني لازم يكون فاتح الأبلكيشن عشان يرن عنده. */
+const ICE = [{ urls: ['stun:stun.l.google.com:19302', 'stun:stun1.l.google.com:19302'] },
+  { urls: ['turn:openrelay.metered.ca:80', 'turn:openrelay.metered.ca:443?transport=tcp'], username: 'openrelayproject', credential: 'openrelayproject' }];
+let CALL = null, ACX = null, RINGT = 0, CALLT = 0;
+const CSEEN = new Set((() => { try { return JSON.parse(localStorage.getItem('og-calls') || '[]'); } catch (e) { return []; } })());
+const seenCall = id => { CSEEN.add(id); try { localStorage.setItem('og-calls', JSON.stringify([...CSEEN].slice(-60))); } catch (e) { /* */ } };
+document.addEventListener('pointerdown', () => { try { if (!ACX) ACX = new (window.AudioContext || window.webkitAudioContext)(); if (ACX.state === 'suspended') ACX.resume(); } catch (e) { /* */ } }, true);
+async function zip(s) {
+  if (!window.CompressionStream) return 'r:' + s;
+  const a = new Uint8Array(await new Response(new Blob([s]).stream().pipeThrough(new CompressionStream('deflate-raw'))).arrayBuffer()); let x = ''; a.forEach(c => { x += String.fromCharCode(c); }); return 'z:' + btoa(x);
+}
+async function unzip(s) { if (s.slice(0, 2) !== 'z:') return s.slice(2); const b = atob(s.slice(2)), a = Uint8Array.from(b, c => c.charCodeAt(0)); return new Response(new Blob([a]).stream().pipeThrough(new DecompressionStream('deflate-raw'))).text(); }
+const myRole = () => isTeam() ? 'team' : 'guest';
+const callRows = t => isTeam() ? recs('chat').filter(r => r.data.t === t) : GROWS.filter(r => r.coll === 'chat' && r.data.t === t);
+async function callRefresh() { if (isTeam()) await sync(); else await gPull(); }
+async function callPost(t, x) {
+  const data = Object.assign({ t, kind: 'call', from: myRole(), name: isTeam() ? ME.name : (GST().name || 'زائر'), at: new Date().toISOString() }, x);
+  if (isTeam()) { saveRec('chat', 'chat_' + nid(), data); return sync(); }
+  const row = { id: 'chat_' + nid(), coll: 'chat', data }; try { await postRow(row); GROWS.push(Object.assign({ created_at: data.at }, row)); } catch (e) { /* */ }
+}
+function tone(f1, f2, len, vol) { if (!ACX) return; try { const o = ACX.createOscillator(), o2 = ACX.createOscillator(), g = ACX.createGain(), n = ACX.currentTime; o.frequency.value = f1; o2.frequency.value = f2; g.gain.setValueAtTime(vol, n); g.gain.setValueAtTime(0, n + len); o.connect(g); o2.connect(g); g.connect(ACX.destination); o.start(n); o2.start(n); o.stop(n + len); o2.stop(n + len); } catch (e) { /* */ } }
+function ring(on, incoming) {
+  clearInterval(RINGT); if (!on) return;
+  const f = () => { if (incoming) { tone(480, 620, 0.35, 0.25); setTimeout(() => tone(480, 620, 0.35, 0.25), 450); try { navigator.vibrate && navigator.vibrate([400, 200, 400]); } catch (e) { /* */ } } else tone(425, 425, 1, 0.08); };
+  f(); RINGT = setInterval(f, incoming ? 2200 : 3500);
+}
+function iceDone(pc) { return new Promise(res => { if (pc.iceGatheringState === 'complete') return res(); pc.addEventListener('icegatheringstatechange', () => { if (pc.iceGatheringState === 'complete') res(); }); setTimeout(res, 3500); }); }
+function newPc() {
+  const pc = new RTCPeerConnection({ iceServers: ICE });
+  pc.ontrack = e => { const a = $('cau'); if (a) { a.srcObject = e.streams[0]; a.play().catch(() => { /* */ }); } };
+  pc.onconnectionstatechange = () => {
+    if (!CALL || CALL.pc !== pc) return;
+    if (pc.connectionState === 'connected' && CALL.state !== 'on') { CALL.state = 'on'; CALL.t0 = Date.now(); ring(false); callUI(); CALLT = setInterval(callUI, 1000); }
+    if (pc.connectionState === 'failed') callEnd('fail');
+    if (pc.connectionState === 'disconnected') setTimeout(() => { if (CALL && CALL.pc === pc && pc.connectionState === 'disconnected') callEnd('done'); }, 6000);
+  };
+  return pc;
+}
+function dcWire(dc) { if (!CALL) return; CALL.dc = dc; dc.onmessage = e => { if (e.data === 'bye') callEnd('done', true); }; }
+async function mic() { try { return await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true } }); } catch (e) { toast('لازم تسمح للأبلكيشن يستخدم المايك عشان المكالمة'); return null; } }
+function callable() { if (!window.RTCPeerConnection || !navigator.mediaDevices) { toast('الموبايل ده مش بيدعم المكالمات من الأبلكيشن'); return false; } if (!navigator.onLine) { toast('محتاج نت عشان تتصل'); return false; } return !CALL; }
+
+/* اتصال (أي طرف) */
+async function callStart(t, name) {
+  if (!callable()) return;
+  if (!isTeam() && !GST().name) return sheet('اسمك إيه؟', '<div class="fld"><input id="cn_n" placeholder="اكتب اسمك عشان نعرف مين بيتصل"></div>', 'اتصل', () => { const n = $('cn_n').value.trim(); if (!n) return toast('اكتب اسمك'); const g = GST(); g.name = n; saveG(g); closeSheet(); callStart(t, name); });
+  const st = await mic(); if (!st) return;
+  const cid = nid(); CALL = { cid, t, name, out: true, st, state: 'ring', muted: false }; callUI(); ring(true, false);
+  const pc = newPc(); CALL.pc = pc; st.getTracks().forEach(k => pc.addTrack(k, st)); dcWire(pc.createDataChannel('c'));
+  await pc.setLocalDescription(await pc.createOffer()); await iceDone(pc); if (!CALL || CALL.cid !== cid) return;
+  await callPost(t, { cid, ph: 'offer', sdp: await zip(pc.localDescription.sdp) });
+  const t0 = Date.now();
+  const poll = async () => {
+    if (!CALL || CALL.cid !== cid || CALL.state === 'on') return;
+    if (Date.now() - t0 > 45000) return callEnd('no');
+    await callRefresh(); const R = callRows(t).filter(r => r.data.cid === cid && r.data.from !== myRole());
+    const end = R.find(r => r.data.ph === 'end'); if (end) return callEnd(end.data.why === 'dec' ? 'dec' : 'busy', true);
+    const ans = R.find(r => r.data.ph === 'answer');
+    if (ans && !CALL.ans) { CALL.ans = 1; CALL.state = 'conn'; callUI(); try { await pc.setRemoteDescription({ type: 'answer', sdp: await unzip(ans.data.sdp) }); } catch (e) { return callEnd('fail'); } }
+    setTimeout(poll, 1500);
+  };
+  setTimeout(poll, 1500);
+}
+/* المكالمة الجاية */
+function callScan() {
+  if (CALL || !navigator.onLine) return; const me = myRole(), now = Date.now();
+  const rows = isTeam() ? recs('chat') : GROWS.filter(r => r.coll === 'chat');
+  const off = rows.filter(r => r.data.kind === 'call' && r.data.ph === 'offer' && r.data.from !== me && !CSEEN.has(r.data.cid) && now - Date.parse(r.data.at || 0) < 40000);
+  for (const o of off) {
+    if (rows.some(r => r.data.cid === o.data.cid && r.data.ph !== 'offer')) { seenCall(o.data.cid); continue; }
+    seenCall(o.data.cid);
+    const nm = isTeam() ? (threads().find(x => x.t === o.data.t) || {}).name || o.data.name : 'OFFGRID';
+    CALL = { cid: o.data.cid, t: o.data.t, name: nm || 'زائر', out: false, offer: o.data.sdp, state: 'in', muted: false }; callUI(); ring(true, true);
+    const poll = async () => { if (!CALL || CALL.cid !== o.data.cid || CALL.state !== 'in') return; await callRefresh(); if (callRows(o.data.t).some(r => r.data.cid === o.data.cid && r.data.ph !== 'offer')) return callEnd('other', true); if (now + 40000 < Date.now()) return callEnd('miss', true); setTimeout(poll, 2500); };
+    setTimeout(poll, 2500); return;
+  }
+}
+async function callAccept() {
+  if (!CALL || CALL.state !== 'in') return; ring(false); CALL.state = 'conn'; callUI();
+  const st = await mic(); if (!st) return callEnd('dec'); CALL.st = st;
+  const pc = newPc(); CALL.pc = pc; pc.ondatachannel = e => dcWire(e.channel); st.getTracks().forEach(k => pc.addTrack(k, st));
+  try { await pc.setRemoteDescription({ type: 'offer', sdp: await unzip(CALL.offer) }); await pc.setLocalDescription(await pc.createAnswer()); } catch (e) { return callEnd('fail'); }
+  await iceDone(pc); if (!CALL) return;
+  await callPost(CALL.t, { cid: CALL.cid, ph: 'answer', sdp: await zip(pc.localDescription.sdp) });
+}
+async function callEnd(why, remote) {
+  const c = CALL; if (!c) return; CALL = null; ring(false); clearInterval(CALLT);
+  const dur = c.t0 ? Math.round((Date.now() - c.t0) / 1000) : 0;
+  try { if (c.dc && c.dc.readyState === 'open' && !remote) c.dc.send('bye'); } catch (e) { /* */ }
+  setTimeout(() => { try { c.pc && c.pc.close(); } catch (e) { /* */ } }, 300); try { c.st && c.st.getTracks().forEach(k => k.stop()); } catch (e) { /* */ }
+  const msg = { no: 'محدش رد', dec: c.out ? 'المكالمة اترفضت' : 'رفضت المكالمة', busy: 'مش متاح دلوقتي', fail: 'المكالمة مش قادرة توصل على النت ده — جرّب Wi-Fi', other: 'حد تاني من الفريق رد', miss: 'مكالمة فائتة', done: 'المكالمة خلصت' }[why] || 'المكالمة خلصت';
+  $('call').innerHTML = '<div class="cl1"><div class="av">' + esc(initial(c.name)) + '</div><b>' + esc(c.name) + '</b><span>' + msg + (dur ? ' · ' + mmss(dur) : '') + '</span></div>'; setTimeout(() => { if (!CALL) $('call').classList.remove('on'); }, 1800);
+  if (!remote || why === 'done') { if (why !== 'other' && why !== 'miss') callPost(c.t, { cid: c.cid, ph: 'end', why: why === 'fail' ? 'fail' : why, dur }); }
+  if (isTeam()) render(); else if ($('pub').style.display !== 'none') pubRender();
+}
+const mmss = s => Math.floor(s / 60) + ':' + pad(s % 60);
+const initial = n => String(n || '?').trim().charAt(0) || '?';
+function callMute() { if (!CALL || !CALL.st) return; CALL.muted = !CALL.muted; CALL.st.getAudioTracks().forEach(k => { k.enabled = !CALL.muted; }); callUI(); }
+function callUI() {
+  const c = CALL, e = $('call'); if (!c) return; e.classList.add('on');
+  const st = c.state === 'in' ? 'مكالمة صوت من الأبلكيشن…' : c.state === 'ring' ? 'بيرن…' : c.state === 'conn' ? 'بيوصّل…' : mmss(Math.round((Date.now() - c.t0) / 1000));
+  e.innerHTML = '<audio id="cau" autoplay playsinline></audio><div class="cl1"><div class="av' + (c.state === 'in' || c.state === 'ring' ? ' pl' : '') + '">' + esc(initial(c.name)) + '</div><b>' + esc(c.name) + '</b><span class="num">' + st + '</span></div>' +
+    '<div class="cl2">' + (c.state === 'in' ? '<button class="cb r" onclick="callEnd(\'dec\')" aria-label="رفض">' + ico('phone', 30) + '</button><button class="cb g" onclick="callAccept()" aria-label="رد">' + ico('phone', 30) + '</button>'
+      : '<button class="cb m' + (c.muted ? ' on' : '') + '" onclick="callMute()" aria-label="كتم">' + ico(c.muted ? 'x' : 'mic', 26) + '<small>' + (c.muted ? 'متكتوم' : 'كتم') + '</small></button><button class="cb r" onclick="callEnd(\'done\')" aria-label="إنهاء">' + ico('phone', 30) + '</button>') + '</div>';
+  if (c.pc && c.st === undefined) { /* */ }
+  const a = $('cau'); if (a && c.pc) { const s = c.pc.getReceivers().map(r => r.track).filter(Boolean); if (s.length) { a.srcObject = new MediaStream(s); a.play().catch(() => { /* */ }); } }
+}
+IC.mic = 'M12 3a3 3 0 00-3 3v6a3 3 0 006 0V6a3 3 0 00-3-3zM5 11a7 7 0 0014 0M12 18v3';
+function callSummary(rows, r, mine) {
+  const d = r.data, R = rows.filter(x => x.data.cid === d.cid), ans = R.some(x => x.data.ph === 'answer'), end = R.find(x => x.data.ph === 'end'), out = d.from === mine;
+  const age = Date.now() - Date.parse(d.at || 0), live = !end && !ans && age < 45000;
+  const txt = live ? 'بيرن…' : ans ? 'مكالمة ' + (end && end.data.dur ? mmss(end.data.dur) : '') : end && end.data.why === 'dec' ? 'مكالمة اترفضت' : out ? 'مكالمة محدش رد عليها' : 'مكالمة فائتة';
+  return '<div class="cmsg' + (!ans && !out && !live ? ' miss' : '') + '">' + ico('phone', 15) + ' ' + (out ? 'صادرة' : 'واردة') + ' · ' + txt + ' <small>' + tm(d.at) + '</small></div>';
+}
+
+/* ====================== الجدول الأسبوعي (للفريق) ======================
+   الأسبوع بيبدأ السبت. بيجمع: المهام (ومنها اللي بتتكرر كل أسبوع)، مواعيد التصوير، الدفعات اللي ميعادها جه، وتجديد الاشتراكات. */
+const wkStart = d => { const x = new Date(d + 'T12:00:00'); x.setDate(x.getDate() - (x.getDay() + 1) % 7); return x.toISOString().slice(0, 10); };
+const addD = (d, n) => { const x = new Date(d + 'T12:00:00'); x.setDate(x.getDate() + n); return x.toISOString().slice(0, 10); };
+function weekItems(ws) {
+  const days = {}, we = addD(ws, 6); for (let i = 0; i < 7; i++) days[addD(ws, i)] = [];
+  const put = (d, o) => { if (days[d]) days[d].push(o); };
+  CFG().sections.filter(s => !s.hidden).forEach(s => {
+    const df = fOf(s, 'date'), cf = fOf(s, 'check'); if (!df) return;
+    if (s.k === 'clients' || s.k === 'dels' || (s.flow && s.flow !== 'in') || s.k === 'income') return;
+    recs(s.k).forEach(r => {
+      const d = String(r.data[df.k] || '').slice(0, 10); if (!d) return;
+      if (s.flow === 'in') { if (cf && r.data[cf.k]) return; if (d >= ws && d <= we) put(d, { r, s, kind: 'pay' }); return; }
+      if (r.data.rep) { if (d > we) return; const wd = addD(ws, (new Date(d + 'T12:00:00').getDay() + 1) % 7); if (wd >= d) put(wd, { r, s, kind: 'rep' }); return; }
+      put(d, { r, s, kind: s.k === 'tasks' ? 'task' : 'item' });
+    });
+  });
+  const cs = CFG().sections.find(s => s.sub); if (cs) recs(cs.k).forEach(r => { const e = subEnd(cs, r); if (e >= ws && e <= we) put(e, { r, s: cs, kind: 'renew' }); });
+  Object.values(days).forEach(L => L.sort((a, b) => (tmOf(a) || '99') < (tmOf(b) || '99') ? -1 : 1));
+  return days;
+}
+const tmOf = o => o.r.data.tm || (o.s.k === 'sched' ? o.r.data.t : '') || '';
+function weekHtml() {
+  const ws = VIEW.w || wkStart(today()), D = weekItems(ws), we = addD(ws, 6); let n = 0, done = 0;
+  let h = '<div class="month"><button onclick="VIEW.w=addD(VIEW.w||wkStart(today()),-7);render()" aria-label="الأسبوع اللي فات">' + ico('r', 18) + '</button><div style="text-align:center"><b>' + dshort(ws) + ' — ' + dshort(we) + '</b>' + (ws !== wkStart(today()) ? '<div><button class="mu sm" onclick="VIEW.w=wkStart(today());render()">ارجع للأسبوع ده</button></div>' : '') + '</div><button onclick="VIEW.w=addD(VIEW.w||wkStart(today()),7);render()" aria-label="الأسبوع الجاي">' + ico('l', 18) + '</button></div>';
+  Object.keys(D).forEach(d => {
+    const L = D[d], td = d === today(), dn = DAYS[new Date(d + 'T12:00:00').getDay()];
+    h += '<div class="wday' + (td ? ' td' : '') + (d < today() ? ' past' : '') + '"><div class="wh"><b>' + dn + '</b><span>' + dshort(d) + '</span>' + (td ? '<span class="pill g">النهارده</span>' : '') + '<button onclick="wkAdd(\'' + d + '\')" aria-label="إضافة">' + ico('plus', 18) + '</button></div>';
+    h += L.length ? L.map(o => { n++; const ok = wkDone(o, ws); if (ok) done++; return wkItem(o, ws, ok); }).join('') : '<div class="wemp">فاضي</div>';
+    h += '</div>';
+  });
+  return '<div class="card wsum"><b>' + n + ' حاجة الأسبوع ده</b><span class="mu sm">' + done + ' خلصت · ' + (n - done) + ' فاضلة</span><div class="prog"><i style="width:' + (n ? Math.round(done / n * 100) : 0) + '%"></i></div></div>' + h;
+}
+function wkDone(o, ws) { const cf = fOf(o.s, 'check'); if (o.kind === 'rep') return !!(o.r.data.dw && o.r.data.dw[ws]); if (o.kind === 'renew') return false; return !!(cf && o.r.data[cf.k]); }
+function wkItem(o, ws, ok) {
+  const d = o.r.data, s = o.s, t = tmOf(o), mf = fOf(s, 'money');
+  const title = o.kind === 'renew' ? 'تجديد اشتراك ' + (d.n || '') : o.kind === 'pay' ? 'تحصيل ' + (mf ? money(d[mf.k]) : '') : recTitle(s, o.r);
+  const sub = o.kind === 'pay' ? (s.fields.find(f => f.t === 'link') ? linkName(s.fields.find(f => f.t === 'link'), d[s.fields.find(f => f.t === 'link').k]) : '') : o.kind === 'renew' ? 'الاشتراك بيخلص' : [s.k === 'sched' ? 'تصوير' : s.n, d.e ? linkName(fOf(s, 'link') || {}, d.e) : '', d.cn || ''].filter(Boolean).join(' · ');
+  const chk = o.kind === 'rep' ? '<div class="chk' + (ok ? ' on' : '') + '" onclick="event.stopPropagation();wkTog(\'' + o.r.id + '\',\'' + ws + '\')"></div>' : fOf(s, 'check') && o.kind !== 'renew' ? '<div class="chk' + (ok ? ' on' : '') + '" onclick="event.stopPropagation();togCheck(\'' + o.r.id + '\')"></div>' : '';
+  const ic = { pay: 'in', renew: 'sync', rep: 'sync' }[o.kind] || s.i || 'cal';
+  return '<div class="wit k_' + o.kind + (ok ? ' ok' : '') + '" onclick="openRec(\'' + o.r.id + '\')">' + (t ? '<span class="wt">' + esc(t) + '</span>' : '') + '<span class="ic">' + ico(ic, 17) + '</span><div class="tx"><div class="t1">' + esc(title) + '</div>' + (sub ? '<div class="t2">' + esc(sub) + (o.kind === 'rep' ? ' · كل أسبوع' : '') + '</div>' : (o.kind === 'rep' ? '<div class="t2">كل أسبوع</div>' : '')) + '</div>' + chk + '</div>';
+}
+function wkTog(id, ws) { const r = ROWS.get(id); if (!r) return; const d = clone(r.data); d.dw = d.dw || {}; if (d.dw[ws]) delete d.dw[ws]; else d.dw[ws] = 1; saveRec(r.coll, id, d); render(); }
+function wkAdd(day) {
+  const ts = SEC('tasks'), team = SEC('team') ? recs('team') : [], cl = SEC('clients') ? recs('clients') : [];
+  sheet('إضافة ' + DAYS[new Date(day + 'T12:00:00').getDay()] + ' ' + dshort(day), '<div class="segs" id="wk_k"><button class="on" data-k="task" onclick="pick(this)">مهمة</button>' + (SEC('sched') ? '<button data-k="sched" onclick="pick(this)">ميعاد تصوير</button>' : '') + '</div>' +
+    '<div class="fld"><label>إيه المطلوب؟</label><input id="wk_t" placeholder="مثلاً: تصوير ريل لمطعم…"></div>' +
+    '<div class="row"><div class="fld" style="flex:1"><label>اليوم</label><input id="wk_d" type="date" value="' + day + '"></div><div class="fld" style="flex:1"><label>الساعة</label><input id="wk_tm" type="time"></div></div>' +
+    (team.length ? '<div class="fld"><label>مين هيعملها</label><select id="wk_e"><option value="">—</option>' + team.map(r => '<option value="' + r.id + '">' + esc(r.data.n || '') + '</option>').join('') + '</select></div>' : '') +
+    (cl.length ? '<div class="fld"><label>العميل (اختياري)</label><select id="wk_c"><option value="">—</option>' + cl.map(r => '<option value="' + r.id + '">' + esc(r.data.n || '') + '</option>').join('') + '</select></div>' : '') +
+    '<div class="tog" onclick="this.querySelector(\'.sw\').classList.toggle(\'on\')"><span>يتكرر كل أسبوع في نفس اليوم</span><span class="sw" id="wk_r"></span></div>', 'حفظ', () => {
+    const t = $('wk_t').value.trim(), k = $('wk_k').querySelector('.on').dataset.k, d = $('wk_d').value || day, tm = $('wk_tm').value, rep = $('wk_r').classList.contains('on') ? 1 : 0;
+    const c = $('wk_c') ? $('wk_c').value : '', cn = c && ROWS.get(c) ? ROWS.get(c).data.n : '';
+    if (!t && !cn) return toast('اكتب المطلوب');
+    if (k === 'sched') saveRec('sched', nid(), { c: cn || t, k: 'n', dt: d, t: tm, tm, rep, x: cn && t ? t : '' });
+    else if (ts) saveRec('tasks', nid(), { t: t || cn, e: $('wk_e') ? $('wk_e').value : '', d, tm, rep, cn, done: false });
+    closeSheet(); toast('اتضاف ✓'); render();
+  });
+  setTimeout(() => $('wk_t').focus(), 350);
+}
 
 </script>
 </body></html>
