@@ -47,7 +47,7 @@ nav button.on{color:var(--ac)}
 .big{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
 .big .k{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:12px 14px}
 .big .k.w{grid-column:span 2;background:linear-gradient(135deg,#17305f,#0f1b33);border-color:#24427a}
-.big .l{font-size:13px;color:var(--mu)}.big .v{font-size:24px;font-weight:800;margin-top:2px}.big .k.w .v{font-size:32px}
+.big .l{font-size:13px;color:var(--mu)}.big .v{font-size:24px;font-weight:800;margin-top:2px}.big .k.w .v{font-size:32px}.big .k[onclick]{cursor:pointer;position:relative}.big .k[onclick]:after{content:"‹";position:absolute;left:12px;top:8px;color:var(--mu);font-size:18px}
 .v.ok{color:var(--ok)}.v.bad{color:var(--bad)}
 .month{display:flex;align-items:center;justify-content:space-between;margin:2px 0 12px}
 .month button{width:38px;height:38px;border-radius:50%;background:var(--card);border:1px solid var(--line);display:flex;align-items:center;justify-content:center}
@@ -418,27 +418,74 @@ function spreadN(ss, c, v) {
 }
 const payKind = d => d.k === 'مقدم' || d.k === 'مؤخر' ? d.k : 'قسط';
 function monthCalc(m) {
-  let fixed = 0, other = 0, out = 0, cash = 0, pre = 0, post = 0; const by = {}, ss = CFG().sections.find(x => x.sub && SEC(x.k)), withSt = new Set();
-  if (ss) recs(ss.k).forEach(c => {
+  let fixed = 0, other = 0, out = 0, cash = 0, pre = 0, post = 0; const by = {}, ss = CFG().sections.find(x => x.sub && SEC(x.k)), withSt = new Set(), L = { fixed: [], other: [], out: [], cash: [], pre: [], post: [] };
+  const add = (k, id, t, how, v, x) => L[k].push(Object.assign({ id, t, how, v }, x || {})), CS = calcSet(), OV = (calcOvr()[m] || {});
+  if (ss && !CS.noSpread) recs(ss.k).forEach(c => {
     const st = String(c.data[ss.sub.start] || '').slice(0, 7); if (!st) return; withSt.add(c.id);
     const plan = Math.max(1, Math.round(+c.data[ss.sub.months] || 1)), k = monDiff(st, m); if (k < 0 || k >= plan) return;
-    const a = acct(ss, c); if (!a || !a.total) return;
-    if (plan === 1) { fixed += a.total; return; }
-    const P = recs('pays').filter(x => Object.values(x.data).indexOf(c.id) >= 0), pp = sum(P.filter(x => payKind(x.data) === 'مقدم'), x => x.data.a), po = sum(P.filter(x => payKind(x.data) === 'مؤخر'), x => x.data.a);
-    fixed += Math.max(0, a.total - pp - po) / plan;
+    const a = acct(ss, c); if (!a || !a.total) return; const nm = recTitle(ss, c), disc = a.pct ? ' بعد خصم ' + fm(a.pct) + '%' : '';
+    if (OV[c.id] != null) { fixed += +OV[c.id]; add('fixed', c.id, nm, 'رقم معدّل يدوي للشهر ده', +OV[c.id], { ov: 1, cid: c.id }); return; }
+    if (plan === 1) { fixed += a.total; add('fixed', c.id, nm, 'اشتراك شهر واحد: ' + money(a.total) + disc, a.total, { cid: c.id }); return; }
+    const P = recs('pays').filter(x => Object.values(x.data).indexOf(c.id) >= 0), pp = sum(P.filter(x => payKind(x.data) === 'مقدم'), x => x.data.a), po = sum(P.filter(x => payKind(x.data) === 'مؤخر'), x => x.data.a), v = Math.max(0, a.total - pp - po) / plan;
+    fixed += v; add('fixed', c.id, nm, 'اشتراك ' + plan + ' شهور (الشهر ' + (k + 1) + ' من ' + plan + '): (' + fm(a.total) + disc + ' − مقدم ' + fm(pp) + ' − مؤخر ' + fm(po) + ') ÷ ' + plan, v, { cid: c.id });
   });
   CFG().sections.forEach(s => {
     if (!s.flow) return; const mf = fOf(s, 'money'); if (!mf) return;
     const lf = ss && s.flow === 'in' ? s.fields.find(f => f.t === 'link' && f.to === ss.k && !f.off) : null;
     recs(s.k).forEach(r => {
       if (!counted(s, r)) return; const md = moneyDate(s, r).slice(0, 7), v = +r.data[mf.k] || 0; if (md !== m) return;
-      if (s.flow === 'out') { out += v; by[s.k] = (by[s.k] || 0) + v; return; }
-      cash += v;
-      if (lf && r.data[lf.k]) { const kd = payKind(r.data); if (kd === 'مقدم') pre += v; else if (kd === 'مؤخر') post += v; else if (!withSt.has(r.data[lf.k])) fixed += v; return; }
-      other += v; by[s.k] = (by[s.k] || 0) + v;
+      const nm = lf && r.data[lf.k] ? linkName(lf, r.data[lf.k]) : recTitle(s, r), dt = dshort(moneyDate(s, r));
+      if (s.flow === 'out') { out += v; by[s.k] = (by[s.k] || 0) + v; add('out', r.id, nm, s.n + ' · ' + dt, v); return; }
+      cash += v; add('cash', r.id, nm, s.n + ' · ' + dt, v);
+      if (lf && r.data[lf.k]) { const kd = payKind(r.data);
+        if (kd === 'مقدم') { pre += v; add('pre', r.id, nm, 'مقدم اتحصل ' + dt, v); } else if (kd === 'مؤخر') { post += v; add('post', r.id, nm, 'مؤخر اتحصل ' + dt, v); }
+        else if (CS.noSpread || !withSt.has(r.data[lf.k])) { fixed += v; add('fixed', r.id, nm, 'دفعة لعميل من غير تاريخ اشتراك · ' + dt, v); } return; }
+      other += v; by[s.k] = (by[s.k] || 0) + v; add('other', r.id, nm, s.n + ' · ' + dt, v);
     });
   });
-  const inn = fixed + other; return { inn, out, net: inn - out, by, cash, fixed, other, pre, post };
+  (OV._adj || []).forEach((a, i) => { const v = +a.v || 0, b = a.b || 'other'; if (b === 'out') out += v; else if (b === 'fixed') fixed += v; else other += v; add(b, '', a.t || 'تسوية يدوية', 'تسوية يدوية — اتضافت بإيدك', v, { adj: i }); });
+  const inn = fixed + other + (CS.preNet ? pre : 0) + (CS.postNet ? post : 0); return { inn, out, net: inn - out, by, cash, fixed, other, pre, post, L, CS };
+}
+const calcSet = () => { const r = ROWS.get('calcset'); return (r && r.data) || {}; };
+const calcOvr = () => { const r = ROWS.get('calcovr'); return (r && r.data) || {}; };
+function ovrSave(o) { saveRec('meta', 'calcovr', o); }
+function ovrEdit(cid, k) {
+  const o = clone(calcOvr()), m = VIEW.m, cur = (o[m] || {})[cid], c = ROWS.get(cid);
+  sheet('تعديل رقم ' + ((c && c.data.n) || '') + ' — ' + mName(m), '<p class="mu sm">اكتب الرقم الصح للعميل ده في الشهر ده بس. الشهور التانية مش هتتأثر.</p><div class="fld"><label>الدخل الثابت من العميل ده الشهر ده</label><input id="ov_v" type="number" inputmode="decimal" value="' + esc(cur != null ? cur : '') + '" placeholder="فاضي = الحسبة العادية"></div>' +
+    (cur != null ? '<button class="btn r" style="width:100%" onclick="ovrReset(\'' + cid + '\',\'' + k + '\')">ارجع للحسبة العادية</button>' : ''), 'حفظ', () => {
+    const v = $('ov_v').value.trim(); o[m] = o[m] || {}; if (v === '') delete o[m][cid]; else o[m][cid] = +v; ovrSave(o); toast('اتعدل ✓'); calcInfo(k); render();
+  });
+}
+function ovrReset(cid, k) { const o = clone(calcOvr()); if (o[VIEW.m]) delete o[VIEW.m][cid]; ovrSave(o); calcInfo(k); render(); }
+function adjAdd(k) {
+  sheet('تسوية يدوية — ' + mName(VIEW.m), '<div class="fld"><label>السبب</label><input id="aj_t" placeholder="مثلاً: فرق حساب، خصم اتفقنا عليه…"></div><div class="fld"><label>المبلغ (اكتب بالسالب لو هيتخصم)</label><input id="aj_v" type="number" inputmode="decimal"></div>' +
+    '<div class="fld"><label>يتحسب في</label><div class="chips" id="aj_b"><button class="on" data-b="fixed" onclick="pick(this)">الدخل الثابت</button><button data-b="other" onclick="pick(this)">دخل تاني</button><button data-b="out" onclick="pick(this)">المصروفات</button></div></div>', 'حفظ', () => {
+    const v = $('aj_v').value.trim(); if (v === '' || isNaN(+v)) return toast('اكتب المبلغ');
+    const o = clone(calcOvr()), m = VIEW.m; o[m] = o[m] || {}; o[m]._adj = (o[m]._adj || []).concat([{ t: $('aj_t').value.trim(), v: +v, b: $('aj_b').querySelector('.on').dataset.b }]); ovrSave(o); toast('التسوية اتضافت ✓'); calcInfo(k); render();
+  });
+}
+function adjDel(i, k) { const o = clone(calcOvr()), m = VIEW.m; if (o[m] && o[m]._adj) { o[m]._adj.splice(i, 1); ovrSave(o); } calcInfo(k); render(); }
+function calcRules(k) {
+  const c = clone(calcSet()), t = (key, l, d) => '<div class="tog" style="margin-bottom:8px" onclick="this.querySelector(\'.sw\').classList.toggle(\'on\')"><span>' + l + '<br><span class="mu sm">' + d + '</span></span><span class="sw' + (c[key] ? ' on' : '') + '" id="cr_' + key + '"></span></div>';
+  sheet('قواعد الحساب', t('preNet', 'المقدم يدخل في الصافي', 'مقفول = المقدم بيظهر لوحده ومش بيتحسب في صافي الشهر') + t('postNet', 'المؤخر يدخل في الصافي', 'مقفول = المؤخر بيظهر لوحده ومش بيتحسب في صافي الشهر') + t('noSpread', 'متقسمش الاشتراكات الطويلة', 'مفتوح = الدخل الثابت يبقى الأقساط اللي اتحصلت فعلاً في الشهر بدل التقسيم على الشهور') + '<p class="mu sm">القواعد دي بتتطبق على كل الشهور.</p>', 'حفظ', () => {
+    ['preNet', 'postNet', 'noSpread'].forEach(x => { c[x] = $('cr_' + x).classList.contains('on'); }); saveRec('meta', 'calcset', c); toast('القواعد اتحفظت ✓'); calcInfo(k); render();
+  });
+}
+const CALC_INFO = {
+  net: ['صافي الدخل الشهري', 'الدخل الثابت + الدخل التاني − المصروفات. المقدم والمؤخر مش داخلين فيه.'],
+  fixed: ['الدخل الثابت', 'اشتراك الشهر الواحد بيدخل كله في شهره. اشتراك الـ 3 شهور: (قيمة الباقة بعد الخصم − المقدم − المؤخر) ÷ 3، وبيتحسب في كل شهر من شهور الاشتراك حتى لو القسط لسه متدفعش.'],
+  other: ['الدخل التاني', 'أي فلوس داخلة مش مربوطة بعميل مشترك (زي «دخل تاني»)، بتتحسب في يوم ما دخلت.'],
+  out: ['اللي اتصرف', 'كل المصروفات وسحب الفريق في الشهر ده، حسب تاريخها.'],
+  pre: ['المقدمات', 'الدفعات اللي نوعها «مقدم» واتحصلت الشهر ده. مش داخلة في الصافي.'],
+  post: ['المؤخرات', 'الدفعات اللي نوعها «مؤخر» واتحصلت الشهر ده. مش داخلة في الصافي.'],
+  cash: ['اتحصل فعلاً', 'كل فلوس دخلت إيدك الشهر ده (أقساط ومقدمات ومؤخرات ودخل تاني)، حسب يوم التحصيل.']
+};
+function calcInfo(k) {
+  const c = monthCalc(VIEW.m), inf = CALC_INFO[k], rows = k === 'net' ? c.L.fixed.concat(c.L.other).concat(c.L.out.map(x => Object.assign({}, x, { v: -x.v }))) : c.L[k];
+  const tot = k === 'net' ? c.net : c[k], adm = ME && ME.admin;
+  sheet(inf[0] + ' — ' + mName(VIEW.m), '<div class="card" style="padding:12px 14px"><b>إزاي اتحسب؟</b><p class="mu sm" style="margin:4px 0 0;line-height:1.8">' + inf[1] + '</p></div>' +
+    (rows.length ? '<div class="list">' + rows.map(x => '<div class="it" onclick="' + (x.id ? 'closeSheet();setTimeout(()=>openRec(\'' + x.id + '\'),320)' : '') + '"><div class="tx"><div class="t1">' + esc(x.t || '—') + '</div><div class="t2" style="white-space:normal">' + esc(x.how) + '</div></div><div class="amt ' + (x.v < 0 ? 'out' : 'in') + '">' + money(Math.round(x.v)) + '</div>' + (adm && x.cid ? '<button class="btn g" style="padding:6px 10px;font-size:13px" onclick="event.stopPropagation();ovrEdit(\'' + x.cid + '\',\'' + k + '\')">' + ico('gear', 14) + '</button>' : '') + (adm && x.adj != null ? '<button class="btn r" style="padding:6px 10px;font-size:13px" onclick="event.stopPropagation();adjDel(' + x.adj + ',\'' + k + '\')">' + ico('trash', 14) + '</button>' : '') + '</div>').join('') + '</div>' : '<div class="card empty">مفيش حاجة في الشهر ده</div>') +
+    '<div class="row" style="justify-content:space-between;padding:6px 4px"><b>الإجمالي</b><b class="num">' + money(Math.round(tot)) + '</b></div><p class="mu sm" style="text-align:center">دوس على أي سطر عشان تفتحه وتعدّله، والحساب بيتظبط لوحده.</p>' + (adm ? '<div class="row" style="gap:8px"><button class="btn g" style="flex:1;padding:10px" onclick="adjAdd(\'' + k + '\')">' + ico('plus', 16) + ' تسوية يدوية</button><button class="btn g" style="flex:1;padding:10px" onclick="calcRules(\'' + k + '\')">' + ico('gear', 16) + ' قواعد الحساب</button></div>' : ''));
 }
 
 /* ---------- واجهة: أدوات ---------- */
@@ -483,10 +530,10 @@ function homeHtml() {
   const inst = !navigator.standalone && /iphone|ipad/i.test(navigator.userAgent) && !window.matchMedia('(display-mode: standalone)').matches;
   return inboxCard() + (inst ? '<div id="inst" style="display:block"><b>نزّل الأبلكيشن على الشاشة الرئيسية</b>دوس على زرار المشاركة تحت في Safari وبعدين «إضافة إلى الشاشة الرئيسية». بعدها افتحه من الأيقونة.</div>' : '') +
     '<div class="month"><button onclick="mv(-1)" aria-label="الشهر اللي فات">' + ico('r', 18) + '</button><b>' + mName(m) + '</b><button onclick="mv(1)" aria-label="الشهر الجاي">' + ico('l', 18) + '</button></div>' +
-    '<div class="big"><div class="k w"><div class="l">صافي الدخل الشهري <span style="opacity:.7;font-size:11.5px">· الدخل الثابت − المصروفات (من غير المقدم والمؤخر)</span></div><div class="v num ' + (c.net < 0 ? 'bad' : '') + '">' + money(c.net) + '</div></div>' +
-    '<div class="k"><div class="l">دخل ثابت</div><div class="v num ok">' + money(c.fixed) + '</div>' + (c.other ? '<div class="mu sm">+ دخل تاني ' + money(c.other) + '</div>' : '') + '</div><div class="k"><div class="l">اللي اتصرف</div><div class="v num bad">' + money(c.out) + '</div></div>' +
-    '<div class="k"><div class="l">مقدمات</div><div class="v num" style="color:var(--ac2)">' + money(c.pre) + '</div></div><div class="k"><div class="l">مؤخرات</div><div class="v num" style="color:var(--ac2)">' + money(c.post) + '</div></div>' +
-    '<div class="k w" style="background:var(--card);border-color:var(--line)"><div class="l">اتحصل فعلاً الشهر ده (كل الفلوس اللي دخلت إيدك)</div><div class="v num" style="font-size:22px">' + money(c.cash) + '</div></div>' +
+    '<div class="big"><div class="k w" onclick="calcInfo(\'net\')"><div class="l">صافي الدخل الشهري <span style="opacity:.7;font-size:11.5px">· الدخل الثابت − المصروفات (من غير المقدم والمؤخر)</span></div><div class="v num ' + (c.net < 0 ? 'bad' : '') + '">' + money(c.net) + '</div></div>' +
+    '<div class="k" onclick="calcInfo(\'fixed\')"><div class="l">دخل ثابت</div><div class="v num ok">' + money(c.fixed) + '</div>' + (c.other ? '<div class="mu sm">+ دخل تاني ' + money(c.other) + '</div>' : '') + '</div><div class="k" onclick="calcInfo(\'out\')"><div class="l">اللي اتصرف</div><div class="v num bad">' + money(c.out) + '</div></div>' +
+    '<div class="k" onclick="calcInfo(\'pre\')"><div class="l">مقدمات</div><div class="v num" style="color:var(--ac2)">' + money(c.pre) + '</div></div><div class="k" onclick="calcInfo(\'post\')"><div class="l">مؤخرات</div><div class="v num" style="color:var(--ac2)">' + money(c.post) + '</div></div>' +
+    '<div class="k w" style="background:var(--card);border-color:var(--line)" onclick="calcInfo(\'cash\')"><div class="l">اتحصل فعلاً الشهر ده (كل الفلوس اللي دخلت إيدك)</div><div class="v num" style="font-size:22px">' + money(c.cash) + '</div></div>' +
     (pend ? '<div class="k w" style="background:var(--card);border-color:var(--line)" onclick="go(\'pays\')"><div class="l">فلوس لسه بره</div><div class="v num" style="font-size:22px;color:var(--warn)">' + money(pend) + '</div></div>' : '') + '</div>' +
     (alerts.length ? '<div class="ttl">محتاج تتابعه</div><div class="list">' + alerts.slice(0, 8).map(a => itemHtml(a[1], a[2])).join('') + '</div>' : '') +
     '<div class="ttl">آخر حاجات اتضافت</div>' + (recent.length ? '<div class="list">' + recent.map(r => itemHtml(SEC(r.coll), r)).join('') + '</div>' : '<div class="card empty">لسه مفيش حاجة — دوس + عشان تضيف</div>');
@@ -1485,10 +1532,12 @@ const _open1 = openRec;
 openRec = function (id) {
   _open1(id); const r = ROWS.get(id); if (!r || r.coll !== 'clients' || !SEC('pays') || !canMoney()) return;
   const P = recs('pays').filter(x => x.data.c === id).sort((a, b) => String(b.data.doneAt || b.data.due || '') < String(a.data.doneAt || a.data.due || '') ? -1 : 1), ed = canEd('pays');
-  const got = sum(P.filter(x => x.data.done), x => x.data.a);
+  const got = sum(P.filter(x => x.data.done), x => x.data.a), cs = SEC('clients'), mf = cs && fOf(cs, 'money'), ac = cs && acct(cs, r);
+  if (mf) $('shB').insertAdjacentHTML('afterbegin', '<div class="card" id="agc" style="padding:12px 14px"><div class="row" style="justify-content:space-between"><div><b>قيمة الاتفاق</b><div class="mu sm">' + (cs.sub && r.data[cs.sub.months] ? 'لمدة ' + r.data[cs.sub.months] + ' شهر' : '') + (cs.sub && r.data[cs.sub.start] ? ' · من ' + dshort(r.data[cs.sub.start]) : '') + (ac && ac.pct ? ' · بعد خصم ' + fm(ac.pct) + '% = ' + money(ac.total) : '') + '</div></div><b class="num" style="font-size:20px">' + money(r.data[mf.k] || 0) + '</b></div>' + (canEd('clients') ? '<button class="btn g" style="width:100%;margin-top:8px;padding:9px" onclick="agreeFix(\'' + id + '\')">' + ico('gear', 15) + ' غيّر قيمة الاتفاق</button>' : '') + '</div>');
   $('shB').insertAdjacentHTML('afterbegin', '<div class="card" style="padding:12px 14px"><div class="row" style="justify-content:space-between;margin-bottom:6px"><b>الفلوس اللي استلمناها</b><b class="num" style="color:var(--ok)">' + money(got) + '</b></div>' +
     (P.length ? P.map(x => '<div class="pyr"><span class="chk' + (x.data.done ? ' on' : '') + '"></span><div style="flex:1;min-width:0"><b class="num">' + money(x.data.a) + '</b><div class="mu sm">' + (x.data.done ? 'اتحصلت ' + dshort(x.data.doneAt || x.data.due) : 'لسه — ميعادها ' + dshort(x.data.due)) + (x.data.note ? ' · ' + esc(x.data.note) : '') + '</div></div>' + (ed ? '<button class="btn g" style="padding:7px 12px;font-size:14px" onclick="payFix(\'' + x.id + '\')">' + ico('gear', 15) + ' تعديل</button>' : '') + '</div>').join('') : '<div class="mu sm">لسه مفيش دفعات</div>') +
     (canAdd('pays') ? '<button class="btn g" style="width:100%;margin-top:8px;padding:10px" onclick="addLinked(\'pays\',\'' + id + '\')">' + ico('plus', 16) + ' دفعة جديدة</button>' : '') + '</div>');
+  const ag = $('agc'); if (ag) $('shB').prepend(ag);
 };
 function payFix(pid) {
   const x = ROWS.get(pid); if (!x) return; const d = x.data;
@@ -1501,6 +1550,17 @@ function payFix(pid) {
     const n = clone(d), v = $('pf_a').value.trim(); if (v === '' || isNaN(+v)) return toast('اكتب المبلغ'); n.a = +v; n.done = $('pf_d').classList.contains('on'); n.note = $('pf_n').value.trim(); n.k = $('pf_k').querySelector('.on').textContent;
     if (n.done) n.doneAt = $('pf_at').value || today(); else delete n.doneAt;
     saveRec('pays', pid, n); toast('الدفعة اتعدلت ✓'); openRec(d.c); render();
+  });
+}
+
+function agreeFix(cid) {
+  const c = ROWS.get(cid), cs = SEC('clients'), mf = fOf(cs, 'money'); if (!c || !mf) return; const d = c.data;
+  sheet('قيمة الاتفاق — ' + (d.n || ''), '<div class="fld"><label>' + esc(mf.l) + ' (قيمة الباقة كلها)</label><input id="ag_v" type="number" inputmode="decimal" value="' + esc(d[mf.k] || '') + '"></div>' +
+    (cs.sub ? '<div class="row"><div class="fld" style="flex:1"><label>المدة بالشهور</label><input id="ag_m" type="number" min="1" value="' + esc(d[cs.sub.months] || 1) + '"></div><div class="fld" style="flex:1"><label>بداية الاشتراك</label><input id="ag_s" type="date" value="' + esc(String(d[cs.sub.start] || '').slice(0, 10)) + '"></div></div>' : '') +
+    '<p class="mu sm">الدخل الثابت والحسابات بتتظبط لوحدها على القيمة الجديدة.</p>', 'حفظ', () => {
+    const v = $('ag_v').value.trim(); if (v === '' || isNaN(+v)) return toast('اكتب القيمة');
+    const n = clone(d); n[mf.k] = +v; if (cs.sub) { n[cs.sub.months] = Math.max(1, +$('ag_m').value || 1); if ($('ag_s').value) n[cs.sub.start] = $('ag_s').value; }
+    saveRec('clients', cid, n); toast('قيمة الاتفاق اتعدلت ✓'); openRec(cid); render();
   });
 }
 
