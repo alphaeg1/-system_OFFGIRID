@@ -175,6 +175,9 @@ body.sh #shade{opacity:1;pointer-events:auto}body.sh #sheet{transform:none}
 .wh{display:flex;align-items:center;gap:8px;padding:8px 14px}.wh b{font-size:16px}.wh span{color:var(--mu);font-size:13px}.wh button{margin-right:auto;width:32px;height:32px;border-radius:10px;background:var(--card2);display:flex;align-items:center;justify-content:center;color:var(--ac2)}
 .wit{display:flex;align-items:center;gap:10px;padding:9px 14px;border-top:1px solid var(--line)}.wit .wt{font-size:12.5px;font-weight:800;color:var(--ac2);min-width:44px}.wit .ic{color:var(--ac2);display:flex}.wit .tx{flex:1;min-width:0}.wit .t1{font-weight:700;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.wit .t2{font-size:12.5px;color:var(--mu)}
 .wit.k_pay .ic{color:var(--ok)}.wit.k_renew .ic{color:var(--warn)}.wit.ok .t1{text-decoration:line-through;color:var(--mu)}.wemp{padding:6px 14px 10px;color:var(--mu);font-size:13px}
+.pyr{display:flex;align-items:center;gap:10px;padding:9px 0;border-top:1px solid var(--line)}
+.prow{display:grid;grid-template-columns:1fr 54px 54px 54px;align-items:center;gap:4px;padding:8px 12px;border-bottom:1px solid var(--line);font-size:14.5px}.prow.ph{color:var(--mu);font-size:12.5px;text-align:center}.prow.ph span:first-child{text-align:right}
+.pb{width:34px;height:34px;margin:auto;border-radius:10px;border:2px solid var(--line);color:#fff;font-weight:900}.pb.on{background:var(--ok);border-color:var(--ok)}
 .upl{display:flex;align-items:center;justify-content:center;aspect-ratio:4/3;border:1.5px dashed #34518c;border-radius:18px;background:var(--card2);overflow:hidden;margin-bottom:12px;color:var(--ac2);text-align:center;position:relative}
 .upl span{display:flex;flex-direction:column;align-items:center;gap:6px}.upl img{width:100%;height:100%;object-fit:cover}.upl input{position:absolute;inset:0;opacity:0}
 #auth{position:fixed}
@@ -259,7 +262,7 @@ const TYPES = { text: 'كلام', number: 'رقم', money: 'فلوس', date: 'ت
 
 /* ---------- الحالة ---------- */
 let ROWS = new Map(), OUT = new Map(), SES = null, ME = null, LAST = '', LASTFULL = 0, syncing = false, syncErr = '', VIEW = { tab: 'home', q: '', f: 'all', m: today().slice(0, 7) }, SAVE_T = 0, POLL = 0;
-const CFG = () => { const r = ROWS.get('cfg'); return r && r.data && Array.isArray(r.data.sections) ? r.data : DEF; };
+let CFG = () => { const r = ROWS.get('cfg'); return r && r.data && Array.isArray(r.data.sections) ? r.data : DEF; };
 const SEC = k => CFG().sections.find(s => s.k === k);
 const recs = k => { const a = []; ROWS.forEach(r => { if (r.coll === k) a.push(r); }); return a; };
 const fOf = (s, t) => s.fields.find(f => f.t === t && !f.off);
@@ -413,20 +416,29 @@ function spreadN(ss, c, v) {
   const plan = Math.max(1, Math.round(+c.data[ss.sub.months] || 1)); if (plan < 2) return 1;
   const a = acct(ss, c), per = a && a.total ? a.total / plan : 0; return per ? Math.max(1, Math.min(plan, Math.round(v / per))) : plan;
 }
+const payKind = d => d.k === 'مقدم' || d.k === 'مؤخر' ? d.k : 'قسط';
 function monthCalc(m) {
-  let inn = 0, out = 0, cash = 0; const by = {}, ss = CFG().sections.find(x => x.sub && SEC(x.k));
+  let fixed = 0, other = 0, out = 0, cash = 0, pre = 0, post = 0; const by = {}, ss = CFG().sections.find(x => x.sub && SEC(x.k)), withSt = new Set();
+  if (ss) recs(ss.k).forEach(c => {
+    const st = String(c.data[ss.sub.start] || '').slice(0, 7); if (!st) return; withSt.add(c.id);
+    const plan = Math.max(1, Math.round(+c.data[ss.sub.months] || 1)), k = monDiff(st, m); if (k < 0 || k >= plan) return;
+    const a = acct(ss, c); if (!a || !a.total) return;
+    if (plan === 1) { fixed += a.total; return; }
+    const P = recs('pays').filter(x => Object.values(x.data).indexOf(c.id) >= 0), pp = sum(P.filter(x => payKind(x.data) === 'مقدم'), x => x.data.a), po = sum(P.filter(x => payKind(x.data) === 'مؤخر'), x => x.data.a);
+    fixed += Math.max(0, a.total - pp - po) / plan;
+  });
   CFG().sections.forEach(s => {
     if (!s.flow) return; const mf = fOf(s, 'money'); if (!mf) return;
     const lf = ss && s.flow === 'in' ? s.fields.find(f => f.t === 'link' && f.to === ss.k && !f.off) : null;
     recs(s.k).forEach(r => {
-      if (!counted(s, r)) return; const md = moneyDate(s, r).slice(0, 7), v = +r.data[mf.k] || 0; if (!md) return;
-      if (s.flow === 'in' && md === m) cash += v;
-      let share = md === m ? v : 0;
-      if (lf) { const c = ROWS.get(r.data[lf.k]), n = c ? spreadN(ss, c, v) : 1; if (n > 1) { const k = monDiff(md, m); share = k >= 0 && k < n ? v / n : 0; } }
-      if (!share) return; if (s.flow === 'in') inn += share; else out += share; by[s.k] = (by[s.k] || 0) + share;
+      if (!counted(s, r)) return; const md = moneyDate(s, r).slice(0, 7), v = +r.data[mf.k] || 0; if (md !== m) return;
+      if (s.flow === 'out') { out += v; by[s.k] = (by[s.k] || 0) + v; return; }
+      cash += v;
+      if (lf && r.data[lf.k]) { const kd = payKind(r.data); if (kd === 'مقدم') pre += v; else if (kd === 'مؤخر') post += v; else if (!withSt.has(r.data[lf.k])) fixed += v; return; }
+      other += v; by[s.k] = (by[s.k] || 0) + v;
     });
   });
-  return { inn, out, net: inn - out, by, cash };
+  const inn = fixed + other; return { inn, out, net: inn - out, by, cash, fixed, other, pre, post };
 }
 
 /* ---------- واجهة: أدوات ---------- */
@@ -471,8 +483,10 @@ function homeHtml() {
   const inst = !navigator.standalone && /iphone|ipad/i.test(navigator.userAgent) && !window.matchMedia('(display-mode: standalone)').matches;
   return inboxCard() + (inst ? '<div id="inst" style="display:block"><b>نزّل الأبلكيشن على الشاشة الرئيسية</b>دوس على زرار المشاركة تحت في Safari وبعدين «إضافة إلى الشاشة الرئيسية». بعدها افتحه من الأيقونة.</div>' : '') +
     '<div class="month"><button onclick="mv(-1)" aria-label="الشهر اللي فات">' + ico('r', 18) + '</button><b>' + mName(m) + '</b><button onclick="mv(1)" aria-label="الشهر الجاي">' + ico('l', 18) + '</button></div>' +
-    '<div class="big"><div class="k w"><div class="l">الصافي الشهر ده <span style="opacity:.7;font-size:11.5px">· الاشتراك اللي أكتر من شهر متقسم على شهوره</span></div><div class="v num ' + (c.net < 0 ? 'bad' : '') + '">' + money(c.net) + '</div></div>' +
-    '<div class="k"><div class="l">دخل الشهر</div><div class="v num ok">' + money(c.inn) + '</div>' + (Math.round(c.cash) !== Math.round(c.inn) ? '<div class="mu sm">اتحصل فعلاً ' + money(c.cash) + '</div>' : '') + '</div><div class="k"><div class="l">اللي اتصرف</div><div class="v num bad">' + money(c.out) + '</div></div>' +
+    '<div class="big"><div class="k w"><div class="l">صافي الدخل الشهري <span style="opacity:.7;font-size:11.5px">· الدخل الثابت − المصروفات (من غير المقدم والمؤخر)</span></div><div class="v num ' + (c.net < 0 ? 'bad' : '') + '">' + money(c.net) + '</div></div>' +
+    '<div class="k"><div class="l">دخل ثابت</div><div class="v num ok">' + money(c.fixed) + '</div>' + (c.other ? '<div class="mu sm">+ دخل تاني ' + money(c.other) + '</div>' : '') + '</div><div class="k"><div class="l">اللي اتصرف</div><div class="v num bad">' + money(c.out) + '</div></div>' +
+    '<div class="k"><div class="l">مقدمات</div><div class="v num" style="color:var(--ac2)">' + money(c.pre) + '</div></div><div class="k"><div class="l">مؤخرات</div><div class="v num" style="color:var(--ac2)">' + money(c.post) + '</div></div>' +
+    '<div class="k w" style="background:var(--card);border-color:var(--line)"><div class="l">اتحصل فعلاً الشهر ده (كل الفلوس اللي دخلت إيدك)</div><div class="v num" style="font-size:22px">' + money(c.cash) + '</div></div>' +
     (pend ? '<div class="k w" style="background:var(--card);border-color:var(--line)" onclick="go(\'pays\')"><div class="l">فلوس لسه بره</div><div class="v num" style="font-size:22px;color:var(--warn)">' + money(pend) + '</div></div>' : '') + '</div>' +
     (alerts.length ? '<div class="ttl">محتاج تتابعه</div><div class="list">' + alerts.slice(0, 8).map(a => itemHtml(a[1], a[2])).join('') + '</div>' : '') +
     '<div class="ttl">آخر حاجات اتضافت</div>' + (recent.length ? '<div class="list">' + recent.map(r => itemHtml(SEC(r.coll), r)).join('') + '</div>' : '<div class="card empty">لسه مفيش حاجة — دوس + عشان تضيف</div>');
@@ -519,7 +533,7 @@ function editRec(k, id) {
   const s = SEC(k), r = id ? ROWS.get(id) : null, d = r ? r.data : {};
   const fs = s.fields.filter(f => !f.off);
   const lists = fs.filter(f => f.t === 'text').map(f => { const vs = [...new Set(recs(k).map(x => x.data[f.k]).filter(Boolean))].slice(0, 60); return '<datalist id="dl_' + f.k + '">' + vs.map(v => '<option value="' + esc(v) + '">').join('') + '</datalist>'; }).join('');
-  sheet((r ? 'تعديل ' : '') + s.n, fs.map(f => fieldHtml(f, r ? d[f.k] : (f.t === 'date' ? today() : ''))).join('') + lists +
+  sheet((r ? 'تعديل ' : '') + s.n, fs.map(f => fieldHtml(f, r ? d[f.k] : (f.t === 'date' ? today() : '')) + (f.t === 'check' && r && d[f.k] ? '<div class="fld"><label>' + esc(f.l) + ' يوم</label><input id="f_' + f.k + 'At" type="date" value="' + esc(String(d[f.k + 'At'] || '').slice(0, 10)) + '"></div>' : '')).join('') + lists +
     (r ? '<button class="btn r" style="width:100%;margin-top:8px" onclick="askDel(\'' + id + '\')">' + ico('trash', 18) + ' مسح</button>' : ''), 'حفظ', () => saveForm(k, id));
   if (!r) setTimeout(() => { const f = $('shB').querySelector('input:not([type=date]),select'); if (f && f.tagName === 'INPUT') f.focus(); }, 350);
 }
@@ -527,7 +541,7 @@ function saveForm(k, id) {
   const s = SEC(k), r = id ? ROWS.get(id) : null, d = r ? clone(r.data) : {};
   s.fields.filter(f => !f.off).forEach(f => {
     const e = $('f_' + f.k); if (!e) return;
-    if (f.t === 'check') { const on = e.classList.contains('on'); if (on && !d[f.k]) d[f.k + 'At'] = today(); if (!on) delete d[f.k + 'At']; d[f.k] = on; }
+    if (f.t === 'check') { const on = e.classList.contains('on'), ae = $('f_' + f.k + 'At'); if (on && !d[f.k]) d[f.k + 'At'] = today(); if (on && ae && ae.value) d[f.k + 'At'] = ae.value; if (!on) delete d[f.k + 'At']; d[f.k] = on; }
     else if (f.t === 'select') d[f.k] = e.dataset.v || '';
     else if (f.t === 'money' || f.t === 'number' || f.t === 'percent') { const v = e.value.trim(); d[f.k] = v === '' ? '' : +v; }
     else d[f.k] = e.value.trim();
@@ -632,7 +646,7 @@ async function usersPage(preClient) {
   sheet('الحسابات', '<div class="empty">بحمّل…</div>');
   let L = []; try { L = await api('/rest/v1/members?select=*&order=created_at.asc') || []; } catch (e) { $('shB').innerHTML = '<div class="empty">' + errAr(e) + '</div>'; return; }
   const row = m => { const a = ACC(m.user_id), c = a && ROWS.get(a.client), kind = m.owner ? 'صاحب السيستم' : a ? 'عميل' : m.role === 'admin' ? 'مدير' : 'موظف';
-    return '<div class="it"' + (a ? ' onclick="accEdit(\'' + m.user_id + '\')"' : '') + '><div class="ic">' + ico(a ? 'users' : 'user') + '</div><div class="tx"><div class="t1">' + esc(m.name) + '</div><div class="t2"><span class="en">' + esc(m.username) + '</span>' + (a ? ' · ' + esc(c ? c.data.n : 'العميل اتمسح') : '') + '</div></div><span class="pill' + (m.role === 'admin' ? ' g' : a ? ' y' : '') + '">' + kind + '</span>' +
+    return '<div class="it"' + (a ? ' onclick="accEdit(\'' + m.user_id + '\')"' : m.role !== 'admin' && !m.owner ? ' onclick="permEdit(\'' + m.user_id + '\',\'' + esc(m.name).replace(/'/g, '') + '\')"' : '') + '><div class="ic">' + ico(a ? 'users' : 'user') + '</div><div class="tx"><div class="t1">' + esc(m.name) + '</div><div class="t2"><span class="en">' + esc(m.username) + '</span>' + (a ? ' · ' + esc(c ? c.data.n : 'العميل اتمسح') : '') + '</div></div><span class="pill' + (m.role === 'admin' ? ' g' : a ? ' y' : '') + '">' + kind + '</span>' +
       (m.user_id !== ME.id && !m.owner ? '<button onclick="event.stopPropagation();rmUser(\'' + m.user_id + '\')">' + ico('trash', 18) + '</button>' : '') + '</div>'; };
   const team = L.filter(m => !ACC(m.user_id)), cls = L.filter(m => ACC(m.user_id)), role = preClient ? 'client' : 'user';
   $('shB').innerHTML = '<div class="ttl" style="margin-top:4px">فريق الشغل</div><div class="list">' + team.map(row).join('') + '</div>' +
@@ -723,7 +737,7 @@ async function clientPull() {
     ME.client = { cid: a.client, show: a.show || defShow() }; IDB.put('kv', 'me', ME);
     const C = await api('/rest/v1/items?select=*&id=eq.' + encodeURIComponent(a.client)) || []; C.forEach(add);
     (await api('/rest/v1/items?select=*&coll=in.(chat,lead)&' + encodeURIComponent('data->>t') + '=eq.' + encodeURIComponent('c_' + a.client)) || []).forEach(add);
-    for (const s of CFG().sections) { const f = s.fields.find(x => x.t === 'link' && x.to === 'clients' && !x.off); if (!f || s.k === 'clients') continue;
+    for (const s of CFG().sections) { const f = s.fields.find(x => x.t === 'link' && x.to === 'clients' && !x.off); if (!f || s.k === 'clients' || s.k === 'notes') continue;
       (await api('/rest/v1/items?select=*&coll=eq.' + encodeURIComponent(s.k) + '&' + encodeURIComponent('data->>' + f.k) + '=eq.' + encodeURIComponent(a.client)) || []).forEach(add); }
     if (C[0] && C[0].data.n) (await api('/rest/v1/items?select=*&coll=eq.sched&' + encodeURIComponent('data->>c') + '=eq.' + encodeURIComponent(C[0].data.n)) || []).forEach(add);
     [...ROWS.keys()].forEach(id => { if (!keep.has(id)) { ROWS.delete(id); IDB.del('rows', id); } });
@@ -1344,6 +1358,150 @@ function wkAdd(day) {
     closeSheet(); toast('اتضاف ✓'); render();
   });
   setTimeout(() => $('wk_t').focus(), 350);
+}
+
+/* ====================== صلاحيات الموظفين + الكول سنتر + المرتبات + سجل النشاط ======================
+   المدير بيحدد لكل موظف: يشوف أنهي أقسام، يضيف فيها، يعدّل فيها، يشوف الفلوس ولا لأ، والرسايل ولا لأ.
+   الموظف اللي ملوش صلاحيات متحددة بيفضل زي ما كان (يشوف كل حاجة). */
+const NOTES_SEC = { k: 'notes', n: 'ملاحظات العملاء', i: 'phone', fields: [F('c', 'العميل', 'link', { to: 'clients' }), F('r', 'النتيجة', 'select', { o: ['رد', 'مردش', 'مهتم', 'مش مهتم', 'يتكلم تاني'] }), F('t', 'الملاحظة', 'text'), F('nx', 'يتكلم تاني يوم', 'date')] };
+const PERM = uid => { const r = ROWS.get('perm_' + uid); return r ? r.data : null; };
+const myP = () => (ME && !ME.admin && !ME.client) ? PERM(ME.id) : null;
+const _CFG0 = CFG;
+CFG = () => {
+  let c = _CFG0(); const ps = c.sections.find(s => s.k === 'pays'); if (ps && !ps.fields.some(f => f.k === 'k')) c = Object.assign({}, c, { sections: c.sections.map(s => s === ps ? Object.assign({}, s, { fields: s.fields.slice(0, 2).concat([F('k', 'نوع الدفعة', 'select', { o: ['قسط', 'مقدم', 'مؤخر'] })], s.fields.slice(2)) }) : s) });
+  if (!c.sections.some(s => s.k === 'notes')) c = Object.assign({}, c, { sections: c.sections.concat([NOTES_SEC]) });
+  const p = myP(); if (!p) return c;
+  return Object.assign({}, c, { sections: c.sections.filter(s => (p.see || {})[s.k] && (!s.flow || p.money)).map(s => p.money ? s : Object.assign({}, s, { fields: s.fields.filter(f => f.t !== 'money'), goal: null })) });
+};
+const canAdd = k => { const p = myP(); return !p || (!!SEC(k) && !!(p.add || {})[k]); };
+const canEd = k => { const p = myP(); return !p || (!!SEC(k) && !!(p.ed || {})[k]); };
+const canMoney = () => { const p = myP(); return !p || !!p.money; };
+const canInbox = () => { const p = myP(); return !p || !!p.inbox; };
+
+/* تطبيق الصلاحيات على الشاشات */
+const _render0 = render;
+render = function () { _render0(); if (!ME || ME.client) return; const s = SEC(VIEW.tab); if (s && !canAdd(s.k)) $('fab').style.display = 'none'; if (VIEW.tab === 'home' && !CFG().sections.some(x => !x.hidden && canAdd(x.k))) $('fab').style.display = 'none'; };
+const _quick0 = quickAdd;
+quickAdd = function () {
+  if (VIEW.tab === 'week' || SEC(VIEW.tab)) return _quick0();
+  const cs = CFG().sections.filter(x => !x.hidden && canAdd(x.k));
+  sheet('تضيف إيه؟', '<div class="grid">' + cs.map(x => '<button class="tile" onclick="editRec(\'' + x.k + '\')"><span class="ic">' + ico(x.i, 26) + '</span>' + esc(x.n) + '</button>').join('') + '</div>');
+};
+const _open0 = openRec;
+openRec = function (id) {
+  const r = ROWS.get(id); if (!r || !SEC(r.coll)) return toast('مش مسموح تشوف ده'); _open0(id);
+  if (!canEd(r.coll)) { $('shA').textContent = 'قفل'; SHEET_ACT = closeSheet; $('shA').onclick = closeSheet; }
+  $('shB').querySelectorAll('.ttl button').forEach(b => { const m = (b.getAttribute('onclick') || '').match(/addLinked\('(\w+)'/); if (m && !canAdd(m[1])) b.remove(); });
+  if (r.coll === 'team') $('shB').insertAdjacentHTML('afterbegin', payCard(r));
+  $('shB').querySelectorAll('button').forEach(b => { const oc = b.getAttribute('onclick') || ''; if ((/^renew\(/.test(oc) && !canEd(r.coll)) || (/^msgClient\(/.test(oc) && !canInbox())) b.remove(); });
+};
+const _tog0 = togCheck;
+togCheck = function (id) { const r = ROWS.get(id); if (r && !canEd(r.coll)) return toast('مش مسموحلك تعدّل هنا'); _tog0(id); };
+const _edit0 = editRec;
+editRec = function (k, id) { if (id ? !canEd(k) : !canAdd(k)) return toast('مش مسموحلك ' + (id ? 'تعدّل' : 'تضيف') + ' هنا'); _edit0(k, id); };
+const _inboxCard0 = inboxCard;
+inboxCard = function () { return canInbox() ? _inboxCard0() : ''; };
+const _home0 = homeHtml;
+homeHtml = function () {
+  if (canMoney()) return _home0();
+  const p = myP(), t = p && p.team && ROWS.get(p.team), td = today(), ws = typeof wkStart === 'function' ? wkStart(td) : '';
+  const D = ws ? weekItems(ws)[td] || [] : [], due = recs('notes').filter(r => r.data.nx && r.data.nx <= td);
+  const recent = [...ROWS.values()].filter(r => SEC(r.coll) && !SEC(r.coll).hidden).sort((a, b) => (b.at || '') < (a.at || '') ? -1 : 1).slice(0, 6);
+  return inboxCard() + (t ? payCard(t) : '') +
+    (due.length && SEC('notes') ? '<div class="ttl">عملاء محتاجين تكلمهم تاني</div><div class="list">' + due.slice(0, 10).map(r => itemHtml(SEC('notes'), r)).join('') + '</div>' : '') +
+    (D.length ? '<div class="ttl">النهارده</div><div class="list" style="padding:0">' + D.map(o => wkItem(o, ws, wkDone(o, ws))).join('') + '</div>' : '') +
+    '<div class="ttl">آخر حاجات اتضافت</div>' + (recent.length ? '<div class="list">' + recent.map(r => itemHtml(SEC(r.coll), r)).join('') + '</div>' : '<div class="card empty">لسه مفيش حاجة</div>');
+};
+const _more0 = moreHtml;
+moreHtml = function () {
+  let h = _more0();
+  if (!canInbox()) h = h.replace(/<div class="it" onclick="inboxPage\(\)">[\s\S]*?<\/div><\/div>(<span class="dot">\d+<\/span>)?<\/div>/, '');
+  if (ME.admin) h = h.replace('<div class="it" onclick="cfgEdit()">', '<div class="it" onclick="actPage()"><div class="ic">' + ico('sync') + '</div><div class="tx"><div class="t1">سجل النشاط</div><div class="t2">مين ضاف ومين عدّل ومين كلم مين</div></div></div><div class="it" onclick="cfgEdit()">');
+  return h;
+};
+
+/* المرتب: كام، سحب كام الشهر ده، وباقي كام */
+function payCard(t) {
+  const sal = +t.data.s || 0, m = today().slice(0, 7), W = recs('wd').filter(r => r.data.e === t.id), wm = W.filter(r => String(r.data.at || r.at || '').slice(0, 7) === m), took = sum(wm, r => r.data.a);
+  return '<div class="big" style="margin-bottom:12px"><div class="k w"><div class="l">مرتب ' + esc(t.data.n || '') + ' — ' + mName(m) + '</div><div class="v num">' + money(sal) + '</div></div>' +
+    '<div class="k"><div class="l">سحب الشهر ده</div><div class="v num bad">' + money(took) + '</div><div class="mu sm">' + wm.length + ' مرة</div></div><div class="k"><div class="l">باقيله</div><div class="v num ' + (sal - took < 0 ? 'bad' : 'ok') + '">' + money(sal - took) + '</div></div></div>';
+}
+
+/* للمدير: صلاحيات كل موظف */
+let PM = null;
+function permEdit(uid, name) {
+  if (!ME || !ME.admin) return; const old = PERM(uid), all = _CFG0().sections.concat(_CFG0().sections.some(s => s.k === 'notes') ? [] : [NOTES_SEC]);
+  PM = old ? clone(old) : { see: {}, add: {}, ed: {}, money: true, inbox: true, team: '' }; if (!old) all.forEach(s => { PM.see[s.k] = PM.add[s.k] = 1; });
+  PM.uid = uid; PM.name = name; PM.secs = all.map(s => [s.k, s.n, !!s.flow]); permRender();
+}
+function permPreset(k) {
+  PM.see = {}; PM.add = {}; PM.ed = {};
+  PM.secs.forEach(([s, , fl]) => { if (k === 'all') { PM.see[s] = PM.add[s] = PM.ed[s] = 1; } else if (k === 'emp' && !fl) { PM.see[s] = PM.add[s] = 1; } });
+  if (k === 'cc') { ['clients', 'notes', 'sched'].forEach(s => { PM.see[s] = 1; }); PM.add.notes = 1; PM.add.sched = 1; }
+  PM.money = k === 'all'; PM.inbox = k !== 'emp'; permRender();
+}
+function permT(kind, s) { PM[kind][s] = PM[kind][s] ? 0 : 1; if (kind !== 'see' && PM[kind][s]) PM.see[s] = 1; if (kind === 'see' && !PM.see[s]) { PM.add[s] = 0; PM.ed[s] = 0; } permRender(); }
+function permRender() {
+  const team = recs('team'), b = (on, js) => '<button class="pb' + (on ? ' on' : '') + '" onclick="' + js + '">' + (on ? '✓' : '') + '</button>';
+  sheet('صلاحيات ' + PM.name, '<div class="fld"><label>جاهز</label><div class="chips"><button onclick="permPreset(\'all\')">كل حاجة</button><button onclick="permPreset(\'emp\')">موظف</button><button onclick="permPreset(\'cc\')">كول سنتر</button></div></div>' +
+    '<div class="list" style="padding:0"><div class="prow ph"><span>القسم</span><span>يشوف</span><span>يضيف</span><span>يعدّل</span></div>' +
+    PM.secs.map(([k, n, fl]) => '<div class="prow"><span>' + esc(n) + (fl ? ' <small class="mu">فلوس</small>' : '') + '</span>' + b(PM.see[k], "permT('see','" + k + "')") + b(PM.add[k], "permT('add','" + k + "')") + b(PM.ed[k], "permT('ed','" + k + "')") + '</div>').join('') + '</div>' +
+    '<div class="tog" style="margin-top:12px" onclick="PM.money=!PM.money;permRender()"><span>يشوف الفلوس<br><span class="mu sm">الدخل والمصروفات وقيمة الاشتراكات</span></span><span class="sw' + (PM.money ? ' on' : '') + '"></span></div>' +
+    '<div class="tog" style="margin-top:8px" onclick="PM.inbox=!PM.inbox;permRender()"><span>الطلبات والرسايل والمكالمات</span><span class="sw' + (PM.inbox ? ' on' : '') + '"></span></div>' +
+    (team.length ? '<div class="fld" style="margin-top:12px"><label>ده مين في الفريق؟ (عشان يشوف مرتبه)</label><select onchange="PM.team=this.value"><option value="">—</option>' + team.map(r => '<option value="' + r.id + '"' + (PM.team === r.id ? ' selected' : '') + '>' + esc(r.data.n || '') + '</option>').join('') + '</select></div>' : '') +
+    '<p class="mu sm" style="margin-top:10px">التغيير بيوصل لموبايل الموظف لوحده أول ما يتزامن.</p>', 'حفظ', () => {
+    const d = { see: PM.see, add: PM.add, ed: PM.ed, money: !!PM.money, inbox: !!PM.inbox, team: PM.team || '' };
+    saveRec('meta', 'perm_' + PM.uid, d); closeSheet(); toast('صلاحيات ' + PM.name + ' اتحفظت ✓'); sync();
+  });
+}
+
+/* للمدير: سجل النشاط */
+let ACTW = '';
+function actPage() {
+  const E = [];
+  ROWS.forEach(r => {
+    if (r.coll === 'meta' || r.coll === 'pub' || r.coll === 'cfg') return;
+    const s = SEC(r.coll), d = r.data;
+    if (r.coll === 'chat') { const x = (typeof threads === 'function' ? threads() : []).find(y => y.t === d.t), to = (x && x.name) || 'زائر';
+      if (d.kind === 'call') { if (d.ph === 'offer') E.push([d.at || r.at, d.from === 'team' ? d.name : to, d.from === 'team' ? 'اتصل بـ ' + to : 'اتصل بـ OFFGRID', 'phone']); return; }
+      E.push([d.at || r.at, d.from === 'team' ? d.name : (d.name || to), d.from === 'team' ? 'بعت رسالة لـ ' + to : 'بعت رسالة', 'chat']); return; }
+    if (r.coll === 'lead') { E.push([d.at || r.at, d.name || 'زائر', d.kind === 'reg' ? 'سجّل رقمه' : 'طلب حجز: ' + (d.s || ''), 'cal']); return; }
+    const nm = s ? s.n + ': ' + recTitle(s, r) : r.coll;
+    if (r.by) E.push([r.at, r.by, 'ضاف في ' + nm, s ? s.i : 'plus']);
+    if (r.ub && r.u && r.at && Date.parse(r.u) - Date.parse(r.at) > 60000) E.push([r.u, r.ub, 'عدّل في ' + nm, 'gear']);
+  });
+  E.sort((a, b) => (a[0] || '') < (b[0] || '') ? 1 : -1);
+  const who = [...new Set(E.map(e => e[1]).filter(Boolean))], L = E.filter(e => !ACTW || e[1] === ACTW).slice(0, 200);
+  sheet('سجل النشاط', '<div class="segs"><button class="' + (ACTW ? '' : 'on') + '" onclick="ACTW=\'\';actPage()">الكل</button>' + who.map(w => '<button class="' + (ACTW === w ? 'on' : '') + '" onclick="ACTW=\'' + esc(w).replace(/'/g, '') + '\';actPage()">' + esc(w) + '</button>').join('') + '</div>' +
+    (L.length ? '<div class="list">' + L.map(e => '<div class="it"><div class="ic">' + ico(e[3], 18) + '</div><div class="tx"><div class="t1">' + esc(e[1] || '—') + '</div><div class="t2">' + esc(e[2]) + '</div></div><span class="mu sm">' + (typeof tm === 'function' ? tm(e[0]) : dshort(e[0])) + '</span></div>').join('') + '</div>' : '<div class="empty">مفيش نشاط</div>') +
+    '<p class="mu sm" style="text-align:center">الأسامي دي بيكتبها السيرفر نفسه، محدش يقدر يغيّرها.</p>');
+}
+
+const _tick0 = inboxTick;
+inboxTick = function () { if (canInbox()) _tick0(); };
+
+/* الفلوس اللي استلمناها من العميل: تعديل سريع من صفحة العميل */
+const _open1 = openRec;
+openRec = function (id) {
+  _open1(id); const r = ROWS.get(id); if (!r || r.coll !== 'clients' || !SEC('pays') || !canMoney()) return;
+  const P = recs('pays').filter(x => x.data.c === id).sort((a, b) => String(b.data.doneAt || b.data.due || '') < String(a.data.doneAt || a.data.due || '') ? -1 : 1), ed = canEd('pays');
+  const got = sum(P.filter(x => x.data.done), x => x.data.a);
+  $('shB').insertAdjacentHTML('afterbegin', '<div class="card" style="padding:12px 14px"><div class="row" style="justify-content:space-between;margin-bottom:6px"><b>الفلوس اللي استلمناها</b><b class="num" style="color:var(--ok)">' + money(got) + '</b></div>' +
+    (P.length ? P.map(x => '<div class="pyr"><span class="chk' + (x.data.done ? ' on' : '') + '"></span><div style="flex:1;min-width:0"><b class="num">' + money(x.data.a) + '</b><div class="mu sm">' + (x.data.done ? 'اتحصلت ' + dshort(x.data.doneAt || x.data.due) : 'لسه — ميعادها ' + dshort(x.data.due)) + (x.data.note ? ' · ' + esc(x.data.note) : '') + '</div></div>' + (ed ? '<button class="btn g" style="padding:7px 12px;font-size:14px" onclick="payFix(\'' + x.id + '\')">' + ico('gear', 15) + ' تعديل</button>' : '') + '</div>').join('') : '<div class="mu sm">لسه مفيش دفعات</div>') +
+    (canAdd('pays') ? '<button class="btn g" style="width:100%;margin-top:8px;padding:10px" onclick="addLinked(\'pays\',\'' + id + '\')">' + ico('plus', 16) + ' دفعة جديدة</button>' : '') + '</div>');
+};
+function payFix(pid) {
+  const x = ROWS.get(pid); if (!x) return; const d = x.data;
+  sheet('تعديل دفعة', '<div class="fld"><label>المبلغ اللي استلمناه</label><input id="pf_a" type="number" inputmode="decimal" value="' + esc(d.a) + '"></div>' +
+    '<div class="fld"><label>نوع الدفعة</label><div class="chips" id="pf_k">' + ['قسط', 'مقدم', 'مؤخر'].map(k => '<button class="' + (payKind(d) === k ? 'on' : '') + '" onclick="pick(this)">' + k + '</button>').join('') + '</div></div>' +
+    '<div class="tog" onclick="this.querySelector(\'.sw\').classList.toggle(\'on\')"><span>اتحصلت</span><span class="sw' + (d.done ? ' on' : '') + '" id="pf_d"></span></div>' +
+    '<div class="fld" style="margin-top:12px"><label>اتحصلت يوم</label><input id="pf_at" type="date" value="' + esc(String(d.doneAt || today()).slice(0, 10)) + '"></div>' +
+    '<div class="fld"><label>ملاحظة</label><input id="pf_n" value="' + esc(d.note || '') + '"></div>' +
+    '<button class="btn r" style="width:100%" onclick="askDel(\'' + pid + '\')">' + ico('trash', 18) + ' امسح الدفعة دي</button>', 'حفظ', () => {
+    const n = clone(d), v = $('pf_a').value.trim(); if (v === '' || isNaN(+v)) return toast('اكتب المبلغ'); n.a = +v; n.done = $('pf_d').classList.contains('on'); n.note = $('pf_n').value.trim(); n.k = $('pf_k').querySelector('.on').textContent;
+    if (n.done) n.doneAt = $('pf_at').value || today(); else delete n.doneAt;
+    saveRec('pays', pid, n); toast('الدفعة اتعدلت ✓'); openRec(d.c); render();
+  });
 }
 
 </script>
